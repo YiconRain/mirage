@@ -72,6 +72,7 @@ pip install --upgrade pip
 pip install --index-url https://download.pytorch.org/whl/cu124 torch==2.6.0
 pip install vllm==0.8.5
 pip install sglang==0.4.6.post5      # 0.5+ requires torch 2.11 / transformers 5.x
+pip install sgl-kernel==0.1.0        # latest sgl-kernel dropped sm_80 wheels
 pip install transformers==4.51.3     # re-pin in case sglang touched it
 deactivate
 
