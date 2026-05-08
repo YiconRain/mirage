@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# E1 single-H100 sweep, SGLang baseline.
+# E1 single-H100 sweep, SGLang baseline (latency mode, mirrors `vllm bench latency`).
 #
 # Output: results/H100/sglang/<model_tag>__bs<bs>.{log,json}
 #
@@ -36,49 +36,62 @@ run_cell() {
 
     echo "===== SGLANG  ${model_tag}  bs=${bs}  =====" | tee "$log"
 
-    # bench_offline_throughput accepts --num-prompts (= batch size in our
-    # offline-batched setting), --input-length, --output-length.
-    if ! python -m sglang.bench_offline_throughput \
-            --model "$hfid" \
-            --num-prompts "$bs" \
-            --input-length "$INPUT_LEN" \
-            --output-length "$OUTPUT_LEN" \
+    # bench_one_batch is SGLang's latency benchmark: runs one batch prefill +
+    # output decoding, prints "Total. latency: X.XXX s" (parallel to
+    # `vllm bench latency` which prints "Avg latency: X.XX seconds").
+    if ! python -m sglang.bench_one_batch \
+            --model-path "$hfid" \
+            --batch-size "$bs" \
+            --input "$INPUT_LEN" \
+            --output "$OUTPUT_LEN" \
             --dtype bfloat16 \
             >>"$log" 2>&1; then
         echo "FAILED: sglang ${model_tag} bs=${bs}" >&2
         return 1
     fi
 
-    # SGLang prints e.g. "Token generation throughput: X.XX token/s"
-    # We invert to ms/token.
-    local tgen
-    tgen=$(grep -oE 'generation throughput[^0-9]*[0-9]+\.[0-9]+' "$log" \
-            | tail -1 | grep -oE '[0-9]+\.[0-9]+')
-    if [[ -z "${tgen:-}" ]]; then
-        echo "Could not parse throughput from $log" >&2
+    # Parse "Total. latency: <s> s" (or "total latency" depending on version).
+    local total_s
+    total_s=$(grep -iE 'total\.? latency: *[0-9]+\.[0-9]+' "$log" | tail -1 \
+              | grep -oE '[0-9]+\.[0-9]+' | head -1)
+    if [[ -z "${total_s:-}" ]]; then
+        # Fallback: sum prefill + decode latency lines if present.
+        local prefill decode
+        prefill=$(grep -iE 'prefill\.? latency: *[0-9]+\.[0-9]+' "$log" | tail -1 \
+                  | grep -oE '[0-9]+\.[0-9]+' | head -1)
+        decode=$(grep -iE 'decode\.? latency: *[0-9]+\.[0-9]+' "$log" | tail -1 \
+                 | grep -oE '[0-9]+\.[0-9]+' | head -1)
+        if [[ -n "${prefill:-}" && -n "${decode:-}" ]]; then
+            total_s=$(python3 -c "print($prefill + $decode)")
+        fi
+    fi
+    if [[ -z "${total_s:-}" ]]; then
+        echo "Could not parse latency from $log" >&2
         return 1
     fi
+
     python3 - <<EOF >"$json"
 import json
-tps = $tgen
-ms_per_token = 1000.0 / tps if tps > 0 else float("nan")
+total_s = $total_s
+input_len = $INPUT_LEN
+output_len = $OUTPUT_LEN
+total_tokens = (input_len + output_len) * $bs
+ms_per_token = (total_s * 1000.0) / total_tokens
 print(json.dumps({
     "system": "sglang",
+    "gpu": "H100",
     "model": "$hfid",
     "batch_size": $bs,
-    "input_len": $INPUT_LEN,
-    "output_len": $OUTPUT_LEN,
-    "tokens_per_second": tps,
+    "input_len": input_len,
+    "output_len": output_len,
+    "total_iter_seconds": total_s,
     "latency_ms_per_token": ms_per_token,
 }, indent=2))
 EOF
 }
 
 for model_tag in $MODELS; do
-    if [[ -z "${HF_ID[$model_tag]:-}" ]]; then
-        echo "Unknown model tag: $model_tag" >&2
-        exit 1
-    fi
+    [[ -z "${HF_ID[$model_tag]:-}" ]] && { echo "Unknown model tag: $model_tag" >&2; exit 1; }
     for bs in $BATCH_SIZES; do
         run_cell "$model_tag" "$bs" || true
     done
