@@ -109,46 +109,54 @@ def _serve(q):
 
 # ---------- TGX-image SSH entry points (one per GPU config) ----------
 TIMEOUT = 3600 * 24
+# Mirage's nvcc compile of search.cc + others uses ~16-24 GB of host RAM.
+# Modal's default container memory is too small; bump to 64 GB.
+MEMORY_MB = 64 * 1024
 
 
-@app.function(gpu="A100-40GB", timeout=TIMEOUT)
+@app.function(gpu="A100-40GB", timeout=TIMEOUT, memory=MEMORY_MB)
 def ssh_a100_40gb(q): _serve(q)
 
 
-@app.function(gpu="A100-80GB", timeout=TIMEOUT)
+@app.function(gpu="A100-80GB", timeout=TIMEOUT, memory=MEMORY_MB)
 def ssh_a100_80gb(q): _serve(q)
 
 
-@app.function(gpu="H100", timeout=TIMEOUT)
+@app.function(gpu="H100", timeout=TIMEOUT, memory=MEMORY_MB)
 def ssh_h100(q): _serve(q)
 
 
-@app.function(gpu="H100:4", timeout=TIMEOUT)
+@app.function(gpu="H100:4", timeout=TIMEOUT, memory=MEMORY_MB)
 def ssh_h100x4(q): _serve(q)
 
 
-@app.function(gpu="H100:8", timeout=TIMEOUT)
+@app.function(gpu="H100:8", timeout=TIMEOUT, memory=MEMORY_MB)
 def ssh_h100x8(q): _serve(q)
 
 
-@app.function(gpu="B200", timeout=TIMEOUT)
+@app.function(gpu="B200", timeout=TIMEOUT, memory=MEMORY_MB)
 def ssh_b200(q): _serve(q)
 
 
 # ---------- Local entrypoint: spawn function, print connection info ----------
 def _local_main(spawn):
-    """Run a chosen ssh_* function in the cloud and print its public host:port."""
+    """Run a chosen ssh_* function in the cloud and print its public host:port.
+
+    If the cloud container is restarted (e.g. OOM kill), the new container's
+    address is also picked up from the queue and re-printed.
+    """
     with modal.Queue.ephemeral() as q:
         spawn(q)
-        host, port = q.get()
-        print()
-        print(f"SSH ready:  ssh root@{host} -p {port}")
-        print()
-        print("Container will idle until you Ctrl-C this terminal")
-        print("or hit the 24h timeout.")
         try:
             while True:
-                time.sleep(60)
+                # block forever waiting for the *next* SSH address; if a
+                # container restarts, the new one publishes a fresh entry.
+                host, port = q.get()
+                print()
+                print(f"SSH ready:  ssh root@{host} -p {port}")
+                print()
+                print("Container will idle until you Ctrl-C this terminal")
+                print("or hit the 24h timeout.")
         except KeyboardInterrupt:
             print("\nReleasing GPU.")
 
