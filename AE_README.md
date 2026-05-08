@@ -41,21 +41,6 @@ JSON schema with `latency_ms_per_token`.
 | E4   | Fig. 12 (§6.6)| Qwen3-8B final linear layer on B200, 5 batch sizes × 3 configs (cuBLAS, TGX-No-Pipe, TGX-Pipe). | `artifact_evaluation/B200/`     |
 | E5   | Fig. 13 (§6.6)| Qwen3-1.7B on 4 × H100 with TP, 5 batch sizes × 2 configs (TGX with/without compute–comm overlap). | `artifact_evaluation/H100xN/`   |
 
-### Reproduction status (current snapshot)
-
-| Sweep | Cells | Status |
-|-------|-------|--------|
-| A100 TGX (4 models × 5 bs)            | 20 | ✅ done |
-| A100 PyTorch (4 models × 5 bs)        | 20 | ✅ done |
-| A100 vLLM (4 models × 5 bs)           | 20 | 🔄 in progress |
-| A100 SGLang (4 models × 5 bs)         | 20 | 🔄 queued behind vLLM |
-| H100 TGX (5 models × 5 bs)            | 25 | ⏳ pending re-run |
-| H100 PyTorch (5 models × 5 bs)        | 25 | 🔄 in progress |
-| H100 vLLM (5 models × 5 bs)           | 25 | 🔄 queued |
-| H100 SGLang (5 models × 5 bs)         | 25 | 🔄 queued |
-| B200 (E1 row 1, E2, E4)                | tbd| ⏳ not started |
-| H100 multi-GPU (E3, E5)                | tbd| ⏳ not started |
-
 **Workload.** Offline batched inference, prompt length **64**, decode
 **1024** tokens, batch sizes **{1, 2, 4, 8, 16}**, greedy
 (`--temperature 0`). Numbers in the paper are the median of 5 runs after
