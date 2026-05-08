@@ -53,14 +53,15 @@ bash artifact_evaluation/H100/run_tgx.sh
 bash artifact_evaluation/H100/run_pytorch.sh
 ```
 
-For the baseline sweeps, use the baseline image which has vLLM + SGLang
-preinstalled (and no flashinfer conflict):
+For the baseline sweeps (vLLM / SGLang), use the one-shot launcher
+since their dependency cone conflicts with flashinfer and would require
+its own image:
 
 ```bash
-modal run scripts/ae/ae_ssh.py --gpu h100-baselines
-ssh -p 9090 root@localhost
-bash artifact_evaluation/H100/run_vllm.sh
-bash artifact_evaluation/H100/run_sglang.sh
+modal run scripts/ae/ae_modal.py::baseline_h100 \
+    --cmd "bash artifact_evaluation/H100/run_vllm.sh"
+modal run scripts/ae/ae_modal.py::baseline_h100 \
+    --cmd "bash artifact_evaluation/H100/run_sglang.sh"
 ```
 
 ### Option B: one-shot via `modal run --cmd`
@@ -68,8 +69,6 @@ bash artifact_evaluation/H100/run_sglang.sh
 ```bash
 modal run scripts/ae/ae_modal.py::run_h100 \
     --cmd "bash artifact_evaluation/H100/run_tgx.sh"
-modal run scripts/ae/ae_modal.py::baseline_h100 \
-    --cmd "bash artifact_evaluation/H100/run_vllm.sh"
 ```
 
 ### Option C: run on any other GPU host

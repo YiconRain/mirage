@@ -112,30 +112,6 @@ image = (
     )
 )
 
-# Baseline-only image: vLLM + SGLang, no MPK. Used by *_baselines entry points.
-baselines_image = (
-    modal.Image.from_registry(
-        "nvidia/cuda:12.4.1-cudnn-devel-ubuntu22.04",
-        add_python="3.12",
-    )
-    .env({"DEBIAN_FRONTEND": "noninteractive", "TZ": "UTC"})
-    .apt_install("git", "curl", "build-essential", "openssh-server")
-    .run_commands(
-        "mkdir -p /run/sshd",
-        "mkdir -p /root/.ssh",
-        "echo 'PermitRootLogin yes' >> /etc/ssh/sshd_config",
-    )
-    .add_local_file(ssh_key_path, "/root/.ssh/authorized_keys", copy=True)
-    .run_commands("chmod 600 /root/.ssh/authorized_keys")
-    .run_commands(
-        f"git clone --recursive --branch {BRANCH} "
-        "https://github.com/mirage-project/mirage.git"
-    )
-    .env({"MIRAGE_HOME": "/mirage"})
-    .pip_install("vllm")
-    .pip_install("sglang[all]")
-)
-
 hf_cache_vol = modal.Volume.from_name("tgx-ae-hf-cache", create_if_missing=True)
 results_vol = modal.Volume.from_name("tgx-ae-results", create_if_missing=True)
 
@@ -204,27 +180,6 @@ def ssh_h100x8(q): _serve(q)
 def ssh_b200(q): _serve(q)
 
 
-# ---------- Baselines-image SSH entry points (vLLM/SGLang) ----------
-@app.function(image=baselines_image, gpu="A100-80GB", timeout=TIMEOUT)
-def ssh_a100_80gb_baselines(q): _serve(q)
-
-
-@app.function(image=baselines_image, gpu="H100", timeout=TIMEOUT)
-def ssh_h100_baselines(q): _serve(q)
-
-
-@app.function(image=baselines_image, gpu="H100:4", timeout=TIMEOUT)
-def ssh_h100x4_baselines(q): _serve(q)
-
-
-@app.function(image=baselines_image, gpu="H100:8", timeout=TIMEOUT)
-def ssh_h100x8_baselines(q): _serve(q)
-
-
-@app.function(image=baselines_image, gpu="B200", timeout=TIMEOUT)
-def ssh_b200_baselines(q): _serve(q)
-
-
 # ---------- Local entrypoint: spawn function, set up tunnel ----------
 def _local_main(spawn):
     """Run a chosen ssh_* function in the cloud and forward to LOCAL_PORT."""
@@ -274,11 +229,6 @@ def main(gpu: str = "h100"):
         "h100x4": ssh_h100x4,
         "h100x8": ssh_h100x8,
         "b200": ssh_b200,
-        "a100-80gb-baselines": ssh_a100_80gb_baselines,
-        "h100-baselines": ssh_h100_baselines,
-        "h100x4-baselines": ssh_h100x4_baselines,
-        "h100x8-baselines": ssh_h100x8_baselines,
-        "b200-baselines": ssh_b200_baselines,
     }
     fn = table.get(gpu.lower())
     if fn is None:
