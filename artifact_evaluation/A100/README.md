@@ -36,6 +36,16 @@ curl -sSL https://raw.githubusercontent.com/mirage-project/mirage/tgx-osdi26-ae/
 builds it, installs torch + transformers + flashinfer. Runtime ≈ 10–15 min
 on first run (mostly CMake + NVCC compilation of the C++/CUDA extension).
 
+**Non-root hosts** (shared clusters where `/mirage` and `/opt` aren't
+writable): set `MIRAGE_HOME` and `SKIP_APT` first so setup clones into
+your home dir and assumes apt deps are pre-installed:
+
+```bash
+export MIRAGE_HOME=$HOME/mirage-ae
+export SKIP_APT=1
+curl -sSL https://raw.githubusercontent.com/mirage-project/mirage/tgx-osdi26-ae/artifact_evaluation/setup.sh | bash
+```
+
 After setup, in your shell:
 
 ```bash

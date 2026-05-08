@@ -37,6 +37,15 @@ On B200 (sm_100) it installs torch 2.7.0+cu128 + flashinfer for
 torch2.7/cu128. On Ampere/Hopper it installs torch 2.6.0+cu124. No
 manual torch upgrade is needed.
 
+**Non-root hosts** (shared clusters where `/mirage` and `/opt` aren't
+writable): set `MIRAGE_HOME` and `SKIP_APT` first:
+
+```bash
+export MIRAGE_HOME=$HOME/mirage-ae
+export SKIP_APT=1
+curl -sSL https://raw.githubusercontent.com/mirage-project/mirage/tgx-osdi26-ae/artifact_evaluation/setup.sh | bash
+```
+
 ### TGX + PyTorch sweeps
 
 ```bash

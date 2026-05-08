@@ -39,6 +39,15 @@ export CUDA_HOME=/usr/local/cuda
 export HF_TOKEN=hf_xxx
 ```
 
+**Non-root hosts** (shared clusters where `/mirage` and `/opt` aren't
+writable): set `MIRAGE_HOME` and `SKIP_APT` first:
+
+```bash
+export MIRAGE_HOME=$HOME/mirage-ae
+export SKIP_APT=1
+curl -sSL https://raw.githubusercontent.com/mirage-project/mirage/tgx-osdi26-ae/artifact_evaluation/setup.sh | bash
+```
+
 ### TGX + PyTorch sweeps (~75 min total)
 
 ```bash
