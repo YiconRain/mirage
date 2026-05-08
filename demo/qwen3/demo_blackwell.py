@@ -101,7 +101,7 @@ if __name__ == "__main__":
         os.environ["WORLD_SIZE"] = str(world_size)
         os.environ["MASTER_ADDR"] = "localhost"
         os.environ["MASTER_PORT"] = "12355"
-    except ImportError:
+    except (ImportError, RuntimeError, OSError):
         world_size = 1
         rank = 0
 
