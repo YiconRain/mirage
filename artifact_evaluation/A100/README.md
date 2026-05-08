@@ -59,21 +59,26 @@ Each writes one JSON per (model, batch_size) cell to
 
 ### Run vLLM + SGLang baselines
 
-vLLM and SGLang pin their own torch versions and conflict with flashinfer,
-so install them in a separate Python venv to avoid clobbering MPK:
+vLLM/SGLang ship their own torch wheels and conflict with flashinfer,
+so install them in a separate Python venv. Pin the versions below —
+newer vLLM (≥0.9) ships torch built with CUDA 13 and breaks on CUDA
+12.4 hosts.
 
 ```bash
 python3 -m venv /opt/baselines-venv
 source /opt/baselines-venv/bin/activate
 pip install --upgrade pip
-pip install vllm
+pip install --index-url https://download.pytorch.org/whl/cu124 torch==2.6.0
+pip install vllm==0.8.5
 pip install 'sglang[all]'
+deactivate
 
 bash artifact_evaluation/A100/run_vllm.sh       # ~30-40 min
 bash artifact_evaluation/A100/run_sglang.sh     # ~30-40 min
-
-deactivate
 ```
+
+The `run_vllm.sh` and `run_sglang.sh` scripts auto-activate
+`/opt/baselines-venv` when it exists, so no extra `source` is needed.
 
 ### Filtering / spot-checks
 

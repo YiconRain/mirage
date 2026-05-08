@@ -44,15 +44,17 @@ bash artifact_evaluation/B200/run_pytorch.sh
 
 ### vLLM + SGLang baselines
 
-In a separate Python venv (vLLM/SGLang conflict with flashinfer's torch
-pin):
+vLLM/SGLang ship their own torch wheels; install them in a separate
+Python venv. B200 needs CUDA 12.8 + torch 2.7 wheels (sm_100 support);
+vLLM 0.10+ provides this.
 
 ```bash
 python3 -m venv /opt/baselines-venv
 source /opt/baselines-venv/bin/activate
 pip install --upgrade pip
-pip install vllm 'sglang[all]'
-pip install flash-attn --no-build-isolation
+pip install --index-url https://download.pytorch.org/whl/cu128 torch==2.7.0
+pip install vllm
+pip install 'sglang[all]'
 deactivate
 
 bash artifact_evaluation/B200/run_vllm.sh
@@ -60,7 +62,7 @@ bash artifact_evaluation/B200/run_sglang.sh
 ```
 
 The `run_vllm.sh` and `run_sglang.sh` scripts auto-activate
-`/opt/baselines-venv` if it exists.
+`/opt/baselines-venv` when it exists.
 
 ### Filtering
 
