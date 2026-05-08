@@ -71,15 +71,13 @@ image = (
     )
     .run_commands("curl https://sh.rustup.rs -sSf | bash -s -- -y")
     .env({"PATH": "/root/.cargo/bin:$PATH"})
+    .pip_install("torch==2.6.0", "transformers", "mpi4py")
+    .run_commands("cd mirage && pip install -e . -v")
     .run_commands(
-        "cd mirage && uv pip install --system -e . -v "
-        "transformers torch==2.6.0 mpi4py"
-    )
-    .run_commands(
-        "cd mirage && uv pip install --system flashinfer-python "
+        "pip install flashinfer-python "
         "-i https://flashinfer.ai/whl/cu124/torch2.6"
     )
-    .run_commands("uv pip install --system vllm sglang")
+    .pip_install("vllm", "sglang")
 )
 
 hf_cache_vol = modal.Volume.from_name("tgx-ae-hf-cache", create_if_missing=True)
