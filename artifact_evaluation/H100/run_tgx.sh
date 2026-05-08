@@ -19,6 +19,10 @@
 
 set -euo pipefail
 
+# CUDA toolchain on PATH (NVCC is needed at first cell to JIT the megakernel).
+export PATH="${CUDA_BIN:-/usr/local/cuda/bin}:$PATH"
+export CUDA_HOME="${CUDA_HOME:-/usr/local/cuda}"
+
 MIRAGE_HOME="${MIRAGE_HOME:-/mirage}"
 cd "$MIRAGE_HOME"
 

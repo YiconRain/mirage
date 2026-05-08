@@ -5,6 +5,9 @@
 
 set -euo pipefail
 
+export PATH="${CUDA_BIN:-/usr/local/cuda/bin}:$PATH"
+export CUDA_HOME="${CUDA_HOME:-/usr/local/cuda}"
+
 MIRAGE_HOME="${MIRAGE_HOME:-/mirage}"
 cd "$MIRAGE_HOME"
 

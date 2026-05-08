@@ -9,6 +9,9 @@
 
 set -euo pipefail
 
+export PATH="${CUDA_BIN:-/usr/local/cuda/bin}:$PATH"
+export CUDA_HOME="${CUDA_HOME:-/usr/local/cuda}"
+
 MIRAGE_HOME="${MIRAGE_HOME:-/mirage}"
 cd "$MIRAGE_HOME"
 
@@ -21,12 +24,16 @@ PROMPT_LEN="${PROMPT_LEN:-64}"
 GEN_LEN="${GEN_LEN:-1024}"
 MAX_SEQ_LEN="${MAX_SEQ_LEN:-$((PROMPT_LEN + GEN_LEN))}"
 
+# NOTE: PyTorch baseline path uses demo.py (Ampere-grid demos) instead of
+# the Hopper variants. The Hopper demos have a kv_last_page_len shape bug
+# in their PyTorch fallback at batch sizes >= 2. The MPK megakernel path
+# is unaffected; only run_tgx.sh uses the Hopper demos.
 declare -A SCRIPT
-SCRIPT[qwen3-0.6b]="demo/qwen3/demo_hopper.py"
+SCRIPT[qwen3-0.6b]="demo/qwen3/demo.py"
 SCRIPT[llama-3.2-1b]="demo/llama3/demo.py"
-SCRIPT[qwen3-1.7b]="demo/qwen3/demo_hopper.py"
-SCRIPT[qwen3-8b]="demo/qwen3/demo_hopper.py"
-SCRIPT[qwen3-30b-a3b]="demo/qwen3/demo_30B_A3B_hopper.py"
+SCRIPT[qwen3-1.7b]="demo/qwen3/demo.py"
+SCRIPT[qwen3-8b]="demo/qwen3/demo.py"
+SCRIPT[qwen3-30b-a3b]="demo/qwen3/demo_30B_A3B.py"
 
 declare -A HF_ID
 HF_ID[qwen3-0.6b]="Qwen/Qwen3-0.6B"
