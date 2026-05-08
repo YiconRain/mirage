@@ -13,13 +13,49 @@ host, and (3) optional shortcuts for running on Modal cloud GPUs.
 
 ## What's reproduced
 
-| Exp. | Paper figure  | Models                | GPU(s)        | Folder                          |
-|------|---------------|-----------------------|---------------|---------------------------------|
-| E1   | Fig. 9 (§6.3) | Qwen3-{0.6B,1.7B,8B,30B-A3B} + Llama-3.2-1B | A100 / H100 / B200 | `artifact_evaluation/{A100,H100,B200}/` |
-| E2   | Fig. 10 (§6.4)| Qwen3-30B-A3B (MoE)   | B200          | `artifact_evaluation/B200/`     |
-| E3   | Fig. 11 (§6.5)| Qwen3-1.7B            | 2/4/8 × H100  | `artifact_evaluation/H100xN/`   |
-| E4   | Fig. 12 (§6.6)| Qwen3-8B (final linear)| B200         | `artifact_evaluation/B200/`     |
-| E5   | Fig. 13 (§6.6)| Qwen3-1.7B            | 4 × H100      | `artifact_evaluation/H100xN/`   |
+### Models, batch sizes, GPUs
+
+| Paper name             | HuggingFace ID                       | Demo entry point                        |
+|------------------------|--------------------------------------|-----------------------------------------|
+| Qwen3-0.6B             | `Qwen/Qwen3-0.6B`                    | `demo/qwen3/demo.py` (A100) / `demo_hopper.py` (H100) |
+| Llama-3.2-1B-Instruct  | `meta-llama/Llama-3.2-1B-Instruct`   | `demo/llama3/demo.py`                   |
+| Qwen3-1.7B             | `Qwen/Qwen3-1.7B`                    | `demo/qwen3/demo.py` / `demo_hopper.py` |
+| Qwen3-8B               | `Qwen/Qwen3-8B`                      | `demo/qwen3/demo.py` / `demo_hopper.py` |
+| Qwen3-30B-A3B (MoE)    | `Qwen/Qwen3-30B-A3B`                 | `demo/qwen3/demo_30B_A3B.py` / `demo_30B_A3B_hopper.py` |
+
+**Batch sizes:** 1, 2, 4, 8, 16 (per the paper's offline batched setup).
+
+**GPU variants:** NVIDIA A100-40GB, NVIDIA H100-80GB SXM, NVIDIA B200.
+
+**Systems compared:** TGX (= MPK, our system), PyTorch (the same demos
+run without `--use-mirage`), vLLM (`vllm bench latency`), SGLang
+(`python -m sglang.bench_one_batch`). All four systems write the same
+JSON schema with `latency_ms_per_token`.
+
+### Experiments
+
+| Exp. | Paper figure  | What it covers | Folder                          |
+|------|---------------|----------------|---------------------------------|
+| E1   | Fig. 9 (§6.3) | 5 models × 5 batch sizes × 4 systems on each of A100/H100/B200 (Qwen3-30B-A3B omitted on A100 per paper). 70 cells total. | `artifact_evaluation/{A100,H100,B200}/` |
+| E2   | Fig. 10 (§6.4)| Qwen3-30B-A3B MoE on B200, 5 batch sizes × 3 configurations (SGLang-MoE, TGX-Static, TGX-Hybrid). | `artifact_evaluation/B200/`     |
+| E3   | Fig. 11 (§6.5)| Qwen3-1.7B with TP on 2 / 4 / 8 × H100, 5 batch sizes × 4 systems. | `artifact_evaluation/H100xN/`   |
+| E4   | Fig. 12 (§6.6)| Qwen3-8B final linear layer on B200, 5 batch sizes × 3 configs (cuBLAS, TGX-No-Pipe, TGX-Pipe). | `artifact_evaluation/B200/`     |
+| E5   | Fig. 13 (§6.6)| Qwen3-1.7B on 4 × H100 with TP, 5 batch sizes × 2 configs (TGX with/without compute–comm overlap). | `artifact_evaluation/H100xN/`   |
+
+### Reproduction status (current snapshot)
+
+| Sweep | Cells | Status |
+|-------|-------|--------|
+| A100 TGX (4 models × 5 bs)            | 20 | ✅ done |
+| A100 PyTorch (4 models × 5 bs)        | 20 | ✅ done |
+| A100 vLLM (4 models × 5 bs)           | 20 | 🔄 in progress |
+| A100 SGLang (4 models × 5 bs)         | 20 | 🔄 queued behind vLLM |
+| H100 TGX (5 models × 5 bs)            | 25 | ⏳ pending re-run |
+| H100 PyTorch (5 models × 5 bs)        | 25 | 🔄 in progress |
+| H100 vLLM (5 models × 5 bs)           | 25 | 🔄 queued |
+| H100 SGLang (5 models × 5 bs)         | 25 | 🔄 queued |
+| B200 (E1 row 1, E2, E4)                | tbd| ⏳ not started |
+| H100 multi-GPU (E3, E5)                | tbd| ⏳ not started |
 
 **Workload.** Offline batched inference, prompt length **64**, decode
 **1024** tokens, batch sizes **{1, 2, 4, 8, 16}**, greedy
