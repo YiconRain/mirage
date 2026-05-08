@@ -116,12 +116,5 @@ Each per-cell JSON looks like:
 }
 ```
 
-## Coverage on A100
-
-| Experiment | Covered? | Notes |
-|-----------|----------|-------|
-| E1 (Fig. 9 A100 row) | ✅ | 4 models × 5 batch sizes × 4 systems (no 30B-A3B) |
-| Other experiments    | ❌ | E2/E4 are B200; E3/E5 are H100 |
-
 If you don't have an A100 host, see the **Optional: cloud hosting on
 Modal** section in the top-level [`AE_README.md`](../../AE_README.md).

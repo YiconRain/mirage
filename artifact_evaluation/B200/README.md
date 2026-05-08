@@ -75,14 +75,5 @@ MODELS=qwen3-0.6b BATCH_SIZES=1 bash artifact_evaluation/B200/run_tgx.sh
 Same as A100/H100 (`results/B200/<system>/<model_tag>__bs<bs>.json`
 with `latency_ms_per_token`).
 
-## Coverage on B200
-
-| Experiment | Covered by these scripts? | Notes |
-|-----------|---------------------------|-------|
-| E1 (Fig. 9 B200 row) | ✅ | 5 models × 5 batch sizes × 4 systems |
-| E2 (Fig. 10, MoE)    | ⏳ | needs a Blackwell-tuned MoE demo + script for 3 configs |
-| E4 (Fig. 12, ablation) | ⏳ | needs a microbench driver |
-| E3, E5 (multi-GPU H100) | ❌ | not B200 |
-
 If you don't have a B200 host, see the **Optional: cloud hosting on
 Modal** section in the top-level [`AE_README.md`](../../AE_README.md).

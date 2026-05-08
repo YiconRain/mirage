@@ -92,14 +92,5 @@ MODELS=qwen3-0.6b BATCH_SIZES=1 bash artifact_evaluation/H100/run_tgx.sh
 Same as A100 (`results/H100/<system>/<model_tag>__bs<bs>.json` with
 `latency_ms_per_token`).
 
-## Coverage on H100
-
-| Experiment | Covered? | Notes |
-|-----------|----------|-------|
-| E1 (Fig. 9 H100 row) | ✅ | 5 models × 5 batch sizes × 4 systems |
-| E3 (Fig. 11)         | ❌ | Multi-GPU (2/4/8 × H100); separate folder |
-| E5 (Fig. 13)         | ❌ | 4× H100 ablation; separate folder |
-| E2, E4               | ❌ | B200-only |
-
 If you don't have an H100 host, see the **Optional: cloud hosting on
 Modal** section in the top-level [`AE_README.md`](../../AE_README.md).
