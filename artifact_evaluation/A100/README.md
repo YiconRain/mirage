@@ -65,13 +65,14 @@ newer vLLM (≥0.9) ships torch built with CUDA 13 and breaks on CUDA
 12.4 hosts.
 
 ```bash
+rm -rf /opt/baselines-venv          # ensure fresh venv (python -m venv won't wipe)
 python3 -m venv /opt/baselines-venv
 source /opt/baselines-venv/bin/activate
 pip install --upgrade pip
 pip install --index-url https://download.pytorch.org/whl/cu124 torch==2.6.0
 pip install vllm==0.8.5
 pip install sglang==0.4.6.post5      # 0.5+ requires torch 2.11 / transformers 5.x
-pip install 'transformers==4.51.3'   # vllm 0.8.5 needs transformers 4.x
+pip install transformers==4.51.3     # re-pin in case sglang touched it
 deactivate
 
 bash artifact_evaluation/A100/run_vllm.sh       # ~30-40 min
