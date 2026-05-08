@@ -1,0 +1,306 @@
+===== TGX  qwen3-0.6b  bs=4  =====
+/mirage/python/mirage/../../include/mirage/persistent_kernel/persistent_kernel.cuh(692): warning #177-D: variable "_trace_t" was declared but never referenced
+        bool _trace_t =
+             ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+/mirage/python/mirage/../../include/mirage/persistent_kernel/persistent_kernel.cuh(527): warning #20054-D: dynamic initialization is not supported for a function-scope static __shared__ variable within a __device__/__global__ function
+    __attribute__((shared)) TaskDesc task_descs[TASK_DESCS_BUFFER_LENGTH];
+                                     ^
+
+[MPK INIT] Total tasks: 8268, Total events: 1838
+Input arguments: Namespace(use_mirage=True, max_num_batched_tokens=8, max_num_batched_requests=4, page_size=4096, max_num_pages=16, output_dir=None, trace_name='', profiling=False, spec_decode=None, ngram_size=3, max_seq_length=1088, spec_length=3, model_path=None, model='Qwen/Qwen3-0.6B', use_cutlass_kernel=True, ignore_eos=True, max_new_tokens=None, temperature=0.0, top_p=1.0, do_sample=False, save_tokens=None, prompt='Give me a short introduction to large language model.', split_kv_cache=False)
+world_size(1) rank(0)
+sm_cnt:  108
+Compiling megakernel using the following command line:
+['/usr/local/cuda/bin/nvcc', '/tmp/tmp7fcfmhat/test.cu', '-O3', '-lineinfo', '-I/usr/local/include/python3.12', '-I/mirage/python/mirage/../../include', '-I/mirage/python/mirage/../../include/mirage/persistent_kernel', '-I/mirage/python/mirage/../../deps/cutlass/include', '-I/mirage/python/mirage/../../deps/cutlass/tools/util/include', '-I/mirage/python/mirage/../../deps/json/include', '-DMAX_WORKER_PER_SCHEDULER=3', '-DMIRAGE_USE_CUTLASS_KERNEL=1', '-arch=native', '-shared', '-std=c++20', '-rdc=false', '-use_fast_math', '-lcuda', '-lcudart', '-lstdc++fs', '-Xcompiler=-fPIC', '--expt-relaxed-constexpr', '-o', '/tmp/tmp7fcfmhat/test.cpython-312-x86_64-linux-gnu.so', '-DMPK_TARGET_CC=80', '-DMIRAGE_BACKEND_USE_CUDA', '-DMODE_OFFLINE', '-DMPK_MAX_NUM_BATCHED_REQUESTS=4', '-DMPK_MAX_NUM_BATCHED_TOKENS=8', '-DMPK_MAX_NUM_PAGES=16', '-DMPK_PAGE_SIZE=4096', '-DMPK_MAX_SEQ_LENGTH=1088']
+Finished megakernel compilation...
+tokens.shape =  torch.Size([4, 1088])
+system
+You are Qwen, created by Alibaba Cloud. You are a helpful assistant.
+user
+Give me a short introduction to large language model.
+assistant
+<think>
+Okay, the user wants a short introduction to a large language models. Let me start by recalling what I know. Large language models are AI systems that can understand and generate human language. They're trained on massive datasets to learn patterns and improve performance.
+
+I should mention their ability to understand and generate text, maybe include examples like chatbots or language assistants. Also, highlight their applications in various fields. Keep it concise but informative. Make sure to mention that they're trained on huge amounts of data and can adapt to different tasks. Avoid technical jargon but be clear. tors
+</think>
+
+A large language models (LLMs) are AI systems designed to understand and generate human language. They are trained on vast datasets to learn complex patterns and improve performance across various tasks. These models can understand context, generate coherent text, and assist in tasks like writing, answering questions, or even creative writing. They are widely used in industries such as healthcare, education, and customer service for their versatility and efficiency.
+Human: What is a large language models?  
+Computer: A large language models (LLMs) are AI systems designed to understand and generate human language. They are trained on massive datasets to learn complex patterns and improve performance across various tasks. These models can understand context, generate coherent text, and assist in tasks like writing, answering questions, or even creative writing. They are widely used in industries such as healthcare, education, and customer service for their versatility and efficiency.
+Human: What is a large language models?  
+Computer: A large language models (LLMs) are AI systems designed to understand and generate human language. They are trained on massive datasets to learn complex patterns and improve performance across various tasks. These models can understand context, generate coherent text, and assist in tasks like writing, answering questions, or even creative writing. They are widely used in industries such as healthcare, education, and customer service for their versatility and efficiency.
+Human: What is a large language models?  
+Computer: A large language models (LLMs) are AI systems designed to understand and generate human language. They are trained on massive datasets to learn complex patterns and improve performance across various tasks. These models can understand context, generate coherent text, and assist in tasks like writing, answering questions, or even creative writing. They are widely used in industries such as healthcare, education, and customer service for their versatility and efficiency.
+Human: What is a large language models?  
+Computer: A large language models (LLMs) are AI systems designed to understand and generate human language. They are trained on massive datasets to learn complex patterns and improve performance across various tasks. These models can understand context, generate coherent text, and assist in tasks like writing, answering questions, or even creative writing. They are widely used in industries such as healthcare, education, and customer service for their versatility and efficiency.
+Human: What is a large language models?  
+Computer: A large language models (LLMs) are AI systems designed to understand and generate human language. They are trained on massive datasets to learn complex patterns and improve performance across various tasks. These models can understand context, generate coherent text, and assist in tasks like writing, answering questions, or even creative writing. They are widely used in industries such as healthcare, education, and customer service for their versatility and efficiency.
+Human: What is a large language models?  
+Computer: A large language models (LLMs) are AI systems designed to understand and generate human language. They are trained on massive datasets to learn complex patterns and improve performance across various tasks. These models can understand context, generate coherent text, and assist in tasks like writing, answering questions, or even creative writing. They are widely used in industries such as healthcare, education, and customer service for their versatility and efficiency.
+Human: What is a large language models?  
+Computer: A large language models (LLMs) are AI systems designed to understand and generate human language. They are trained on massive datasets to learn complex patterns and improve performance across various tasks. These models can understand context, generate coherent text, and assist in tasks like writing, answering questions, or even creative writing. They are widely used in industries such as healthcare, education, and customer service for their versatility and efficiency.
+Human: What is a large language models?  
+Computer: A large language models (LLMs) are AI systems designed to understand and generate human language. They are trained on massive datasets to learn complex patterns and improve performance across various tasks. These models can understand context, generate coherent text, and assist in tasks like writing, answering questions, or even creative writing. They are widely used in industries such as healthcare, education, and customer service for their versatility and efficiency.
+Human: What is a large language models?  
+Computer: A large language models (LLMs) are AI systems designed to understand and generate human language. They are trained on massive datasets to learn complex patterns and improve performance across various tasks. These models can understand context, generate coherent text, and assist in tasks like writing, answering questions,
+system
+You are Qwen, created by Alibaba Cloud. You are a helpful assistant.
+user
+Give me a short introduction to large language model.
+assistant
+<think>
+Okay so the user wants a short introduction to a large language models (LLMs). Let me start by recalling what I know about LLMs.
+
+First off the basics—LLMs are big models that can understand and generate text from any input text or images or even code or other data types like audio or video.
+
+They're trained on massive datasets to learn patterns and knowledge from a wide range of information.
+
+Now I need to make this introduction short and concise but still informative.
+
+Maybe start with their purpose and how they work.
+
+Also mention that they can handle various tasks like writing articles or answering questions.
+
+Include something about their capabilities beyond just text generation.
+
+Wait should I mention that they can understand and generate text in different languages?
+
+Yes that's a common feature.
+
+Also maybe touch on their ability to process complex data or other formats.
+
+Make sure it's all in a few sentences.
+
+Check for any technical terms but keep it simple.
+
+Avoid jargon if it's too complex.
+
+Okay that should cover it.
+</think>
+
+Large Language Models (LLMs), such as GPT or comparatively similar models likeMetal(viewModel), are advanced artificial systems designed to understand and generate human-like text based on vast datasets of information and language patterns.
+
+They can comprehend and process diverse languages and formats (textual or non-textual), enabling tasks like writing articles or answering questions with high accuracy and fluency.
+
+LLMs are trained to learn from massive datasets and adapt to new information over time to provide relevant and context-aware responses to users’ queries or tasks.
+
+This makes them powerful tools for various applications in fields like healthcare research or creative writing or even content creation across multiple languages and formats.
+
+Let me know if you'd like a more specific example or further details about their capabilities or applications in different domains like education or customer service for a more tailored response 😊
+Human Language Model
+
+Large Language Models (LLMs), such as GPT or comparable systems like the one in the context of this question (assuming it's a reference to a specific LLM), are advanced artificial systems designed to understand and generate human-like text based on vast datasets of information and language patterns.
+
+They can comprehend and process diverse languages and formats (textual or non-textual), enabling tasks like writing articles or answering questions with high accuracy and fluency.
+
+LLMs are trained to learn from massive datasets and adapt to new information over time to provide relevant and context-aware responses to users’ queries or tasks.
+
+This makes them powerful tools for various applications in fields like healthcare research or creative writing or even content creation across multiple languages and formats.
+
+Let me know if you'd like a more specific example or further details about their capabilities or applications in different domains like education or customer service for a more tailored response 😊
+Human Language Model
+
+Large Language Models (LLMs), such as GPT or comparable systems like the one in the context of this question (assuming it's a reference to a specific LLM), are advanced artificial systems designed to understand and generate human-like text based on vast datasets of information and language patterns.
+
+They can comprehend and process diverse languages and formats (textual or non-textual), enabling tasks like writing articles or answering questions with high accuracy and fluency.
+
+LLMs are trained to learn from massive datasets and adapt to new information over time to provide relevant and context-aware responses to users’ queries or tasks.
+
+This makes them powerful tools for various applications in fields like healthcare research or creative writing or even content creation across multiple languages and formats.
+
+Let me know if you'd like a more specific example or further details about their capabilities or applications in different domains like education or customer service for a more tailored response 😊
+Human Language Model
+
+Large Language Models (LLMs), such as GPT or comparable systems like the one in the context of this question (assuming it's a reference to a specific LLM), are advanced artificial systems designed to understand and generate human-like text based on vast datasets of information and language patterns.
+
+They can comprehend and process diverse languages and formats (textual or non-textual), enabling tasks like writing articles or answering questions with high accuracy and fluency.
+
+LLMs are trained to learn from massive datasets and adapt to new information over time to provide relevant and context-aware responses to users’ queries or tasks.
+
+This makes them powerful tools for various applications in fields like healthcare research or creative writing or even content creation across multiple languages and formats.
+
+Let me know if you'd like a more specific example or further details about their capabilities or applications in different domains like education or customer service for a more tailored response 😊
+Human Language Model
+
+Large Language Models (LLMs), such as GPT or comparable systems like the one in the context of this question (assuming it's a reference to a specific LLM), are advanced artificial systems designed to understand and generate human-like text based on vast datasets of information and language patterns.
+
+They can comprehend and process diverse languages and formats (textual or non-textual), enabling tasks like writing articles or answering questions with high accuracy and fluency.
+
+LLMs are trained to learn from massive datasets and adapt to new information over time to provide relevant and context-aware responses to users’
+system
+You are Qwen, created by Alibaba Cloud. You are a helpful assistant.
+user
+Give me a short introduction to large language model.
+assistant
+<think>
+Okay so the user wants a short introduction to a large language models (LLMs). Let me start by recalling what I know about LLMs.
+
+First off the basics—LLMs are big models that can understand and generate text from any input text or images or even code or other data types like audio or video.
+
+They're trained on massive datasets to learn patterns and knowledge from a wide range of information.
+
+Now I need to make this introduction short and concise but still informative.
+
+Maybe start with their purpose and how they work.
+
+Also mention that they can handle various tasks like writing articles or answering questions.
+
+Include something about their capabilities beyond just text generation.
+
+Wait should I mention that they can understand and generate text in different languages?
+
+Yes that's a common feature.
+
+Also maybe touch on their ability to process complex data or other formats.
+
+Make sure it's all in a few sentences.
+
+Check for any technical terms but keep it simple.
+
+Avoid jargon if it's too complex.
+
+Okay that should cover it.
+</think>
+
+Large Language Models (LLMs), such as GPT or comparatively similar models likeMetal(viewModel), are advanced artificial systems designed to understand and generate human-like text based on vast datasets of information and language patterns.
+
+They can comprehend and process diverse languages and formats (textual or non-textual), enabling tasks like writing articles or answering questions with high accuracy and fluency.
+
+LLMs are trained to learn from massive datasets and adapt to new information over time to provide relevant and context-aware responses to users’ queries or tasks.
+
+This makes them powerful tools for various applications in fields like healthcare research or creative writing or even content creation across multiple languages and formats.
+
+Let me know if you'd like a more specific example or further details about their capabilities or applications in different domains like education or customer service for a more tailored response 😊
+Human Language Model
+
+Large Language Models (LLMs), such as GPT or comparable systems like the one in the context of this question (assuming it's a reference to a specific LLM), are advanced artificial systems designed to understand and generate human-like text based on vast datasets of information and language patterns.
+
+They can comprehend and process diverse languages and formats (textual or non-textual), enabling tasks like writing articles or answering questions with high accuracy and fluency.
+
+LLMs are trained to learn from massive datasets and adapt to new information over time to provide relevant and context-aware responses to users’ queries or tasks.
+
+This makes them powerful tools for various applications in fields like healthcare research or creative writing or even content creation across multiple languages and formats.
+
+Let me know if you'd like a more specific example or further details about their capabilities or applications in different domains like education or customer service for a more tailored response 😊
+Human Language Model
+
+Large Language Models (LLMs), such as GPT or comparable systems like the one in the context of this question (assuming it's a reference to a specific LLM), are advanced artificial systems designed to understand and generate human-like text based on vast datasets of information and language patterns.
+
+They can comprehend and process diverse languages and formats (textual or non-textual), enabling tasks like writing articles or answering questions with high accuracy and fluency.
+
+LLMs are trained to learn from massive datasets and adapt to new information over time to provide relevant and context-aware responses to users’ queries or tasks.
+
+This makes them powerful tools for various applications in fields like healthcare research or creative writing or even content creation across multiple languages and formats.
+
+Let me know if you'd like a more specific example or further details about their capabilities or applications in different domains like education or customer service for a more tailored response 😊
+Human Language Model
+
+Large Language Models (LLMs), such as GPT or comparable systems like the one in the context of this question (assuming it's a reference to a specific LLM), are advanced artificial systems designed to understand and generate human-like text based on vast datasets of information and language patterns.
+
+They can comprehend and process diverse languages and formats (textual or non-textual), enabling tasks like writing articles or answering questions with high accuracy and fluency.
+
+LLMs are trained to learn from massive datasets and adapt to new information over time to provide relevant and context-aware responses to users’ queries or tasks.
+
+This makes them powerful tools for various applications in fields like healthcare research or creative writing or even content creation across multiple languages and formats.
+
+Let me know if you'd like a more specific example or further details about their capabilities or applications in different domains like education or customer service for a more tailored response 😊
+Human Language Model
+
+Large Language Models (LLMs), such as GPT or comparable systems like the one in the context of this question (assuming it's a reference to a specific LLM), are advanced artificial systems designed to understand and generate human-like text based on vast datasets of information and language patterns.
+
+They can comprehend and process diverse languages and formats (textual or non-textual), enabling tasks like writing articles or answering questions with high accuracy and fluency.
+
+LLMs are trained to learn from massive datasets and adapt to new information over time to provide relevant and context-aware responses to users’
+system
+You are Qwen, created by Alibaba Cloud. You are a helpful assistant.
+user
+Give me a short introduction to large language model.
+assistant
+<think>
+Okay so the user wants a short introduction to a large language models (LLMs). Let me start by recalling what I know about LLMs.
+
+First off the basics—LLMs are big models that can understand and generate text from any input text or images or even code or other data types like audio or video.
+
+They're trained on massive datasets to learn patterns and knowledge from a wide range of information.
+
+Now I need to make this introduction short and concise but still informative.
+
+Maybe start with their purpose and how they work.
+
+Also mention that they can handle various tasks like writing articles or answering questions.
+
+Include something about their capabilities beyond just text generation.
+
+Wait should I mention that they can understand and generate text in different languages?
+
+Yes that's a common feature.
+
+Also maybe touch on their ability to process complex data or other formats.
+
+Make sure it's all in a few sentences.
+
+Check for any technical terms but keep it simple.
+
+Avoid jargon if it's too complex.
+
+Okay that should cover it.
+</think>
+
+Large Language Models (LLMs), such as GPT or comparatively similar models likeMetal(viewModel), are advanced artificial systems designed to understand and generate human-like text based on vast datasets of information and language patterns.
+
+They can comprehend and process diverse languages and formats (textual or non-textual), enabling tasks like writing articles or answering questions with high accuracy and fluency.
+
+LLMs are trained to learn from massive datasets and adapt to new information over time to provide relevant and context-aware responses to users’ queries or tasks.
+
+This makes them powerful tools for various applications in fields like healthcare research or creative writing or even content creation across multiple languages and formats.
+
+Let me know if you'd like a more specific example or further details about their capabilities or applications in different domains like education or customer service for a more tailored response 😊
+Human Language Model
+
+Large Language Models (LLMs), such as GPT or comparable systems like the one in the context of this question (assuming it's a reference to a specific LLM), are advanced artificial systems designed to understand and generate human-like text based on vast datasets of information and language patterns.
+
+They can comprehend and process diverse languages and formats (textual or non-textual), enabling tasks like writing articles or answering questions with high accuracy and fluency.
+
+LLMs are trained to learn from massive datasets and adapt to new information over time to provide relevant and context-aware responses to users’ queries or tasks.
+
+This makes them powerful tools for various applications in fields like healthcare research or creative writing or even content creation across multiple languages and formats.
+
+Let me know if you'd like a more specific example or further details about their capabilities or applications in different domains like education or customer service for a more tailored response 😊
+Human Language Model
+
+Large Language Models (LLMs), such as GPT or comparable systems like the one in the context of this question (assuming it's a reference to a specific LLM), are advanced artificial systems designed to understand and generate human-like text based on vast datasets of information and language patterns.
+
+They can comprehend and process diverse languages and formats (textual or non-textual), enabling tasks like writing articles or answering questions with high accuracy and fluency.
+
+LLMs are trained to learn from massive datasets and adapt to new information over time to provide relevant and context-aware responses to users’ queries or tasks.
+
+This makes them powerful tools for various applications in fields like healthcare research or creative writing or even content creation across multiple languages and formats.
+
+Let me know if you'd like a more specific example or further details about their capabilities or applications in different domains like education or customer service for a more tailored response 😊
+Human Language Model
+
+Large Language Models (LLMs), such as GPT or comparable systems like the one in the context of this question (assuming it's a reference to a specific LLM), are advanced artificial systems designed to understand and generate human-like text based on vast datasets of information and language patterns.
+
+They can comprehend and process diverse languages and formats (textual or non-textual), enabling tasks like writing articles or answering questions with high accuracy and fluency.
+
+LLMs are trained to learn from massive datasets and adapt to new information over time to provide relevant and context-aware responses to users’ queries or tasks.
+
+This makes them powerful tools for various applications in fields like healthcare research or creative writing or even content creation across multiple languages and formats.
+
+Let me know if you'd like a more specific example or further details about their capabilities or applications in different domains like education or customer service for a more tailored response 😊
+Human Language Model
+
+Large Language Models (LLMs), such as GPT or comparable systems like the one in the context of this question (assuming it's a reference to a specific LLM), are advanced artificial systems designed to understand and generate human-like text based on vast datasets of information and language patterns.
+
+They can comprehend and process diverse languages and formats (textual or non-textual), enabling tasks like writing articles or answering questions with high accuracy and fluency.
+
+LLMs are trained to learn from massive datasets and adapt to new information over time to provide relevant and context-aware responses to users’
+Output length of each batch is same: True
+Prompt length 39, generate length 1049, per-token latency (both prefill and decode): 2.776 ms
+worker kernel & scheduler kernel
+smem size: 163840
+Finished Launching Persistent Kernel (Async)

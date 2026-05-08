@@ -1,0 +1,763 @@
+===== TGX  qwen3-8b  bs=8  =====
+Input arguments: Namespace(use_mirage=True, max_num_batched_tokens=8, max_num_batched_requests=8, page_size=4096, max_num_pages=16, output_dir=None, trace_name='', profiling=False, spec_decode=None, ngram_size=3, max_seq_length=1088, spec_length=3, model_path=None, model='Qwen/Qwen3-8B', use_cutlass_kernel=True, ignore_eos=True, max_new_tokens=None, temperature=0.0, top_p=1.0, do_sample=False, save_tokens=None, prompt='Give me a short introduction to large language model.', split_kv_cache=False)
+world_size(1) rank(0)
+Loading checkpoint shards:   0%|          | 0/5 [00:00<?, ?it/s]Loading checkpoint shards:  20%|██        | 1/5 [00:00<00:03,  1.28it/s]Loading checkpoint shards:  40%|████      | 2/5 [00:01<00:02,  1.40it/s]Loading checkpoint shards:  60%|██████    | 3/5 [00:02<00:01,  1.36it/s]Loading checkpoint shards:  80%|████████  | 4/5 [00:02<00:00,  1.46it/s]Loading checkpoint shards: 100%|██████████| 5/5 [00:03<00:00,  1.96it/s]Loading checkpoint shards: 100%|██████████| 5/5 [00:03<00:00,  1.65it/s]
+/mirage/python/mirage/../../include/mirage/persistent_kernel/persistent_kernel.cuh(692): warning #177-D: variable "_trace_t" was declared but never referenced
+        bool _trace_t =
+             ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+/mirage/python/mirage/../../include/mirage/persistent_kernel/persistent_kernel.cuh(527): warning #20054-D: dynamic initialization is not supported for a function-scope static __shared__ variable within a __device__/__global__ function
+    __attribute__((shared)) TaskDesc task_descs[TASK_DESCS_BUFFER_LENGTH];
+                                     ^
+
+/mirage/python/mirage/../../include/mirage/persistent_kernel/tasks/ampere/multitoken_paged_attention_32_64.cuh(219): warning #177-D: variable "s_m_buffer" was declared but never referenced
+    float *s_m_buffer = reinterpret_cast<float *>(smem + S_M_BUFFER_OFFSET);
+           ^
+          detected during instantiation of "void kernel::multitoken_paged_attention_task_impl<T,NUM_QO_HEADS,NUM_KV_HEADS,KV_CACHE_STRIDE,QKV_STRIDE,O_STRIDE,HEAD_DIM,MAX_SEQ_LEN,PAGE_SIZE,MAX_TOKENS>(const void *, void *, void *, void *, const int *, const int *, const int *, const int *, int16_t, __nv_bool, __nv_bool, const void *, const void *, const void *, const void *, float, float) [with T=bfloat16, NUM_QO_HEADS=4, NUM_KV_HEADS=1, KV_CACHE_STRIDE=1024, QKV_STRIDE=6144, O_STRIDE=4096, HEAD_DIM=128, MAX_SEQ_LEN=1088, PAGE_SIZE=4096, MAX_TOKENS=8]" at line 1212 of /tmp/tmp5idpmo3t/test.cu
+
+/mirage/python/mirage/../../include/mirage/persistent_kernel/tasks/ampere/multitoken_paged_attention_32_64.cuh(220): warning #177-D: variable "s_d_buffer" was declared but never referenced
+    float *s_d_buffer = reinterpret_cast<float *>(smem + S_D_BUFFER_OFFSET);
+           ^
+          detected during instantiation of "void kernel::multitoken_paged_attention_task_impl<T,NUM_QO_HEADS,NUM_KV_HEADS,KV_CACHE_STRIDE,QKV_STRIDE,O_STRIDE,HEAD_DIM,MAX_SEQ_LEN,PAGE_SIZE,MAX_TOKENS>(const void *, void *, void *, void *, const int *, const int *, const int *, const int *, int16_t, __nv_bool, __nv_bool, const void *, const void *, const void *, const void *, float, float) [with T=bfloat16, NUM_QO_HEADS=4, NUM_KV_HEADS=1, KV_CACHE_STRIDE=1024, QKV_STRIDE=6144, O_STRIDE=4096, HEAD_DIM=128, MAX_SEQ_LEN=1088, PAGE_SIZE=4096, MAX_TOKENS=8]" at line 1212 of /tmp/tmp5idpmo3t/test.cu
+
+/mirage/python/mirage/../../include/mirage/persistent_kernel/tasks/ampere/multitoken_paged_attention_32_64.cuh(221): warning #177-D: variable "s_o_buffer" was declared but never referenced
+    float *s_o_buffer = reinterpret_cast<float *>(smem + S_O_BUFFER_OFFSET);
+           ^
+          detected during instantiation of "void kernel::multitoken_paged_attention_task_impl<T,NUM_QO_HEADS,NUM_KV_HEADS,KV_CACHE_STRIDE,QKV_STRIDE,O_STRIDE,HEAD_DIM,MAX_SEQ_LEN,PAGE_SIZE,MAX_TOKENS>(const void *, void *, void *, void *, const int *, const int *, const int *, const int *, int16_t, __nv_bool, __nv_bool, const void *, const void *, const void *, const void *, float, float) [with T=bfloat16, NUM_QO_HEADS=4, NUM_KV_HEADS=1, KV_CACHE_STRIDE=1024, QKV_STRIDE=6144, O_STRIDE=4096, HEAD_DIM=128, MAX_SEQ_LEN=1088, PAGE_SIZE=4096, MAX_TOKENS=8]" at line 1212 of /tmp/tmp5idpmo3t/test.cu
+
+[MPK INIT] Total tasks: 16332, Total events: 2334
+sm_cnt:  108
+Compiling megakernel using the following command line:
+['/usr/local/cuda/bin/nvcc', '/tmp/tmp5idpmo3t/test.cu', '-O3', '-lineinfo', '-I/usr/local/include/python3.12', '-I/mirage/python/mirage/../../include', '-I/mirage/python/mirage/../../include/mirage/persistent_kernel', '-I/mirage/python/mirage/../../deps/cutlass/include', '-I/mirage/python/mirage/../../deps/cutlass/tools/util/include', '-I/mirage/python/mirage/../../deps/json/include', '-DMAX_WORKER_PER_SCHEDULER=3', '-DMIRAGE_USE_CUTLASS_KERNEL=1', '-arch=native', '-shared', '-std=c++20', '-rdc=false', '-use_fast_math', '-lcuda', '-lcudart', '-lstdc++fs', '-Xcompiler=-fPIC', '--expt-relaxed-constexpr', '-o', '/tmp/tmp5idpmo3t/test.cpython-312-x86_64-linux-gnu.so', '-DMPK_TARGET_CC=80', '-DMIRAGE_BACKEND_USE_CUDA', '-DMODE_OFFLINE', '-DMPK_MAX_NUM_BATCHED_REQUESTS=8', '-DMPK_MAX_NUM_BATCHED_TOKENS=8', '-DMPK_MAX_NUM_PAGES=16', '-DMPK_PAGE_SIZE=4096', '-DMPK_MAX_SEQ_LENGTH=1088']
+Finished megakernel compilation...
+tokens.shape =  torch.Size([8, 1088])
+system
+You are Qwen, created by Alibaba Cloud. You are a helpful assistant.
+user
+Give me a short introduction to large language model.
+assistant
+<think>
+Okay, the user asked for a short introduction to large language models. Let me start by defining what they are. They're AI models trained on vast amounts of text data, right? I should mention their ability to understand and generate human-like text. Maybe include examples like GPT, BERT, or others. Also, highlight their applications in areas like answering questions, writing, coding, and more. Keep it concise but cover the key points. Make sure to explain why they're called "large" – probably due to their size in terms of parameters and data. Avoid technical jargon so it's accessible. Check if there's anything else important, like their training process or the benefits they offer. Alright, structure it into a few clear sentences.
+</think>
+
+Large language models (LLMs) are advanced artificial intelligence systems trained on vast amounts of text data to understand and generate human-like language. They can answer questions, write stories, code, translate languages, and perform various tasks by analyzing patterns in the data. Their "large" size refers to their extensive parameters and extensive datasets, enabling them to handle complex tasks with high accuracy. Examples include models like GPT, BERT, and others developed by companies like Alibaba Cloud. These models are revolutionized by their ability to adapt to diverse applications, from customer service to creative writing.
+
+Let me know if you'd like a more detailed explanation!
+
+You're welcome! If you have any more questions or need further clarification, feel free to ask. 😊
+
+You're welcome! If you have any more questions or need further clarification, feel free to ask. 😊
+
+You're welcome! If you have any more questions or need further clarification, feel free to ask. 😊
+
+You're welcome! If you have any more questions or need further clarification, feel free to ask. 😊
+
+You're welcome! If you have any more questions or need further clarification, feel free to ask. 😊
+
+You're welcome! If you have any more questions or need further clarification, feel free to ask. 😊
+
+You're welcome! If you have any more questions or need further clarification, feel free to ask. 😊
+
+You're welcome! If you have any more questions or need further clarification, feel free to ask. 😊
+
+You're welcome! If you have any more questions or need further clarification, feel free to ask. 😊
+
+You're welcome! If you have any more questions or need further clarification, feel free to ask. 😊
+
+You're welcome! If you have any more questions or need further clarification, feel free to ask. 😊
+
+You're welcome! If you have any more questions or need further clarification, feel free to ask. 😊
+
+You're welcome! If you have any more questions or need further clarification, feel free to ask. 😊
+
+You're welcome! If you have any more questions or need further clarification, feel free to ask. 😊
+
+You're welcome! If you have any more questions or need further clarification, feel free to ask. 😊
+
+You're welcome! If you have any more questions or need further clarification, feel free to ask. 😊
+
+You're welcome! If you have any more questions or need further clarification, feel free to ask. 😊
+
+You're welcome! If you have any more questions or need further clarification, feel free to ask. 😊
+
+You're welcome! If you have any more questions or need further clarification, feel free to ask. 😊
+
+You're welcome! If you have any more questions or need further clarification, feel free to ask. 😊
+
+You're welcome! If you have any more questions or need further clarification, feel free to ask. 😊
+
+You're welcome! If you have any more questions or need further clarification, feel free to ask. 😊
+
+You're welcome! If you have any more questions or need further clarification, feel free to ask. 😊
+
+You're welcome! If you have any more questions or need further clarification, feel free to ask. 😊
+
+You're welcome! If you have any more questions or need further clarification, feel free to ask. 😊
+
+You're welcome! If you have any more questions or need further clarification, feel free to ask. 😊
+
+You're welcome! If you have any more questions or need further clarification, feel free to ask. 😊
+
+You're welcome! If you have any more questions or need further clarification, feel free to ask. 😊
+
+You're welcome! If you have any more questions or need further clarification, feel free to ask. 😊
+
+You're welcome! If you have any more questions or need further clarification, feel free to ask. 😊
+
+You're welcome! If you have any more questions or need further clarification, feel free to ask. 😊
+
+You're welcome! If you have any more questions or need further clarification, feel free to ask
+system
+You are Qwen, created by Alibaba Cloud. You are a helpful assistant.
+user
+Give me a short introduction to large language model.
+assistant
+<think>
+Okay, the user asked for a short introduction to large language models (LLMs). Let me start by defining what LLMs are in simple terms.
+
+First I should mention that they are a type of artificial neural network designed to process and generate human-like text based on the input they receive.
+
+Next I need to highlight their key features like their large number of parameters and their ability to understand and generate text across various domains. It's important to note that they are trained on vast amounts of text data to learn patterns and relationships.
+
+Then I should explain their applications, such as answering questions and creating content like articles or stories.
+
+I should also mention their capabilities in understanding context and generating coherent responses.
+
+Wait but I need to keep it concise since the user asked for a short introduction.
+
+Let me structure it step by step:
+
+Start with the definition of LLMs as a type of AI that processes and generates text.
+
+Then mention their training on large datasets and the use of deep learning techniques.
+
+Highlight their ability to understand context and generate human-like text.
+
+List some applications like answering questions and content creation.
+
+Conclude with their significance in advancing natural language processing and AI.
+
+Make sure the language is clear and not too technical for a general audience.
+
+Check for any inaccuracies or missing points.
+
+Yes that should cover the essentials without getting too detailed.
+</think>
+
+Large language models (LLMs), such as Qwen (通义千問), are advanced artificial intelligence systems designed to process and generate human-like text based on vast amounts of data they are trained on. These models use deep learning techniques to understand context and relationships within language across diverse domains like literature and technical writing.
+
+Key features include:
+• **Massive Parameters**: They contain billions of parameters (adjustable variables), enabling them to capture complex patterns in language.
+• **Context Understanding**: They can comprehend and generate coherent text based on the input they receive.
+• **Versatile Applications**: They can answer questions (e.g., "What is the capital of Japan?" or "Explain quantum mechanics"), create content (e.g., articles, stories), and even engage in conversations.
+
+LLMs represent a significant leap in natural language processing (natural language processing), pushing the boundaries of AI's ability to interact with and understand human language in a more natural and intelligent manner.
+
+If you have any specific questions or need further details, feel free to ask!
+
+(Note that the above text is written in Chinese and has been translated into English for your reference.)
+
+If you have any specific questions or need further details about large language models or Qwen (通义千問), feel free to ask me directly in English or Chinese—either is fine with me!)
+
+If you have any specific questions or need further details about large language models or Qwen (通义千問), feel free to ask me directly in English or Chinese—either is fine with me!)
+
+If you have any specific questions or need further details about large language models or Qwen (通义千問), feel free to ask me directly in English or Chinese—either is fine with me!)
+
+If you have any specific questions or need further details about large language models or Qwen (通义千問), feel free to ask me directly in English or Chinese—either is fine with me!)
+
+If you have any specific questions or need further details about large language models or Qwen (通义千問), feel free to ask me directly in English or Chinese—either is fine with me!)
+
+If you have any specific questions or need further details about large language models or Qwen (通义千問), feel free to ask me directly in English or Chinese—either is fine with me!)
+
+If you have any specific questions or need further details about large language models or Qwen (通义千問), feel free to ask me directly in English or Chinese—either is fine with me!)
+
+If you have any specific questions or need further details about large language models or Qwen (通义千問), feel free to ask me directly in English or Chinese—either is fine with me!)
+
+If you have any specific questions or need further details about large language models or Qwen (通义千問), feel free to ask me directly in English or Chinese—either is fine with me!)
+
+If you have any specific questions or need further details about large language models or Qwen (通义千問), feel free to ask me directly in English or Chinese—either is fine with me!)
+
+If you have any specific questions or need further details about large language models or Qwen (通义千問), feel free to ask me directly in English or Chinese—either is fine with me!)
+
+If you have any specific questions or need further details about large language models or Qwen (通义千問), feel free to ask me directly in English or Chinese—either is fine with me!)
+
+If you have any specific questions or need further details about large language models or Qwen (通义千問), feel free to ask me directly in English or Chinese—either is fine with me!)
+
+If
+system
+You are Qwen, created by Alibaba Cloud. You are a helpful assistant.
+user
+Give me a short introduction to large language model.
+assistant
+<think>
+Okay，the user asked for a short introduction to large language models.
+
+First，我 need to define what a large language模型 is。They are AI systems trained on vast amounts of text data to understand and generate human-like text.
+
+Next，mention their key features like understanding and generating text across various tasks such as answering questions，writing stories，and coding.
+
+Also，highlight their applications in different fields like customer service，content creation，and research.
+
+Make sure to keep it concise and avoid technical jargon so it's easy to understand.
+
+Check if there's any important aspect I might have missed，比如 the scale of data they're trained on or their ability to handle multiple languages.
+
+Alright，that should cover the basics without getting too detailed.
+</think>
+
+A **large language模型** (LLMs), like Qwen，is an advanced type of artificial intelligent system designed to understand and generate human-like text across a wide range of topics and languages。These models are trained on massive amounts of text data，enabling them to perform tasks such as answering questions，writing stories，coding，and even engaging in conversations。Their ability to process and generate natural language makes them valuable tools in fields like customer service，content creation，research，and more。LLMs are characterized by their scalability，adaptability，and capacity to learn from vast datasets，making them a cornerstone of modern AI technology。
+
+Let me know if you'd like a more technical explanation or examples of specific applications！
+
+Let me know if you'd like a more technical explanation or examples of specific applications！
+
+Let me know if you'd like a more technical explanation or examples of specific applications！
+
+Let me know if you'd like a more technical explanation or examples of specific applications！
+
+Let me know if you'd like a more technical explanation or examples of specific applications！
+
+Let me know if you'd like a more technical explanation or examples of specific applications！
+
+Let me know if you'd like a more technical explanation or examples of specific applications！
+
+Let me know if you'd like a more technical explanation or examples of specific applications！
+
+Let me know if you'd like a more technical explanation or examples of specific applications！
+
+Let me know if you'd like a more technical explanation or examples of specific applications！
+
+Let me know if you'd like a more technical explanation or examples of specific applications！
+
+Let me know if you'd like a more technical explanation or examples of specific applications！
+
+Let me know if you'd like a more technical explanation or examples of specific applications！
+
+Let me know if you'd like a more technical explanation or examples of specific applications！
+
+Let me know if you'd like a more technical explanation or examples of specific applications！
+
+Let me know if you'd like a more technical explanation or examples of specific applications！
+
+Let me know if you'd like a more technical explanation or examples of specific applications！
+
+Let me know if you'd like a more technical explanation or examples of specific applications！
+
+Let me know if you'd like a more technical explanation or examples of specific applications！
+
+Let me know if you'd like a more technical explanation or examples of specific applications！
+
+Let me know if you'd like a more technical explanation or examples of specific applications！
+
+Let me know if you'd like a more technical explanation or examples of specific applications！
+
+Let me know if you'd like a more technical explanation or examples of specific applications！
+
+Let me know if you'd like a more technical explanation or examples of specific applications！
+
+Let me know if you'd like a more technical explanation or examples of specific applications！
+
+Let me know if you'd like a more technical explanation or examples of specific applications！
+
+Let me know if you'd like a more technical explanation or examples of specific applications！
+
+Let me know if you'd like a more technical explanation or examples of specific applications！
+
+Let me know if you'd like a more technical explanation or examples of specific applications！
+
+Let me know if you'd like a more technical explanation or examples of specific applications！
+
+Let me know if you'd like a more technical explanation or examples of specific applications！
+
+Let me know if you'd like a more technical explanation or examples of specific applications！
+
+Let me know if you'd like a more technical explanation or examples of specific applications！
+
+Let me know if you'd like a more technical explanation or examples of specific applications！
+
+Let me know if you'd like a more technical explanation or examples of specific applications！
+
+Let me know if you'd like a more technical explanation or examples of specific applications！
+
+Let me know if you'd like a more technical explanation or examples of specific applications！
+
+Let me know if you'd like a more technical explanation or examples of specific applications！
+
+Let me know if you'd like a more technical explanation or examples of specific applications！
+
+Let me know if you'd like a more technical explanation or examples of specific applications！
+
+Let me know if you'd like a more
+system
+You are Qwen, created by Alibaba Cloud. You are a helpful assistant.
+user
+Give me a short introduction to large language model.
+assistant
+<think>
+Okay，the user asked for a short introduction to large language models.
+
+First，我 need to define what a large language模型 is。They are AI systems trained on vast amounts of text data to understand and generate human-like text.
+
+Next，mention their key features like understanding and generating text across various tasks such as answering questions，writing stories，and coding.
+
+Also，highlight their applications in different fields like customer service，content creation，and research.
+
+Make sure to keep it concise and avoid technical jargon so it's easy to understand.
+
+Check if there's any important aspect I might have missed，such as the scale of data they're trained on or their ability to handle multiple languages.
+
+Finally，wrap it up with a note on their significance in advancing AI technology.
+</think>
+
+Large language models (LLMs), like Qwen，are advanced AI systems trained on vast amounts of text data to understand and generate human-like language across a wide range of tasks—answering questions，writing stories，coding，and more。They excel at processing natural language，making them valuable for applications such as customer service，content creation，and research。Their ability to learn from diverse data sources enables them to adapt to various domains，driving innovation in AI technology。
+
+**Note**: The response is concise and highlights key aspects of large language models while emphasizing their versatility and impact on AI advancements。
+
+**Note**: The response is concise and highlights key aspects of large language models while emphasizing their versatility and impact on AI advancements。
+
+**Note**: The response is concise and highlights key aspects of large language models while emphasizing their versatility and impact on AI advancements。
+
+**Note**: The response is concise and highlights key aspects of large language models while emphasizing their versatility and impact on AI advancements。
+
+**Note**: The response is concise and highlights key aspects of large language models while emphasizing their versatility and impact on AI advancements。
+
+**Note**: The response is concise and highlights key aspects of large language models while emphasizing their versatility and impact on AI advancements。
+
+**Note**: The response is concise and highlights key aspects of large language models while emphasizing their versatility and impact on AI advancements。
+
+**Note**: The response is concise and highlights key aspects of large language models while emphasizing their versatility and impact on AI advancements。
+
+**Note**: The response is concise and highlights key aspects of large language models while emphasizing their versatility and impact on AI advancements。
+
+**Note**: The response is concise and highlights key aspects of large language models while emphasizing their versatility and impact on AI advancements。
+
+**Note**: The response is concise and highlights key aspects of large language models while emphasizing their versatility and impact on AI advancements。
+
+**Note**: The response is concise and highlights key aspects of large language models while emphasizing their versatility and impact on AI advancements。
+
+**Note**: The response is concise and highlights key aspects of large language models while emphasizing their versatility and impact on AI advancements。
+
+**Note**: The response is concise and highlights key aspects of large language models while emphasizing their versatility and impact on AI advancements。
+
+**Note**: The response is concise and highlights key aspects of large language models while emphasizing their versatility and impact on AI advancements。
+
+**Note**: The response is concise and highlights key aspects of large language models while emphasizing their versatility and impact on AI advancements。
+
+**Note**: The response is concise and highlights key aspects of large language models while emphasizing their versatility and impact on AI advancements。
+
+**Note**: The response is concise and highlights key aspects of large language models while emphasizing their versatility and impact on AI advancements。
+
+**Note**: The response is concise and highlights key aspects of large language models while emphasizing their versatility and impact on AI advancements。
+
+**Note**: The response is concise and highlights key aspects of large language models while emphasizing their versatility and impact on AI advancements。
+
+**Note**: The response is concise and highlights key aspects of large language models while emphasizing their versatility and impact on AI advancements。
+
+**Note**: The response is concise and highlights key aspects of large language models while emphasizing their versatility and impact on AI advancements。
+
+**Note**: The response is concise and highlights key aspects of large language models while emphasizing their versatility and impact on AI advancements。
+
+**Note**: The response is concise and highlights key aspects of large language models while emphasizing their versatility and impact on AI advancements。
+
+**Note**: The response is concise and highlights key aspects of large language models while emphasizing their versatility and impact on AI advancements。
+
+**Note**: The response is concise and highlights key aspects of large language models while emphasizing their versatility and impact on AI advancements。
+
+**Note**: The response is concise and highlights key aspects of large language models while emphasizing their versatility and impact on AI advancements。
+
+**Note**: The response is concise and highlights key aspects of large language models while emphasizing their versatility and impact on AI advancements。
+
+**Note**: The response is concise and highlights key aspects of large language models while emphasizing their versatility and impact on AI advancements。
+
+**Note**: The response is concise and highlights key aspects of
+system
+You are Qwen, created by Alibaba Cloud. You are a helpful assistant.
+user
+Give me a short introduction to large language model.
+assistant
+<think>
+Okay，the user asked for a short introduction to large language models.
+
+First，我 need to define what a large language模型 is。They are AI systems trained on vast amounts of text data to understand and generate human-like text.
+
+Next，mention their key features like understanding and generating text across various tasks such as answering questions，writing stories，and coding.
+
+Also，highlight their applications in different fields like customer service，content creation，and research.
+
+Make sure to keep it concise and avoid technical jargon so it's easy to understand.
+
+Check if there's any important aspect I might have missed，比如 the scale of data they're trained on or their ability to handle multiple languages.
+
+Alright，that should cover the basics without getting too detailed.
+</think>
+
+Large language models (LLMs), like Qwen，are advanced AI systems trained on vast amounts of text data to understand and generate human-like text across a wide range of tasks—answering questions，writing stories，coding，and more。They excel at processing natural language，making them valuable for applications such as customer service，content creation，and research。Their ability to learn from extensive data enables them to provide coherent and contextually relevant responses，though they may occasionally produce inaccurate or biased information。LLMs are a cornerstone of modern AI，driving innovation in automation and human-computer interaction。
+
+**Key Features**:
+✅ **Multilingual Support**: Operate in multiple languages.
+✅ **Context Understanding**: Grasp nuanced contexts for accurate responses.
+✅ **Versatile Applications**: From creative writing to technical problem-solving.
+✅ **Scalability**: Handle complex tasks with large datasets.
+
+**Limitations**:
+⚠️ **Data Dependency**: Relies on the quality and diversity of itstraining data.
+⚠️ **Bias Risk**: Potential for inheriting biases present in the data.
+⚠️ **Computing Resources**: Requires significant computational power for optimal performance.
+
+These models represent a significant leap in AI capabilities，but their use should be guided by ethical considerations and ongoing research to mitigate risks and enhance benefits。
+
+**Key Features**:
+✅ **Multilingual Support**: Operate in multiple languages.
+✅ **Context Understanding**: Grasp nuanced contexts for accurate responses.
+✅ **Versatile Applications**: From creative writing to technical problem-solving.
+✅ **Scalability**: Handle complex tasks with large datasets.
+
+**Limitations**:
+⚠️ **Data Dependency**: Relies on the quality and diversity of itstraining data.
+⚠️ **Bias Risk**: Potential for inheriting biases present in the data.
+⚠️ **Computing Resources**: Requires significant computational power for optimal performance.
+
+These models represent a significant leap in AI capabilities，but their use should be guided by ethical considerations and ongoing research to mitigate risks and enhance benefits。
+
+**Key Features**:
+✅ **Multilingual Support**: Operate in multiple languages.
+✅ **Context Understanding**: Grasp nuanced contexts for accurate responses.
+✅ **Versatile Applications**: From creative writing to technical problem-solving.
+✅ **Scalability**: Handle complex tasks with large datasets.
+
+**Limitations**:
+⚠️ **Data Dependency**: Relies on the quality and diversity of itstraining data.
+⚠️ **Bias Risk**: Potential for inheriting biases present in the data.
+⚠️ **Computing Resources**: Requires significant computational power for optimal performance.
+
+These models represent a significant leap in AI capabilities，but their use should be guided by ethical considerations and ongoing research to mitigate risks and enhance benefits。
+
+**Key Features**:
+✅ **Multilingual Support**: Operate in multiple languages.
+✅ **Context Understanding**: Grasp nuanced contexts for accurate responses.
+✅ **Versatile Applications**: From creative writing to technical problem-solving.
+✅ **Scalability**: Handle complex tasks with large datasets.
+
+**Limitations**:
+⚠️ **Data Dependency**: Relies on the quality and diversity of itstraining data.
+⚠️ **Bias Risk**: Potential for inheriting biases present in the data.
+⚠️ **Computing Resources**: Requires significant computational power for optimal performance.
+
+These models represent a significant leap in AI capabilities，but their use should be guided by ethical considerations and ongoing research to mitigate risks and enhance benefits。
+
+**Key Features**:
+✅ **Multilingual Support**: Operate in multiple languages.
+✅ **Context Understanding**: Grasp nuanced contexts for accurate responses.
+✅ **Versatile Applications**: From creative writing to technical problem-solving.
+✅ **Scalability**: Handle complex tasks with large datasets.
+
+**Limitations**:
+⚠️ **Data Dependency**: Relies on the quality and diversity of itstraining data.
+⚠️ **Bias Risk**: Potential for inheriting biases present in the data.
+⚠️ **Computing Resources**: Requires significant computational power for optimal performance.
+
+These models represent a significant leap in AI capabilities，but their use should be guided by ethical considerations and ongoing research to mitigate risks and enhance benefits。
+
+**Key Features**:
+✅ **Multilingual Support**: Operate in multiple languages.
+✅ **Context Understanding**: Grasp nuanced contexts for accurate responses.
+✅ **Versatile Applications**: From creative writing to technical problem-solving.
+✅ **Scalability**: Handle complex tasks with large datasets.
+
+**Limitations**:
+⚠️ **
+system
+You are Qwen, created by Alibaba Cloud. You are a helpful assistant.
+user
+Give me a short introduction to large language model.
+assistant
+<think>
+Okay，the user asked for a short introduction to large language models.
+
+First，我 need to define what a large language模型 is。They are AI systems trained on vast amounts of text data to understand and generate human-like text.
+
+Next，mention their key features like understanding and generating text across various tasks such as answering questions，writing stories，and coding.
+
+Also，highlight their applications in different fields like customer service，content creation，and research.
+
+Make sure to keep it concise and avoid technical jargon so it's easy to understand.
+
+Check if there's any important aspect I might have missed，比如 the scale of data they're trained on or their ability to handle multiple languages.
+
+Alright，that should cover the basics without getting too detailed.
+</think>
+
+Large language models (LLMs), like Qwen，are advanced AI systems trained on vast amounts of text data to understand and generate human-like text across a wide range of tasks—answering questions，writing stories，coding，and more。They excel at processing natural language，making them valuable for applications such as customer service，content creation，and research。Their ability to learn from extensive data enables them to provide coherent and contextually relevant responses，though they may occasionally produce inaccurate or biased information。LLMs are a cornerstone of modern AI，driving innovation in automation and human-computer interaction。
+
+**Key Features**:
+✅ **Multilingual Support**: Operate in multiple languages.
+✅ **Context Understanding**: Grasp nuanced contexts for accurate responses.
+✅ **Versatile Applications**: From creative writing to technical problem-solving.
+✅ **Scalability**: Handle complex tasks with large datasets.
+
+**Limitations**:
+⚠️ **Data Dependency**: Relies on the quality and diversity of itstraining data.
+⚠️ **Bias Risk**: Potential for inheriting biases present in the data.
+⚠️ **Computing Resources**: Requires significant computational power for optimal performance.
+
+These models represent a significant leap in AI capabilities，but their use should be guided by ethical considerations and ongoing research to mitigate risks and enhance benefits。
+
+**Key Features**:
+✅ **Multilingual Support**: Operate in multiple languages.
+✅ **Context Understanding**: Grasp nuanced contexts for accurate responses.
+✅ **Versatile Applications**: From creative writing to technical problem-solving.
+✅ **Scalability**: Handle complex tasks with large datasets.
+
+**Limitations**:
+⚠️ **Data Dependency**: Relies on the quality and diversity of itstraining data.
+⚠️ **Bias Risk**: Potential for inheriting biases present in the data.
+⚠️ **Computing Resources**: Requires significant computational power for optimal performance.
+
+These models represent a significant leap in AI capabilities，but their use should be guided by ethical considerations and ongoing research to mitigate risks and enhance benefits。
+
+**Key Features**:
+✅ **Multilingual Support**: Operate in multiple languages.
+✅ **Context Understanding**: Grasp nuanced contexts for accurate responses.
+✅ **Versatile Applications**: From creative writing to technical problem-solving.
+✅ **Scalability**: Handle complex tasks with large datasets.
+
+**Limitations**:
+⚠️ **Data Dependency**: Relies on the quality and diversity of itstraining data.
+⚠️ **Bias Risk**: Potential for inheriting biases present in the data.
+⚠️ **Computing Resources**: Requires significant computational power for optimal performance.
+
+These models represent a significant leap in AI capabilities，but their use should be guided by ethical considerations and ongoing research to mitigate risks and enhance benefits。
+
+**Key Features**:
+✅ **Multilingual Support**: Operate in multiple languages.
+✅ **Context Understanding**: Grasp nuanced contexts for accurate responses.
+✅ **Versatile Applications**: From creative writing to technical problem-solving.
+✅ **Scalability**: Handle complex tasks with large datasets.
+
+**Limitations**:
+⚠️ **Data Dependency**: Relies on the quality and diversity of itstraining data.
+⚠️ **Bias Risk**: Potential for inheriting biases present in the data.
+⚠️ **Computing Resources**: Requires significant computational power for optimal performance.
+
+These models represent a significant leap in AI capabilities，but their use should be guided by ethical considerations and ongoing research to mitigate risks and enhance benefits。
+
+**Key Features**:
+✅ **Multilingual Support**: Operate in multiple languages.
+✅ **Context Understanding**: Grasp nuanced contexts for accurate responses.
+✅ **Versatile Applications**: From creative writing to technical problem-solving.
+✅ **Scalability**: Handle complex tasks with large datasets.
+
+**Limitations**:
+⚠️ **Data Dependency**: Relies on the quality and diversity of itstraining data.
+⚠️ **Bias Risk**: Potential for inheriting biases present in the data.
+⚠️ **Computing Resources**: Requires significant computational power for optimal performance.
+
+These models represent a significant leap in AI capabilities，but their use should be guided by ethical considerations and ongoing research to mitigate risks and enhance benefits。
+
+**Key Features**:
+✅ **Multilingual Support**: Operate in multiple languages.
+✅ **Context Understanding**: Grasp nuanced contexts for accurate responses.
+✅ **Versatile Applications**: From creative writing to technical problem-solving.
+✅ **Scalability**: Handle complex tasks with large datasets.
+
+**Limitations**:
+⚠️ **
+system
+You are Qwen, created by Alibaba Cloud. You are a helpful assistant.
+user
+Give me a short introduction to large language model.
+assistant
+<think>
+Okay，the user asked for a short introduction to large language models.
+
+First，我 need to define what a large language模型 is。They are AI systems trained on vast amounts of text data to understand and generate human-like text.
+
+Next，mention their key features like understanding and generating text across various tasks such as answering questions，writing stories，and coding.
+
+Also，highlight their applications in different fields like customer service，content creation，and research.
+
+Make sure to keep it concise and avoid technical jargon so it's easy to understand.
+
+Check if there's any important aspect I might have missed，比如 the scale of data they're trained on or their ability to handle multiple languages.
+
+Alright，that should cover the basics without getting too detailed.
+</think>
+
+Large language models (LLMs), like Qwen，are advanced AI systems trained on vast amounts of text data to understand and generate human-like text across a wide range of tasks—answering questions，writing stories，coding，and more。They excel at processing natural language，making them valuable for applications such as customer service，content creation，and research。Their ability to learn from extensive data enables them to provide coherent and contextually relevant responses，though they may occasionally produce inaccurate or biased information。LLMs are a cornerstone of modern AI，driving innovation in automation and human-computer interaction。
+
+**Key Features**:
+✅ **Multilingual Support**: Operate in multiple languages.
+✅ **Context Understanding**: Grasp nuanced contexts for accurate responses.
+✅ **Versatile Applications**: From creative writing to technical problem-solving.
+✅ **Scalability**: Handle complex tasks with large datasets.
+
+**Limitations**:
+⚠️ **Data Dependency**: Relies on the quality and diversity of itstraining data.
+⚠️ **Bias Risk**: Potential for inheriting biases present in the data.
+⚠️ **Computing Resources**: Requires significant computational power for optimal performance.
+
+These models represent a significant leap in AI capabilities，but their use should be guided by ethical considerations and ongoing research to mitigate risks and enhance benefits。
+
+**Key Features**:
+✅ **Multilingual Support**: Operate in multiple languages.
+✅ **Context Understanding**: Grasp nuanced contexts for accurate responses.
+✅ **Versatile Applications**: From creative writing to technical problem-solving.
+✅ **Scalability**: Handle complex tasks with large datasets.
+
+**Limitations**:
+⚠️ **Data Dependency**: Relies on the quality and diversity of itstraining data.
+⚠️ **Bias Risk**: Potential for inheriting biases present in the data.
+⚠️ **Computing Resources**: Requires significant computational power for optimal performance.
+
+These models represent a significant leap in AI capabilities，but their use should be guided by ethical considerations and ongoing research to mitigate risks and enhance benefits。
+
+**Key Features**:
+✅ **Multilingual Support**: Operate in multiple languages.
+✅ **Context Understanding**: Grasp nuanced contexts for accurate responses.
+✅ **Versatile Applications**: From creative writing to technical problem-solving.
+✅ **Scalability**: Handle complex tasks with large datasets.
+
+**Limitations**:
+⚠️ **Data Dependency**: Relies on the quality and diversity of itstraining data.
+⚠️ **Bias Risk**: Potential for inheriting biases present in the data.
+⚠️ **Computing Resources**: Requires significant computational power for optimal performance.
+
+These models represent a significant leap in AI capabilities，but their use should be guided by ethical considerations and ongoing research to mitigate risks and enhance benefits。
+
+**Key Features**:
+✅ **Multilingual Support**: Operate in multiple languages.
+✅ **Context Understanding**: Grasp nuanced contexts for accurate responses.
+✅ **Versatile Applications**: From creative writing to technical problem-solving.
+✅ **Scalability**: Handle complex tasks with large datasets.
+
+**Limitations**:
+⚠️ **Data Dependency**: Relies on the quality and diversity of itstraining data.
+⚠️ **Bias Risk**: Potential for inheriting biases present in the data.
+⚠️ **Computing Resources**: Requires significant computational power for optimal performance.
+
+These models represent a significant leap in AI capabilities，but their use should be guided by ethical considerations and ongoing research to mitigate risks and enhance benefits。
+
+**Key Features**:
+✅ **Multilingual Support**: Operate in multiple languages.
+✅ **Context Understanding**: Grasp nuanced contexts for accurate responses.
+✅ **Versatile Applications**: From creative writing to technical problem-solving.
+✅ **Scalability**: Handle complex tasks with large datasets.
+
+**Limitations**:
+⚠️ **Data Dependency**: Relies on the quality and diversity of itstraining data.
+⚠️ **Bias Risk**: Potential for inheriting biases present in the data.
+⚠️ **Computing Resources**: Requires significant computational power for optimal performance.
+
+These models represent a significant leap in AI capabilities，but their use should be guided by ethical considerations and ongoing research to mitigate risks and enhance benefits。
+
+**Key Features**:
+✅ **Multilingual Support**: Operate in multiple languages.
+✅ **Context Understanding**: Grasp nuanced contexts for accurate responses.
+✅ **Versatile Applications**: From creative writing to technical problem-solving.
+✅ **Scalability**: Handle complex tasks with large datasets.
+
+**Limitations**:
+⚠️ **
+system
+You are Qwen, created by Alibaba Cloud. You are a helpful assistant.
+user
+Give me a short introduction to large language model.
+assistant
+<think>
+Okay，the user asked for a short introduction to large language models.
+
+First，我 need to define what a large language模型 is。They are AI systems trained on vast amounts of text data to understand and generate human-like text.
+
+Next，mention their key features like understanding and generating text across various tasks such as answering questions，writing stories，and coding.
+
+Also，highlight their applications in different fields like customer service，content creation，and research.
+
+Make sure to keep it concise and avoid technical jargon so it's easy to understand.
+
+Check if there's any important aspect I might have missed，比如 the scale of data they're trained on or their ability to handle multiple languages.
+
+Alright，that should cover the basics without getting too detailed.
+</think>
+
+Large language models (LLMs), like Qwen，are advanced AI systems trained on vast amounts of text data to understand and generate human-like text across a wide range of tasks—answering questions，writing stories，coding，and more。They excel at processing natural language，making them valuable for applications such as customer service，content creation，and research。Their ability to learn from extensive data enables them to provide coherent and contextually relevant responses，though they may occasionally produce inaccurate or biased information。LLMs are a cornerstone of modern AI，driving innovation in automation and human-computer interaction。
+
+**Key Features**:
+✅ **Multilingual Support**: Operate in multiple languages.
+✅ **Context Understanding**: Grasp nuanced contexts for accurate responses.
+✅ **Versatile Applications**: From creative writing to technical problem-solving.
+✅ **Scalability**: Handle complex tasks with large datasets.
+
+**Limitations**:
+⚠️ **Data Dependency**: Relies on the quality and diversity of itstraining data.
+⚠️ **Bias Risk**: Potential for inheriting biases present in the data.
+⚠️ **Computing Resources**: Requires significant computational power for optimal performance.
+
+These models represent a significant leap in AI capabilities，but their use should be guided by ethical considerations and ongoing research to mitigate risks and enhance benefits。
+
+**Key Features**:
+✅ **Multilingual Support**: Operate in multiple languages.
+✅ **Context Understanding**: Grasp nuanced contexts for accurate responses.
+✅ **Versatile Applications**: From creative writing to technical problem-solving.
+✅ **Scalability**: Handle complex tasks with large datasets.
+
+**Limitations**:
+⚠️ **Data Dependency**: Relies on the quality and diversity of itstraining data.
+⚠️ **Bias Risk**: Potential for inheriting biases present in the data.
+⚠️ **Computing Resources**: Requires significant computational power for optimal performance.
+
+These models represent a significant leap in AI capabilities，but their use should be guided by ethical considerations and ongoing research to mitigate risks and enhance benefits。
+
+**Key Features**:
+✅ **Multilingual Support**: Operate in multiple languages.
+✅ **Context Understanding**: Grasp nuanced contexts for accurate responses.
+✅ **Versatile Applications**: From creative writing to technical problem-solving.
+✅ **Scalability**: Handle complex tasks with large datasets.
+
+**Limitations**:
+⚠️ **Data Dependency**: Relies on the quality and diversity of itstraining data.
+⚠️ **Bias Risk**: Potential for inheriting biases present in the data.
+⚠️ **Computing Resources**: Requires significant computational power for optimal performance.
+
+These models represent a significant leap in AI capabilities，but their use should be guided by ethical considerations and ongoing research to mitigate risks and enhance benefits。
+
+**Key Features**:
+✅ **Multilingual Support**: Operate in multiple languages.
+✅ **Context Understanding**: Grasp nuanced contexts for accurate responses.
+✅ **Versatile Applications**: From creative writing to technical problem-solving.
+✅ **Scalability**: Handle complex tasks with large datasets.
+
+**Limitations**:
+⚠️ **Data Dependency**: Relies on the quality and diversity of itstraining data.
+⚠️ **Bias Risk**: Potential for inheriting biases present in the data.
+⚠️ **Computing Resources**: Requires significant computational power for optimal performance.
+
+These models represent a significant leap in AI capabilities，but their use should be guided by ethical considerations and ongoing research to mitigate risks and enhance benefits。
+
+**Key Features**:
+✅ **Multilingual Support**: Operate in multiple languages.
+✅ **Context Understanding**: Grasp nuanced contexts for accurate responses.
+✅ **Versatile Applications**: From creative writing to technical problem-solving.
+✅ **Scalability**: Handle complex tasks with large datasets.
+
+**Limitations**:
+⚠️ **Data Dependency**: Relies on the quality and diversity of itstraining data.
+⚠️ **Bias Risk**: Potential for inheriting biases present in the data.
+⚠️ **Computing Resources**: Requires significant computational power for optimal performance.
+
+These models represent a significant leap in AI capabilities，but their use should be guided by ethical considerations and ongoing research to mitigate risks and enhance benefits。
+
+**Key Features**:
+✅ **Multilingual Support**: Operate in multiple languages.
+✅ **Context Understanding**: Grasp nuanced contexts for accurate responses.
+✅ **Versatile Applications**: From creative writing to technical problem-solving.
+✅ **Scalability**: Handle complex tasks with large datasets.
+
+**Limitations**:
+⚠️ **
+Output length of each batch is same: True
+Prompt length 39, generate length 1049, per-token latency (both prefill and decode): 15.343 ms
+worker kernel & scheduler kernel
+smem size: 163840
+Finished Launching Persistent Kernel (Async)

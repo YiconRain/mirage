@@ -1,0 +1,12 @@
+{
+  "system": "tgx",
+  "gpu": "A100",
+  "model": "Qwen/Qwen3-0.6B",
+  "model_tag": "qwen3-0.6b",
+  "script": "demo/qwen3/demo.py",
+  "batch_size": 1,
+  "prompt_len": 64,
+  "gen_len": 1024,
+  "max_seq_length": 1088,
+  "latency_ms_per_token": 2.693
+}

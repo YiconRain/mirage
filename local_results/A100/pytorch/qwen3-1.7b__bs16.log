@@ -1,0 +1,17 @@
+===== PYTORCH  qwen3-1.7b  bs=16  =====
+Input arguments: Namespace(use_mirage=False, max_num_batched_tokens=8, max_num_batched_requests=16, page_size=4096, max_num_pages=16, output_dir=None, trace_name='', profiling=False, spec_decode=None, ngram_size=3, max_seq_length=1088, spec_length=3, model_path=None, model='Qwen/Qwen3-1.7B', use_cutlass_kernel=True, ignore_eos=True, max_new_tokens=None, temperature=0.0, top_p=1.0, do_sample=False, save_tokens=None, prompt='Give me a short introduction to large language model.', split_kv_cache=False)
+world_size(1) rank(0)
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards:  50%|█████     | 1/2 [00:00<00:00,  1.43it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00,  2.52it/s]
+system
+You are Qwen, created by Alibaba Cloud. You are a helpful assistant.
+user
+Give me a short introduction to large language model.
+assistant
+<think>
+Okay, the user wants a short introduction to large language models. Let me start by defining what they are. Large language models are AI systems trained on vast amounts of text data. They can understand and generate human-like text.
+
+I should mention key features like natural language processing, understanding context, and generating coherent responses. Also, note that they're used in various applications like chatbots, content creation, and more. Maybe touch on their training data and the complexity involved. Need to keep it concise but informative. Avoid technical jargon so it's accessible. Make sure to highlight their ability to adapt and learn from new data. Check if there's anything else important to include, like their role in different industries. Alright, structure the response with a definition, key features, applications, and a concluding sentence about their impact.
+</think>
+
+Large language models (LLMs) are advanced AI systems designed to understand, generate, and interact with human language. They are trained on massive datasets of text, enabling them to grasp complex patterns, context, and nuances. These models can perform tasks like answering questions, writing text, translating languages, and generating creative content. Their ability to adapt and learn from new data makes them versatile for various applications, from customer service chatbots to content creation. LLMs represent a significant leap in AI, bridging the gap between human-like communication and machine intelligence.
+Prompt length 39, generate length 279, per-token latency 28.05369168626792 ms

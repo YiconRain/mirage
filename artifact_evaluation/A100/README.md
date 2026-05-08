@@ -108,4 +108,4 @@ Each per-cell JSON looks like:
 ```
 
 If you don't have an A100 host, see the **Optional: cloud hosting on
-Modal** section in the top-level [`AE_README.md`](../../AE_README.md).
+Modal** section in the top-level [`README.md`](../../README.md).

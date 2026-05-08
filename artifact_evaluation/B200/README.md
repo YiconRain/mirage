@@ -84,4 +84,4 @@ Same as A100/H100 (`results/B200/<system>/<model_tag>__bs<bs>.json`
 with `latency_ms_per_token`).
 
 If you don't have a B200 host, see the **Optional: cloud hosting on
-Modal** section in the top-level [`AE_README.md`](../../AE_README.md).
+Modal** section in the top-level [`README.md`](../../README.md).

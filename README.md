@@ -1,146 +1,189 @@
-<div align="center">
+# Artifact Evaluation — TGX (OSDI '26 paper #804)
 
-# Mirage Persistent Kernel: Compiling LLMs into a MegaKernel
-    
-| [Join Slack](https://join.slack.com/t/miragesystem/shared_invite/zt-37reobr1i-SKjxeYF3GXdPDoCvtVbjTQ) | [Roadmap](https://github.com/mirage-project/mirage/issues/325) | [Blog Post](https://zhihaojia.medium.com/compiling-llms-into-a-megakernel-a-path-to-low-latency-inference-cf7840913c17) | 
+*TGX: A Compiler and Runtime for Mega-Kernelizing Tensor Programs*
 
-</div>
+> **Branch `tgx-osdi26-ae`** — the frozen artifact for OSDI '26 AE.
+> For the general Mirage project README, see the
+> [`mpk` branch](https://github.com/mirage-project/mirage/tree/mpk).
 
-*Latest News* 🔥
-* [2025/06] We released [Mirage Persistent Kernel (MPK)](https://github.com/mirage-project/mirage/tree/mpk), a compiler and runtime that automatically transforms multi-GPU LLM inference into a high-performance megakernel.
+This README documents (1) what's reproduced, (2) how to run on any
+GPU host, and (3) optional shortcuts for running on Modal cloud GPUs.
 
-## About
+---
 
-**Mirage Persistent Kernel (MPK)** is a compiler and runtime system that automatically transforms LLM inference into a single megakernel—a fused GPU kernel that performs all necessary computation and communication within a single kernel launch. This end-to-end GPU fusion approach reduces LLM inference latency by 1.2× to 6.7×, all while requiring minimal developer effort.
+## What's reproduced
 
-## Quick Installation
+### Models, batch sizes, GPUs
 
-The fastest way to try MPK is to install it directly from source:
+| Paper name             | HuggingFace ID                       | Demo entry point                        |
+|------------------------|--------------------------------------|-----------------------------------------|
+| Qwen3-0.6B             | `Qwen/Qwen3-0.6B`                    | `demo/qwen3/demo.py` (A100) / `demo_hopper.py` (H100) |
+| Llama-3.2-1B-Instruct  | `meta-llama/Llama-3.2-1B-Instruct`   | `demo/llama3/demo.py`                   |
+| Qwen3-1.7B             | `Qwen/Qwen3-1.7B`                    | `demo/qwen3/demo.py` / `demo_hopper.py` |
+| Qwen3-8B               | `Qwen/Qwen3-8B`                      | `demo/qwen3/demo.py` / `demo_hopper.py` |
+| Qwen3-30B-A3B (MoE)    | `Qwen/Qwen3-30B-A3B`                 | `demo/qwen3/demo_30B_A3B.py` / `demo_30B_A3B_hopper.py` |
+
+**Batch sizes:** 1, 2, 4, 8, 16 (per the paper's offline batched setup).
+
+**GPU variants:** NVIDIA A100-40GB, NVIDIA H100-80GB SXM, NVIDIA B200.
+
+**Systems compared:** TGX (our system), PyTorch (the same demos
+run without `--use-mirage`), vLLM (`vllm bench latency`), SGLang
+(`python -m sglang.bench_one_batch`). All four systems write the same
+JSON schema with `latency_ms_per_token`.
+
+### Experiments
+
+| Exp. | Paper figure  | What it covers | Folder                          |
+|------|---------------|----------------|---------------------------------|
+| E1   | Fig. 9 (§6.3) | 5 models × 5 batch sizes × 4 systems on each of A100/H100/B200 (Qwen3-30B-A3B omitted on A100 per paper). 70 cells total. | `artifact_evaluation/{A100,H100,B200}/` |
+| E2   | Fig. 10 (§6.4)| Qwen3-30B-A3B MoE on B200, 5 batch sizes × 3 configurations (SGLang-MoE, TGX-Static, TGX-Hybrid). | `artifact_evaluation/B200/`     |
+| E3   | Fig. 11 (§6.5)| Qwen3-1.7B with TP on 2 / 4 / 8 × H100, 5 batch sizes × 4 systems. | `artifact_evaluation/H100xN/`   |
+| E4   | Fig. 12 (§6.6)| Qwen3-8B final linear layer on B200, 5 batch sizes × 3 configs (cuBLAS, TGX-No-Pipe, TGX-Pipe). | `artifact_evaluation/B200/`     |
+| E5   | Fig. 13 (§6.6)| Qwen3-1.7B on 4 × H100 with TP, 5 batch sizes × 2 configs (TGX with/without compute–comm overlap). | `artifact_evaluation/H100xN/`   |
+
+**Workload.** Offline batched inference, prompt length **64**, decode
+**1024** tokens, batch sizes **{1, 2, 4, 8, 16}**, greedy
+(`--temperature 0`). Numbers in the paper are the median of 5 runs after
+a 4-iteration warmup.
+
+**Metric.** Per-token decoding latency in ms, parsed from each demo's
+stdout line:
+
+```
+Prompt length 64, generate length 1024, per-token latency (both prefill and decode): X.XXX ms
+```
+
+All baselines are converted to the same metric. Each cell produces a
+JSON of the shape `{system, gpu, model, batch_size, latency_ms_per_token, ...}`.
+
+**TGX configuration (Table 1, set automatically per GPU).**
+
+| GPU  | # SMs | # workers | # schedulers | Shared-mem page |
+|------|-------|-----------|--------------|------|
+| A100 | 108   | 104       | 16           | 32 KB |
+| H100 | 132   | 128       | 16           | 32 KB |
+| B200 | 148   | 144       | 16           | 32 KB |
+
+---
+
+## How to run on any GPU host
+
+Per-GPU instructions live in:
+
+- [`artifact_evaluation/A100/README.md`](artifact_evaluation/A100/README.md)
+- [`artifact_evaluation/H100/README.md`](artifact_evaluation/H100/README.md)
+- *(B200 / multi-GPU folders coming as we complete those experiments)*
+
+Each folder is self-contained and assumes a Linux + CUDA 12.4 host
+already provisioned. The minimum flow is:
+
 ```bash
-git clone --recursive --branch mpk https://www.github.com/mirage-project/mirage
-cd mirage
-pip install -e . -v
-export MIRAGE_HOME=$(pwd)
+# inside the GPU host (any A100/H100/B200, bare metal or cloud)
+curl -sSL https://raw.githubusercontent.com/mirage-project/mirage/tgx-osdi26-ae/artifact_evaluation/setup.sh | bash
+export PATH=/usr/local/cuda/bin:$PATH
+export CUDA_HOME=/usr/local/cuda
+export HF_TOKEN=hf_xxx                                    # for Llama-3.2 (gated)
+bash artifact_evaluation/<gpu>/run_tgx.sh                  # TGX
+bash artifact_evaluation/<gpu>/run_pytorch.sh              # PyTorch baseline
+
+# vLLM and SGLang share a separate Python venv (their torch pin
+# conflicts with flashinfer's)
+python3 -m venv /opt/baselines-venv
+source /opt/baselines-venv/bin/activate
+pip install --upgrade pip vllm 'sglang[all]'
+bash artifact_evaluation/<gpu>/run_vllm.sh
+bash artifact_evaluation/<gpu>/run_sglang.sh
 ```
 
-> 🔧[2025/06/19] We are working on pre-built binary wheels for MPK and will update the installation instructions once they are available.
+`setup.sh` clones the branch into `/mirage`, installs apt + pip deps,
+and builds TGX. Takes ~10–15 min on first run.
 
-## Quickstart
-Mirage allows you to compile LLMs from the Hugging Face model zoo into a megakernel using just a few dozen lines of Python—mainly to define the kernel’s inputs and outputs. See [this demo script](https://github.com/mirage-project/mirage/blob/mpk/demo/qwen3/demo.py) that compiles the Qwen3-8B model into a megakernel.
+---
 
-We start by running the demo with native Triton and FlashInfer kernels:
+## Optional: cloud hosting on Modal
+
+If you don't have a GPU host, this artifact includes helpers to spin
+up Modal cloud GPUs. **This is entirely optional**; the per-GPU
+instructions above work on any A100/H100/B200 host.
+
+### Local prereqs (one-time)
+
 ```bash
-python demo/qwen3/demo.py
+pip install modal
+modal setup    # browser-based auth
 ```
 
-To compile and execute the megakernel using MPK:
+Make sure `~/.ssh/id_rsa.pub` exists (`ssh-keygen -t rsa` if not).
+
+### Start a GPU box
+
 ```bash
-python demo/qwen3/demo.py --use-mirage
+# pick one
+modal run scripts/ae/ae_ssh.py --gpu a100-40gb
+modal run scripts/ae/ae_ssh.py --gpu a100-80gb
+modal run scripts/ae/ae_ssh.py --gpu h100
+modal run scripts/ae/ae_ssh.py --gpu h100x4
+modal run scripts/ae/ae_ssh.py --gpu h100x8
+modal run scripts/ae/ae_ssh.py --gpu b200
 ```
 
-To enable profiling (which visualizes the execution timeline of each task):
-```bash
-python demo/qwen3/demo.py --use-mirage --profiling
+The launcher prints:
+
+```
+SSH ready:  ssh root@<host>.modal.host -p <port>
 ```
 
-## How MPK Works
-Once you've imported the Mirage package, you can instantiate a persistent kernel using the following API:
-```python
-import mirage as mi
-mpk = mi.PersistentKernel(
-    world_size=world_size,
-    mpi_rank=rank,
-    num_workers=96,
-    num_local_schedulers=48,
-    num_remote_schedulers=0,
-    meta_tensors=[step, tokens],
-    profiler_tensor=profiler_tensor,
-)
+In another terminal, paste that ssh line; you're now on a fresh
+Modal-hosted GPU box. Run the per-GPU `setup.sh` + sweep scripts as in
+the previous section.
+
+### Persistent volumes
+
+The Modal container mounts:
+
+- `/root/.cache/huggingface` → `tgx-ae-hf-cache` Volume (HF weights
+  reused across runs)
+- `/mirage/results` → `tgx-ae-results` Volume (all benchmark JSONs
+  persist across container restarts)
+
+The launcher commits the results volume every 2 minutes to survive
+ungraceful container exits (OOM, force-stop, etc.).
+
+### Caveats
+
+- Image build is ~10 min the first time per cache.
+- A bare GPU host avoids Modal-specific concerns (volumes, auth,
+  per-second billing). Use whichever fits your workflow.
+
+---
+
+## Reproduction notes
+
+- **First TGX run is slow.** Triggers a one-time NVCC compile of the
+  megakernel (~1–5 min depending on model). Cached under
+  `~/.cache/mirage/`. To pre-warm, run with a small `--max-seq-length`
+  once.
+- **Run-to-run variance.** Sweep drivers run a built-in warmup before
+  timing.
+- **HuggingFace gating.** Llama-3.2 requires accepting Meta's license.
+  Set `HF_TOKEN=<your_token>` before the sweep.
+- **Qwen3-30B-A3B on A100** is omitted in Fig. 9 (paper §6.2) due to
+  OOM on a 40 GB A100.
+- **Qwen3-30B-A3B on H100** at batch sizes >1 currently scales linearly
+  with batch (kernel limitation, see `artifact_evaluation/H100/README.md`).
+
+---
+
+## Layout
+
 ```
-* `world_size` and `mpi_rank`: number of GPUs and current GPU rank.
-* `num_workers`, `num_local_schedulers`, `num_remote_schedulers`: the number of workers, local schedulers, and remote schedulers. They must match the number of physical SMs (`num_workers` + (`num_local_schedulers` + `num_remote_schedulers`) / 4).
-* The megakernel currently requires two meta tensors: `step` is an array of integer tracking the current decoding step, and is incremented by MPK after each decoding iteration; `tokens` is a tensor of shape [`num_requests`, `seq_length`] storing prompts and MPK generated tokens.
-
-To attach an existing `PyTorch.Tensor`:
-```python
-x = mpk.attach_input(torch_tensor=torch_tensor, name="torch_tensor_name")
+artifact_evaluation/
+├── setup.sh              # bootstrap TGX on a fresh GPU host
+├── A100/                 # E1 row 3 of Fig. 9 (4 models × 5 bs × 4 systems)
+├── H100/                 # E1 row 2 of Fig. 9 (5 models × 5 bs × 4 systems)
+├── ...                   # B200, H100xN added as experiments complete
+scripts/ae/
+├── ae_ssh.py             # Optional: Modal SSH launcher (cloud helper)
+└── ae_modal.py           # Optional: Modal one-shot launcher
 ```
-* `name` is used by MPK to refer to the tensor in the generated megakernel in CUDA.
-
-To allocate a new tensor:
-```python
-y = mpk.new_tensor(
-    dims=(batch_size, hidden_size),
-    dtype=mi.bfloat16,
-    name="embed_out",
-    io_category="cuda_tensor",
-)
-```
-* `dims` and `dtype` specify the dimensions and data type of the tensor. 
-* `name` is used by MPK to refer to this new tensor in the megakernel. 
-* `io_category` indicates how the tensor is allocated and must be `cuda_tensor` or `nvshmem_tensor` (the latter is required for remote GPU access, e.g., during all-reduce).
-
-### Defining the Computation Graph
-You can compose the LLM’s computation graph by chaining fused operations. For example: `rmsnorm_linear_layer` fuses an RMSNorm layer and a Linear layer in the megakernel.
-```python
-mpk.rmsnorm_linear_layer(
-    input=x,
-    weight_norm=w_norm,
-    weight_linear=w_qkv,
-    output=attn_in,
-    grid_dim=(96, 1, 1),
-    block_dim=(128, 1, 1),
-)
-```
-* `weight_norm` and `weight_linear` are the weight tensors for RMSNorm and Linear.
-* `input` and `output` are the input and output tensors of this fused layer. 
-* `grid_dim` and `block_dim` specifies the number of thread blocks (i.e., number of tasks in the task graph) and number of thread within each thread block. To minimize latency, it is suggested that the total number of thread blocks is a multiplier of the number of workers to avoid outliers.
-
-### Compilation & Execution
-Once the computation graph is defined, compile it with:
-```python
-mpk.compile()
-```
-Then, run the optimized megakernel as:
-```python
-mpk()
-```
-
-## Contribution
-We welcome feedback, contributions, and collaborations from the community! Please join our [Slack channel](https://join.slack.com/t/mirage-ag11870/shared_invite/zt-37reobr1i-SKjxeYF3GXdPDoCvtVbjTQ).
-
-Please let us know if you encounter any bugs or have any suggestions by [submitting an issue](https://github.com/mirage-project/mirage/issues).
-
-## Citation
-A paper describing Mirage's techniques is available [on arxiv](https://arxiv.org/abs/2405.05751). Please cite Mirage as:
-
-``` bibtex
-@inproceedings {wu2024mirage,
-title={Mirage: A Multi-Level Superoptimizer for Tensor Programs}, 
-author={Mengdi Wu and Xinhao Cheng and Shengyu Liu and Chunan Shi and Jianan Ji and Kit Ao and Praveen Velliengiri and Xupeng Miao and Oded Padon and Zhihao Jia},
-booktitle = {19th USENIX Symposium on Operating Systems Design and Implementation (OSDI 25)},
-year = {2025},
-address = {Boston, MA},
-publisher = {USENIX Association},
-month = jul
-}
-
-@misc{cheng2025mpk,
-      title={Mirage Persistent Kernel: A Compiler and Runtime for Mega-Kernelizing Tensor Programs}, 
-      author={Xinhao Cheng and Zhihao Zhang and Yu Zhou and Jianan Ji and Jinchen Jiang and Zepeng Zhao and Ziruo Xiao and Zihao Ye and Yingyi Huang and Ruihang Lai and Hongyi Jin and Bohan Hou and Mengdi Wu and Yixin Dong and Anthony Yip and Zihao Ye and Songting Wang and Wenqin Yang and Xupeng Miao and Tianqi Chen and Zhihao Jia},
-      year={2025},
-      eprint={2512.22219},
-      archivePrefix={arXiv},
-      primaryClass={cs.DC},
-      url={https://arxiv.org/abs/2512.22219}, 
-}
-```
-
-## Publications
-
-- **Mirage Persistent Kernel: A Compiler and Runtime for Mega-Kernelizing Tensor Programs**. *Arxiv 2025*. [[arXiv]](https://arxiv.org/abs/2512.22219)
-- **Mirage: A Multi-Level Superoptimizer for Tensor Programs**. *OSDI 2025*. [[PDF]](https://www.usenix.org/system/files/osdi25-wu-mengdi.pdf)
-- **Identity Testing for Circuits with Exponentiation Gates**. *ITCS 2026* [[arXiv]](https://arxiv.org/pdf/2506.04529)
-
-## License
-Mirage uses Apache License 2.0.
