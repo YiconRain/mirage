@@ -141,11 +141,33 @@ EOF
         fi
     fi
 
+    # Detect GPU compute capability so we can pick the right torch wheel.
+    # B200 = sm_100, requires torch 2.7+cu128. Hopper/Ampere use torch 2.6+cu124.
+    CC=""
+    if command -v nvidia-smi >/dev/null 2>&1; then
+        CC=$(nvidia-smi --query-gpu=compute_cap --format=csv,noheader,nounits 2>/dev/null | head -1 | tr -d '.')
+    fi
+    case "$CC" in
+        100|110|120)
+            TORCH_INDEX="https://download.pytorch.org/whl/cu128"
+            TORCH_VER="2.7.0"
+            FLASHINFER_INDEX="https://flashinfer.ai/whl/cu128/torch2.7"
+            echo "[setup] detected sm_${CC} (Blackwell+); using torch 2.7+cu128"
+            ;;
+        *)
+            TORCH_INDEX="https://download.pytorch.org/whl/cu124"
+            TORCH_VER="2.6.0"
+            FLASHINFER_INDEX="https://flashinfer.ai/whl/cu124/torch2.6"
+            echo "[setup] detected sm_${CC:-unknown}; using torch 2.6+cu124 (Ampere/Hopper)"
+            ;;
+    esac
+
     echo "[setup] pip install MPK + deps (this builds the C++/CUDA extension)"
     pip install --upgrade pip
-    pip install torch==2.6.0 transformers mpi4py
+    pip install --index-url "$TORCH_INDEX" "torch==$TORCH_VER"
+    pip install transformers mpi4py
     (cd "$MIRAGE_HOME" && pip install -e . -v)
-    pip install flashinfer-python -i https://flashinfer.ai/whl/cu124/torch2.6
+    pip install flashinfer-python -i "$FLASHINFER_INDEX"
 fi
 
 # ---------- 5. baselines (optional) ----------

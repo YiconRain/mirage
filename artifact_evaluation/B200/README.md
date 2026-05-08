@@ -19,45 +19,23 @@ appropriate grid sizing. Decode length is set via `--max-seq-length 1088`
 
 ### Prerequisites
 
-- NVIDIA B200 with driver supporting CUDA 12.8 (sm_100 requires
-  PyTorch built against cu128, not cu124)
+- NVIDIA B200 with driver supporting CUDA 12.8
 - Ubuntu 22.04+ with Python 3.10+
 - HuggingFace token (`HF_TOKEN`) for Llama-3.2 (gated)
 
-### One-shot setup (then upgrade torch for sm_100)
+### One-shot setup
 
 ```bash
 curl -sSL https://raw.githubusercontent.com/mirage-project/mirage/tgx-osdi26-ae/artifact_evaluation/setup.sh | bash
-```
-
-`setup.sh` installs torch 2.6.0+cu124 by default, which does **not**
-support B200 (sm_100). After setup completes, replace torch with
-2.7.0+cu128:
-
-```bash
-# if setup.sh created a venv (modern Debian/Ubuntu), activate it:
-source $HOME/mirage-venv/bin/activate     # or /opt/mirage-venv depending on host
-
-pip uninstall -y torch torchaudio torchvision flashinfer-python
-pip cache purge
-pip install --index-url https://download.pytorch.org/whl/cu128 torch==2.7.0
-pip install flashinfer-python -i https://flashinfer.ai/whl/cu128/torch2.7
-
-# verify B200 sees the new arch
-python -c "import torch; print(torch.__version__, torch.cuda.get_arch_list())"
-# expected: 2.7.0+cu128  ['sm_75', ..., 'sm_90', 'sm_100']
-
-# rebuild mirage's Cython binding against the new torch ABI
-cd $MIRAGE_HOME && python setup.py build_ext --inplace
-```
-
-Then export env and run:
-
-```bash
 export PATH=/usr/local/cuda/bin:$PATH
 export CUDA_HOME=/usr/local/cuda
 export HF_TOKEN=hf_xxx
 ```
+
+`setup.sh` auto-detects the GPU compute capability from `nvidia-smi`.
+On B200 (sm_100) it installs torch 2.7.0+cu128 + flashinfer for
+torch2.7/cu128. On Ampere/Hopper it installs torch 2.6.0+cu124. No
+manual torch upgrade is needed.
 
 ### TGX/MPK + PyTorch sweeps
 
