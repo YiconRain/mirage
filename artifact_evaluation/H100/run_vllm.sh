@@ -17,7 +17,7 @@ export CUDA_HOME="${CUDA_HOME:-/usr/local/cuda}"
 # Activate baselines venv if present (vLLM/SGLang have their own torch
 # pin and cannot share the MPK environment). Set BASELINES_VENV=...
 # to override; pass BASELINES_VENV=skip to use whatever python is on PATH.
-BASELINES_VENV="${BASELINES_VENV:-/opt/baselines-venv}"
+BASELINES_VENV="${BASELINES_VENV:-/opt/vllm-venv}"
 if [[ "$BASELINES_VENV" != "skip" && -f "$BASELINES_VENV/bin/activate" ]]; then
     # shellcheck disable=SC1091
     source "$BASELINES_VENV/bin/activate"

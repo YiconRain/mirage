@@ -12,7 +12,7 @@ set -euo pipefail
 export PATH="${CUDA_BIN:-/usr/local/cuda/bin}:$PATH"
 export CUDA_HOME="${CUDA_HOME:-/usr/local/cuda}"
 
-BASELINES_VENV="${BASELINES_VENV:-/opt/baselines-venv}"
+BASELINES_VENV="${BASELINES_VENV:-/opt/sglang-venv}"
 if [[ "$BASELINES_VENV" != "skip" && -f "$BASELINES_VENV/bin/activate" ]]; then
     # shellcheck disable=SC1091
     source "$BASELINES_VENV/bin/activate"

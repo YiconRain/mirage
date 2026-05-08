@@ -48,29 +48,38 @@ bash artifact_evaluation/H100/run_pytorch.sh
 
 ### vLLM + SGLang baselines
 
-vLLM/SGLang ship their own torch wheels; install them in a separate
-Python venv to avoid clobbering the MPK environment. Pin the versions
-below — newer vLLM releases (≥0.9) ship torch built with CUDA 13 and
-break on CUDA 12.4 hosts.
+vLLM and SGLang have fundamentally incompatible dependency cones
+(different torch / transformers versions). Install each in its **own
+venv** — `run_vllm.sh` auto-activates `/opt/vllm-venv` and
+`run_sglang.sh` auto-activates `/opt/sglang-venv`.
+
+**vLLM venv** (pinned, since newer vLLM ships torch built for CUDA 13):
 
 ```bash
-rm -rf /opt/baselines-venv          # ensure fresh venv (python -m venv won't wipe)
-python3 -m venv /opt/baselines-venv
-source /opt/baselines-venv/bin/activate
+rm -rf /opt/vllm-venv
+python3 -m venv /opt/vllm-venv
+source /opt/vllm-venv/bin/activate
 pip install --upgrade pip
 pip install --index-url https://download.pytorch.org/whl/cu124 torch==2.6.0
 pip install vllm==0.8.5
-pip install sglang==0.4.6.post5      # 0.5+ requires torch 2.11 / transformers 5.x
-pip install sgl-kernel==0.1.0        # latest sgl-kernel dropped sm_80/sm_90 wheels
-pip install transformers==4.51.3     # re-pin in case sglang touched it
+pip install transformers==4.51.3     # vllm 0.8.5 needs transformers 4.x
 deactivate
 
 bash artifact_evaluation/H100/run_vllm.sh
-bash artifact_evaluation/H100/run_sglang.sh
 ```
 
-The two `run_*.sh` scripts auto-activate `/opt/baselines-venv` when
-it exists, so no extra `source` is needed.
+**SGLang venv** (let pip resolve internally consistent set):
+
+```bash
+rm -rf /opt/sglang-venv
+python3 -m venv /opt/sglang-venv
+source /opt/sglang-venv/bin/activate
+pip install --upgrade pip
+pip install 'sglang[all]'
+deactivate
+
+bash artifact_evaluation/H100/run_sglang.sh
+```
 
 ### Filtering
 

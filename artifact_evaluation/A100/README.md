@@ -59,29 +59,38 @@ Each writes one JSON per (model, batch_size) cell to
 
 ### Run vLLM + SGLang baselines
 
-vLLM/SGLang ship their own torch wheels and conflict with flashinfer,
-so install them in a separate Python venv. Pin the versions below —
-newer vLLM (≥0.9) ships torch built with CUDA 13 and breaks on CUDA
-12.4 hosts.
+vLLM and SGLang have fundamentally incompatible dependency cones
+(different torch / transformers versions). Install each in its **own
+venv** — `run_vllm.sh` auto-activates `/opt/vllm-venv` and
+`run_sglang.sh` auto-activates `/opt/sglang-venv`.
+
+**vLLM venv** (pinned, since newer vLLM ships torch built for CUDA 13):
 
 ```bash
-rm -rf /opt/baselines-venv          # ensure fresh venv (python -m venv won't wipe)
-python3 -m venv /opt/baselines-venv
-source /opt/baselines-venv/bin/activate
+rm -rf /opt/vllm-venv
+python3 -m venv /opt/vllm-venv
+source /opt/vllm-venv/bin/activate
 pip install --upgrade pip
 pip install --index-url https://download.pytorch.org/whl/cu124 torch==2.6.0
 pip install vllm==0.8.5
-pip install sglang==0.4.6.post5      # 0.5+ requires torch 2.11 / transformers 5.x
-pip install sgl-kernel==0.1.0        # latest sgl-kernel dropped sm_80 wheels
-pip install transformers==4.51.3     # re-pin in case sglang touched it
+pip install transformers==4.51.3     # vllm 0.8.5 needs transformers 4.x
 deactivate
 
 bash artifact_evaluation/A100/run_vllm.sh       # ~30-40 min
-bash artifact_evaluation/A100/run_sglang.sh     # ~30-40 min
 ```
 
-The `run_vllm.sh` and `run_sglang.sh` scripts auto-activate
-`/opt/baselines-venv` when it exists, so no extra `source` is needed.
+**SGLang venv** (let pip resolve internally consistent set):
+
+```bash
+rm -rf /opt/sglang-venv
+python3 -m venv /opt/sglang-venv
+source /opt/sglang-venv/bin/activate
+pip install --upgrade pip
+pip install 'sglang[all]'
+deactivate
+
+bash artifact_evaluation/A100/run_sglang.sh     # ~30-40 min
+```
 
 ### Filtering / spot-checks
 
