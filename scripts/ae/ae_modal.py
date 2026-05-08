@@ -106,12 +106,24 @@ app = modal.App(
 
 # ---------- Helpers ----------
 def _run(cmd: str, world_size: int = 1) -> None:
+    """Sync /mirage to latest origin/tgx-osdi26-ae, then exec cmd inside it.
+
+    The git sync lets script-only edits flow through without forcing a Modal
+    image rebuild. Only steps inside the image (apt/pip/git clone) need a
+    rebuild; new commits to scripts, demos, or AE_README are picked up here.
+    """
     import subprocess
 
+    sync = (
+        f"git -C /mirage fetch --quiet origin {BRANCH} && "
+        f"git -C /mirage reset --hard --quiet origin/{BRANCH} && "
+        "git -C /mirage submodule update --init --recursive --quiet && "
+        "git -C /mirage log -1 --oneline"
+    )
     if world_size > 1:
         cmd = f"mpirun -n {world_size} --allow-run-as-root --bind-to none {cmd}"
-    print(f"[ae_modal] $ {cmd}")
-    subprocess.run(cmd, check=True, shell=True, executable="/bin/bash", cwd="/mirage")
+    full = f"{sync} && echo '[ae_modal] $ {cmd}' && {cmd}"
+    subprocess.run(full, check=True, shell=True, executable="/bin/bash", cwd="/mirage")
 
 
 # ---------- Per-GPU entry points ----------
