@@ -57,31 +57,19 @@ import time
 import modal
 
 APP_NAME = "tgx-osdi26-ae-ssh"
-BRANCH = "tgx-osdi26-ae"
 LOCAL_PORT = 9090
 
 ssh_key_path = os.path.expanduser("~/.ssh/id_rsa.pub")
 
-# ---------- TGX image (mirrors ae_modal.py + sshd) ----------
+# Bare GPU container with sshd. No MPK, no torch, no clone.
+# After ssh, the user installs/builds whatever they need.
 image = (
     modal.Image.from_registry(
         "nvidia/cuda:12.4.1-cudnn-devel-ubuntu22.04",
         add_python="3.12",
     )
     .env({"DEBIAN_FRONTEND": "noninteractive", "TZ": "UTC"})
-    .apt_install(
-        "wget",
-        "sudo",
-        "binutils",
-        "git",
-        "libmpich-dev",
-        "libopenmpi-dev",
-        "openmpi-bin",
-        "curl",
-        "pkg-config",
-        "build-essential",
-        "openssh-server",
-    )
+    .apt_install("openssh-server", "git", "curl", "build-essential")
     .run_commands(
         "mkdir -p /run/sshd",
         "mkdir -p /root/.ssh",
@@ -89,27 +77,6 @@ image = (
     )
     .add_local_file(ssh_key_path, "/root/.ssh/authorized_keys", copy=True)
     .run_commands("chmod 600 /root/.ssh/authorized_keys")
-    .run_commands(
-        f"git clone --recursive --branch {BRANCH} "
-        "https://github.com/mirage-project/mirage.git"
-    )
-    .env({"MIRAGE_HOME": "/mirage"})
-    .env(
-        {
-            "LD_LIBRARY_PATH": (
-                "/mirage/build/abstract_subexpr/release:"
-                "/mirage/build/formal_verifier/release:$LD_LIBRARY_PATH"
-            )
-        }
-    )
-    .run_commands("curl https://sh.rustup.rs -sSf | bash -s -- -y")
-    .env({"PATH": "/root/.cargo/bin:$PATH"})
-    .pip_install("torch==2.6.0", "transformers", "mpi4py")
-    .run_commands("cd mirage && pip install -e . -v")
-    .run_commands(
-        "pip install flashinfer-python "
-        "-i https://flashinfer.ai/whl/cu124/torch2.6"
-    )
 )
 
 hf_cache_vol = modal.Volume.from_name("tgx-ae-hf-cache", create_if_missing=True)
