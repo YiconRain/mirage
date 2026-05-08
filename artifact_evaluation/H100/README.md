@@ -32,27 +32,58 @@ Each script writes one JSON per (model, batch_size) cell to
 }
 ```
 
-## Running on Modal
+## How to run
 
-TGX + PyTorch share the TGX Modal image (`run_h100`):
+The bash scripts in this folder are GPU-host agnostic — they work on any
+Linux box with CUDA + the right software. Two ways to drive them:
+
+### Option A (recommended): SSH into a Modal box and run interactively
+
+Local prereq: `pip install sshtunnel` and `~/.ssh/id_rsa.pub` exists.
+
+```bash
+# Terminal 1 — start the SSH-able container
+modal run scripts/ae/ae_ssh.py --gpu h100
+
+# Terminal 2 — connect and drive the sweeps
+ssh -p 9090 root@localhost
+cd /mirage && git pull --quiet
+export HF_TOKEN=hf_xxx     # for Llama-3.2 (gated)
+bash artifact_evaluation/H100/run_tgx.sh
+bash artifact_evaluation/H100/run_pytorch.sh
+```
+
+For the baseline sweeps, use the baseline image which has vLLM + SGLang
+preinstalled (and no flashinfer conflict):
+
+```bash
+modal run scripts/ae/ae_ssh.py --gpu h100-baselines
+ssh -p 9090 root@localhost
+bash artifact_evaluation/H100/run_vllm.sh
+bash artifact_evaluation/H100/run_sglang.sh
+```
+
+### Option B: one-shot via `modal run --cmd`
 
 ```bash
 modal run scripts/ae/ae_modal.py::run_h100 \
     --cmd "bash artifact_evaluation/H100/run_tgx.sh"
-
-modal run scripts/ae/ae_modal.py::run_h100 \
-    --cmd "bash artifact_evaluation/H100/run_pytorch.sh"
-```
-
-vLLM + SGLang use the baseline Modal image (`baseline_h100`) because
-their dependency cone conflicts with flashinfer:
-
-```bash
 modal run scripts/ae/ae_modal.py::baseline_h100 \
     --cmd "bash artifact_evaluation/H100/run_vllm.sh"
+```
 
-modal run scripts/ae/ae_modal.py::baseline_h100 \
-    --cmd "bash artifact_evaluation/H100/run_sglang.sh"
+### Option C: run on any other GPU host
+
+The scripts assume `MIRAGE_HOME=/mirage` by default; override it:
+
+```bash
+git clone --recursive --branch tgx-osdi26-ae \
+    https://github.com/mirage-project/mirage.git
+cd mirage && export MIRAGE_HOME=$PWD
+pip install -e . -v
+pip install transformers torch==2.6.0 mpi4py
+pip install flashinfer-python -i https://flashinfer.ai/whl/cu124/torch2.6
+bash artifact_evaluation/H100/run_tgx.sh
 ```
 
 ## Filtering
