@@ -74,6 +74,7 @@ total_tokens = (input_len + output_len) * $bs
 ms_per_token = (avg_s * 1000.0) / total_tokens
 print(json.dumps({
     "system": "vllm",
+    "gpu": "H100",
     "model": "$hfid",
     "batch_size": $bs,
     "input_len": input_len,
