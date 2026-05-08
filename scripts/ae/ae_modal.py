@@ -77,7 +77,19 @@ image = (
         "pip install flashinfer-python "
         "-i https://flashinfer.ai/whl/cu124/torch2.6"
     )
-    .pip_install("vllm", "sglang")
+)
+
+# Baseline image: pinned torch ecosystem for vLLM + SGLang. Kept separate from
+# the TGX image because the joint dependency cone backtracks for hours.
+baselines_image = (
+    modal.Image.from_registry(
+        "nvidia/cuda:12.4.1-cudnn-devel-ubuntu22.04",
+        add_python="3.12",
+    )
+    .env({"DEBIAN_FRONTEND": "noninteractive", "TZ": "UTC"})
+    .apt_install("git", "curl", "build-essential")
+    .pip_install("vllm")     # pulls its own torch version
+    .pip_install("sglang[all]")
 )
 
 hf_cache_vol = modal.Volume.from_name("tgx-ae-hf-cache", create_if_missing=True)
@@ -130,6 +142,32 @@ def run_h100x8(cmd: str) -> None:
 
 @app.function(gpu="B200", timeout=3600 * 4)
 def run_b200(cmd: str) -> None:
+    _run(cmd)
+
+
+# ---------- Baseline (vLLM/SGLang) entry points ----------
+@app.function(image=baselines_image, gpu="A100-80GB", timeout=3600 * 4)
+def baseline_a100_80gb(cmd: str) -> None:
+    _run(cmd)
+
+
+@app.function(image=baselines_image, gpu="H100", timeout=3600 * 4)
+def baseline_h100(cmd: str) -> None:
+    _run(cmd)
+
+
+@app.function(image=baselines_image, gpu="H100:4", timeout=3600 * 4)
+def baseline_h100x4(cmd: str) -> None:
+    _run(cmd, world_size=4)
+
+
+@app.function(image=baselines_image, gpu="H100:8", timeout=3600 * 4)
+def baseline_h100x8(cmd: str) -> None:
+    _run(cmd, world_size=8)
+
+
+@app.function(image=baselines_image, gpu="B200", timeout=3600 * 4)
+def baseline_b200(cmd: str) -> None:
     _run(cmd)
 
 
