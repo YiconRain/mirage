@@ -49,6 +49,12 @@ fi
 
 # ---------- 2. mirage repo ----------
 if (( ! BASELINES_ONLY )); then
+    # If $MIRAGE_HOME exists but isn't a git repo (e.g. left over from a
+    # stale Modal image layer), clear it before cloning.
+    if [[ -d "$MIRAGE_HOME" && ! -d "$MIRAGE_HOME/.git" ]]; then
+        echo "[setup] $MIRAGE_HOME exists but is not a git repo; clearing"
+        rm -rf "$MIRAGE_HOME"
+    fi
     if [[ ! -d "$MIRAGE_HOME/.git" ]]; then
         echo "[setup] cloning mirage@${BRANCH} into $MIRAGE_HOME"
         git clone --recursive --branch "$BRANCH" \
