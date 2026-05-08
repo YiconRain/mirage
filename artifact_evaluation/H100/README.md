@@ -39,7 +39,7 @@ export CUDA_HOME=/usr/local/cuda
 export HF_TOKEN=hf_xxx
 ```
 
-### TGX/MPK + PyTorch sweeps (~75 min total)
+### TGX + PyTorch sweeps (~75 min total)
 
 ```bash
 bash artifact_evaluation/H100/run_tgx.sh

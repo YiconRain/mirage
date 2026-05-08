@@ -11,7 +11,7 @@ generate = 1024, batch sizes 1/2/4/8/16, 5 models).
 | Qwen3-30B-A3B (MoE)   | `demo/qwen3/demo_30B_A3B.py`     |
 | Llama-3.2-1B-Instruct | `demo/llama3/demo.py`            |
 
-The MPK runtime auto-selects the Blackwell task headers (sm_100) at
+The TGX runtime auto-selects the Blackwell task headers (sm_100) at
 NVCC compile time via `-DMIRAGE_GRACE_BLACKWELL`. Decode length is set
 via `--max-seq-length 1088` (= prompt 64 + generate 1024).
 
@@ -37,7 +37,7 @@ On B200 (sm_100) it installs torch 2.7.0+cu128 + flashinfer for
 torch2.7/cu128. On Ampere/Hopper it installs torch 2.6.0+cu124. No
 manual torch upgrade is needed.
 
-### TGX/MPK + PyTorch sweeps
+### TGX + PyTorch sweeps
 
 ```bash
 bash artifact_evaluation/B200/run_tgx.sh

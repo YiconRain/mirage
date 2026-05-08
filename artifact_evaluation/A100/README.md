@@ -44,9 +44,9 @@ export CUDA_HOME=/usr/local/cuda
 export HF_TOKEN=hf_xxx   # only needed for Llama-3.2 (gated)
 ```
 
-### Run TGX/MPK + PyTorch sweeps
+### Run TGX + PyTorch sweeps
 
-These two share the MPK environment (no extra deps):
+These two share the TGX environment (no extra deps):
 
 ```bash
 bash artifact_evaluation/A100/run_tgx.sh        # ~30-40 min

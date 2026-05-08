@@ -26,7 +26,7 @@ on Modal cloud GPUs.
 
 **GPU variants:** NVIDIA A100-40GB, NVIDIA H100-80GB SXM, NVIDIA B200.
 
-**Systems compared:** TGX (= MPK, our system), PyTorch (the same demos
+**Systems compared:** TGX (our system), PyTorch (the same demos
 run without `--use-mirage`), vLLM (`vllm bench latency`), SGLang
 (`python -m sglang.bench_one_batch`). All four systems write the same
 JSON schema with `latency_ms_per_token`.
@@ -83,7 +83,7 @@ curl -sSL https://raw.githubusercontent.com/mirage-project/mirage/tgx-osdi26-ae/
 export PATH=/usr/local/cuda/bin:$PATH
 export CUDA_HOME=/usr/local/cuda
 export HF_TOKEN=hf_xxx                                    # for Llama-3.2 (gated)
-bash artifact_evaluation/<gpu>/run_tgx.sh                  # TGX/MPK
+bash artifact_evaluation/<gpu>/run_tgx.sh                  # TGX
 bash artifact_evaluation/<gpu>/run_pytorch.sh              # PyTorch baseline
 
 # vLLM and SGLang share a separate Python venv (their torch pin
@@ -96,7 +96,7 @@ bash artifact_evaluation/<gpu>/run_sglang.sh
 ```
 
 `setup.sh` clones the branch into `/mirage`, installs apt + pip deps,
-and builds MPK. Takes ~10–15 min on first run.
+and builds TGX. Takes ~10–15 min on first run.
 
 ---
 
@@ -178,7 +178,7 @@ ungraceful container exits (OOM, force-stop, etc.).
 
 ```
 artifact_evaluation/
-├── setup.sh              # bootstrap MPK on a fresh GPU host
+├── setup.sh              # bootstrap TGX on a fresh GPU host
 ├── A100/                 # E1 row 3 of Fig. 9 (4 models × 5 bs × 4 systems)
 ├── H100/                 # E1 row 2 of Fig. 9 (5 models × 5 bs × 4 systems)
 ├── ...                   # B200, H100xN added as experiments complete
