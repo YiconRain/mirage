@@ -70,6 +70,18 @@ if (( ! BASELINES_ONLY )); then
     grep -q '^export MIRAGE_HOME=' /root/.bashrc 2>/dev/null \
         || echo "export MIRAGE_HOME=$MIRAGE_HOME" >> /root/.bashrc
 
+    # CUDA toolchain on PATH (nvcc lives in /usr/local/cuda/bin on the
+    # nvidia/cuda:*-devel base image, but PATH isn't set by default).
+    if [[ -d /usr/local/cuda/bin ]]; then
+        export PATH="/usr/local/cuda/bin:$PATH"
+        export CUDA_HOME="/usr/local/cuda"
+        grep -q '^export PATH=/usr/local/cuda/bin' /root/.bashrc 2>/dev/null \
+            || cat >> /root/.bashrc <<'EOF'
+export PATH=/usr/local/cuda/bin:$PATH
+export CUDA_HOME=/usr/local/cuda
+EOF
+    fi
+
     # ---------- 3. rust (only needed for abstract_subexpr / formal_verifier) ----------
     if ! command -v rustc >/dev/null 2>&1; then
         echo "[setup] installing rust toolchain"
