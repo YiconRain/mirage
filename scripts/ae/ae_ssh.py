@@ -96,14 +96,29 @@ def _wait_for_ssh(host, port, q):
 
 
 def _serve(q):
-    """Forward port 22 through Modal, publish address, run sshd in foreground."""
+    """Forward port 22 through Modal, publish address, run sshd in foreground.
+
+    Spawns a background thread that calls results_vol.commit() every 2 minutes
+    so that writes to /mirage/results survive ungraceful container exits
+    (OOM kills, modal-run Ctrl-C, etc.). Without this, Modal only commits
+    on clean function exit, and we have lost results before.
+    """
     import subprocess
+
+    def _commit_loop():
+        while True:
+            time.sleep(120)
+            try:
+                results_vol.commit()
+            except Exception as exc:  # noqa: BLE001
+                print(f"[ae_ssh] periodic commit failed: {exc}", flush=True)
 
     with modal.forward(22, unencrypted=True) as tunnel:
         host, port = tunnel.tcp_socket
         threading.Thread(
             target=_wait_for_ssh, args=(host, port, q), daemon=True
         ).start()
+        threading.Thread(target=_commit_loop, daemon=True).start()
         subprocess.run(["/usr/sbin/sshd", "-D"])
 
 
