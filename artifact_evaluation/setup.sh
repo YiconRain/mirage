@@ -49,16 +49,32 @@ fi
 
 # ---------- 2. mirage repo ----------
 if (( ! BASELINES_ONLY )); then
-    # If $MIRAGE_HOME exists but isn't a git repo (e.g. left over from a
-    # stale Modal image layer), clear it before cloning.
+    # If $MIRAGE_HOME exists but isn't a git repo (e.g. fresh Modal SSH
+    # container with the results-volume symlink already in place), clear
+    # it before cloning. Preserve any volume-mount symlinks (they'll be
+    # restored after the clone).
+    declare -A _saved_links
     if [[ -d "$MIRAGE_HOME" && ! -d "$MIRAGE_HOME/.git" ]]; then
         echo "[setup] $MIRAGE_HOME exists but is not a git repo; clearing"
+        for entry in "$MIRAGE_HOME"/*; do
+            [[ -L "$entry" ]] || continue
+            target=$(readlink "$entry")
+            _saved_links["$(basename "$entry")"]="$target"
+        done
         rm -rf "$MIRAGE_HOME"
     fi
     if [[ ! -d "$MIRAGE_HOME/.git" ]]; then
         echo "[setup] cloning mirage@${BRANCH} into $MIRAGE_HOME"
         git clone --recursive --branch "$BRANCH" \
             https://github.com/mirage-project/mirage.git "$MIRAGE_HOME"
+        # restore preserved symlinks (e.g. results -> volume)
+        for name in "${!_saved_links[@]}"; do
+            target="${_saved_links[$name]}"
+            link_path="$MIRAGE_HOME/$name"
+            [[ -e "$link_path" ]] && rm -rf "$link_path"
+            ln -s "$target" "$link_path"
+            echo "[setup] restored symlink $link_path -> $target"
+        done
     else
         echo "[setup] updating $MIRAGE_HOME (branch $BRANCH)"
         git -C "$MIRAGE_HOME" fetch --quiet origin "$BRANCH"
