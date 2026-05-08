@@ -48,7 +48,7 @@ HF_ID[qwen3-30b-a3b]="Qwen/Qwen3-30B-A3B"
 
 # Parse "per-token latency ... <float> ms" from a log file -> float ms or "".
 parse_latency_ms() {
-    grep -oE 'per-token latency[^0-9]*[0-9]+\.[0-9]+ ms' "$1" \
+    grep -oiE 'per-token latency[^0-9]*[0-9]+\.[0-9]+ ms' "$1" \
         | tail -1 \
         | grep -oE '[0-9]+\.[0-9]+'
 }
