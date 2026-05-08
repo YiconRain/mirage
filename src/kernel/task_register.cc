@@ -1941,19 +1941,28 @@ int TaskRegister::register_paged_attention_sm100_task(
   assert(input_ops[2]->output_tensors[0].num_dims == 4);
   assert(head_dim == input_ops[2]->output_tensors[0].dim[3]);
 
+  // Pick MAX_TOKENS (kernel template arg) so the SM100 attention shared-memory
+  // budget fits. S_O_BUFFER scales with MMA_ITERS_M = ceil(MAX_TOKENS *
+  // NUM_QO_PER_KV / 16). For high-grouped-query models (e.g. Qwen3-30B-A3B
+  // with NUM_QO_PER_KV=8) MAX_TOKENS=8 overflows ~228 KB shmem on B200; drop
+  // to 4 in that case. Other models keep the default 8.
+  int num_qo_per_kv = num_q_heads / num_kv_heads;
+  int max_tokens_template = (num_qo_per_kv >= 8) ? 4 : 8;
+
   mirage::transpiler::CodeKeeper code;
   code.inc_indent();
   code.e("kernel::multitoken_paged_attention_sm100_task_impl<bfloat16, $, $, "
          "$, $, "
-         "$, $, $, $>(",
-         num_q_heads / num_kv_heads,
+         "$, $, $, $, $>(",
+         num_qo_per_kv,
          1,
          kv_stride,
          qkv_stride,
          output_size,
          head_dim,
          max_seq_len,
-         page_size);
+         page_size,
+         max_tokens_template);
   code.e("    task_desc->input_ptrs[0],");
   code.e("    task_desc->input_ptrs[1],");
   code.e("    task_desc->input_ptrs[2],");
