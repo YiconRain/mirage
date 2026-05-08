@@ -1,15 +1,7 @@
 #!/usr/bin/env bash
 # E1 single-B200 sweep, TGX/MPK system.
-#
-# Blackwell-tuned demo entry points:
-#   Qwen3-{0.6B,1.7B,8B}    -> demo/qwen3/demo_blackwell.py
-#   Qwen3-30B-A3B (MoE)     -> demo/qwen3/demo_30B_A3B.py        (Ampere fallback)
-#   Llama-3.2-1B-Instruct   -> demo/llama3/demo.py
-#
 # Output: results/B200/tgx/<model_tag>__bs<bs>.json
-#
-# NOTE: Qwen3-30B-A3B currently uses demo_30B_A3B.py because no
-# Blackwell-tuned MoE demo exists yet. Override MODELS to skip it.
+# See artifact_evaluation/B200/README.md.
 
 set -euo pipefail
 
@@ -29,10 +21,10 @@ GEN_LEN="${GEN_LEN:-1024}"
 MAX_SEQ_LEN="${MAX_SEQ_LEN:-$((PROMPT_LEN + GEN_LEN))}"
 
 declare -A SCRIPT
-SCRIPT[qwen3-0.6b]="demo/qwen3/demo_blackwell.py"
+SCRIPT[qwen3-0.6b]="demo/qwen3/demo.py"
 SCRIPT[llama-3.2-1b]="demo/llama3/demo.py"
-SCRIPT[qwen3-1.7b]="demo/qwen3/demo_blackwell.py"
-SCRIPT[qwen3-8b]="demo/qwen3/demo_blackwell.py"
+SCRIPT[qwen3-1.7b]="demo/qwen3/demo.py"
+SCRIPT[qwen3-8b]="demo/qwen3/demo.py"
 SCRIPT[qwen3-30b-a3b]="demo/qwen3/demo_30B_A3B.py"
 
 declare -A HF_ID

@@ -29,6 +29,7 @@ SCRIPT[llama-3.2-1b]="demo/llama3/demo.py"
 SCRIPT[qwen3-1.7b]="demo/qwen3/demo.py"
 SCRIPT[qwen3-8b]="demo/qwen3/demo.py"
 SCRIPT[qwen3-30b-a3b]="demo/qwen3/demo_30B_A3B.py"
+# (already using demo.py for qwen3 — Hopper variant has a kv_last_page_len shape bug at bs>=2)
 
 declare -A HF_ID
 HF_ID[qwen3-0.6b]="Qwen/Qwen3-0.6B"

@@ -7,13 +7,13 @@ generate = 1024, batch sizes 1/2/4/8/16, 5 models).
 
 | Model                 | Demo file                        |
 |-----------------------|----------------------------------|
-| Qwen3-0.6B / 1.7B / 8B| `demo/qwen3/demo_blackwell.py`   |
+| Qwen3-0.6B / 1.7B / 8B| `demo/qwen3/demo.py`             |
 | Qwen3-30B-A3B (MoE)   | `demo/qwen3/demo_30B_A3B.py`     |
 | Llama-3.2-1B-Instruct | `demo/llama3/demo.py`            |
 
-`demo_blackwell.py` targets compute capability 10.0 (sm_100) with
-appropriate grid sizing. Decode length is set via `--max-seq-length 1088`
-(= prompt 64 + generate 1024).
+The MPK runtime auto-selects the Blackwell task headers (sm_100) at
+NVCC compile time via `-DMIRAGE_GRACE_BLACKWELL`. Decode length is set
+via `--max-seq-length 1088` (= prompt 64 + generate 1024).
 
 ## How to run (any B200 host with CUDA 12.8+)
 
