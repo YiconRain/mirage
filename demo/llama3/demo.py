@@ -267,7 +267,7 @@ def create_persistent_kernel(args, world_size, rank, input_data, config, eos_tok
         profiler_tensor = None
     
     # Setup speculative decoding configuration
-    spec_decode_config = mi.speculative.spec_decode_class(
+    spec_decode_config = mi.mpk.spec_decode_class(
         args.spec_decode,
         ngram_size=args.ngram_size,
         spec_length=args.spec_length,
