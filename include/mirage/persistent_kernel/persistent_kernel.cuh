@@ -39,6 +39,8 @@
 #include <nvshmemx.h>
 #endif
 #endif
+#include <map>
+#include <string>
 #include <thread>
 #include <unistd.h>
 #include <vector>
