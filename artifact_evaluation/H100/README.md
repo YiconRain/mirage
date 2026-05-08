@@ -19,17 +19,6 @@ The Hopper demos do not support `--save-tokens`, so latency is parsed
 from the `per-token latency ... ms` stdout line. Decode length is set
 via `--max-seq-length 1088` (= prompt 64 + generate 1024).
 
-### Known limitation: Qwen3-30B-A3B at batch sizes >1
-
-The Hopper MoE megakernel for Qwen3-30B-A3B is shape-tuned for
-`max_num_batched_tokens=1` (one token per request per decode iter). At
-larger batch sizes the kernel processes requests serially within an
-iter, so 30B-A3B's per-token latency scales linearly with batch size
-(bs=N is roughly N× bs=1) instead of the sub-linear scaling other
-models show. Forcing larger `max_num_batched_tokens` causes the kernel
-to silently no-op (output stays as the eos sentinel). Fix would require
-C++ kernel changes; out of scope for this artifact.
-
 ## How to run (any H100 host with CUDA 12.4)
 
 These instructions work on **any** Linux + H100 host: bare metal,
