@@ -33,6 +33,7 @@ for arg in "$@"; do
 done
 
 # ---------- 1. system packages ----------
+SKIP_APT="${SKIP_APT:-0}"
 need_apt=()
 for pkg in git curl build-essential pkg-config wget python3 python3-pip; do
     dpkg -s "$pkg" >/dev/null 2>&1 || need_apt+=("$pkg")
@@ -41,10 +42,23 @@ done
 for pkg in libmpich-dev libopenmpi-dev openmpi-bin; do
     dpkg -s "$pkg" >/dev/null 2>&1 || need_apt+=("$pkg")
 done
-if (( ${#need_apt[@]} )); then
+if (( ${#need_apt[@]} && ! SKIP_APT )); then
     echo "[setup] apt installing: ${need_apt[*]}"
-    DEBIAN_FRONTEND=noninteractive apt-get update -qq
-    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends "${need_apt[@]}"
+    if [[ "$EUID" -ne 0 ]] && command -v sudo >/dev/null 2>&1; then
+        APT_PREFIX="sudo"
+    elif [[ "$EUID" -ne 0 ]]; then
+        echo "[setup] WARNING: not root and no sudo. Skipping apt step." >&2
+        echo "[setup] Set SKIP_APT=1 to silence, or ensure these are installed:" >&2
+        echo "[setup]   ${need_apt[*]}" >&2
+        APT_PREFIX="false"   # makes apt commands no-op
+    else
+        APT_PREFIX=""
+    fi
+    if [[ "$APT_PREFIX" != "false" ]]; then
+        $APT_PREFIX env DEBIAN_FRONTEND=noninteractive apt-get update -qq || true
+        $APT_PREFIX env DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends "${need_apt[@]}" || \
+            echo "[setup] WARNING: apt install failed; assuming packages are present" >&2
+    fi
 fi
 
 # ---------- 2. mirage repo ----------
