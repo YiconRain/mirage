@@ -64,11 +64,13 @@ run_cell() {
     echo "===== TGX  ${model_tag}  bs=${bs}  =====" | tee "$log"
 
     set +e
+    # NOTE: do NOT pass --max-num-batched-tokens. Each demo's default is what
+    # its kernel was tuned for (qwen3 hopper demos: 8; 30B-A3B MoE: 1). Forcing
+    # 8 on the MoE path silently produces zeros/eos sentinel in the output.
     python "$script" \
         --use-mirage \
         --model "$hfid" \
         --max-num-batched-requests "$bs" \
-        --max-num-batched-tokens 8 \
         --max-seq-length "$MAX_SEQ_LEN" \
         --ignore-eos \
         2>&1 | tee -a "$log"

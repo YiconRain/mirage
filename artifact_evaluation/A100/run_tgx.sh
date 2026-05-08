@@ -68,7 +68,6 @@ run_cell() {
         --use-mirage \
         --model "$hfid" \
         --max-num-batched-requests "$bs" \
-        --max-num-batched-tokens 8 \
         --max-seq-length "$MAX_SEQ_LEN" \
         --ignore-eos \
         2>&1 | tee -a "$log"
