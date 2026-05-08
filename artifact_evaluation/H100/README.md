@@ -94,19 +94,5 @@ Same as A100 (`results/H100/<system>/<model_tag>__bs<bs>.json` with
 | E5 (Fig. 13)         | ❌ | 4× H100 ablation; separate folder |
 | E2, E4               | ❌ | B200-only |
 
----
-
-## Optional: launching on Modal cloud GPUs
-
-This repo includes Modal helpers if you don't want to provision your
-own host. Entirely optional.
-
-```bash
-# In a local terminal (your laptop)
-modal run scripts/ae/ae_ssh.py --gpu h100
-# prints:  SSH ready:  ssh root@<host>.modal.host -p <port>
-
-# Paste the printed ssh line in another terminal, then run the same
-# setup.sh + sweep commands as above. Results land at /mirage/results
-# which is backed by the `tgx-ae-results` Modal Volume.
-```
+If you don't have an H100 host, see the **Optional: cloud hosting on
+Modal** section in the top-level [`AE_README.md`](../../AE_README.md).

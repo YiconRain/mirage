@@ -106,23 +106,5 @@ Each per-cell JSON looks like:
 | E1 (Fig. 9 A100 row) | ✅ | 4 models × 5 batch sizes × 4 systems (no 30B-A3B) |
 | Other experiments    | ❌ | E2/E4 are B200; E3/E5 are H100 |
 
----
-
-## Optional: launching on Modal cloud GPUs
-
-If you have a [Modal](https://modal.com) account and want to run on rented
-A100s without provisioning your own host, this repo includes Modal helpers.
-These are entirely optional — the scripts above work on any A100 host.
-
-Local prereqs (one-time): `pip install modal && modal setup`.
-
-```bash
-# Start an SSH-accessible Modal A100 box
-modal run scripts/ae/ae_ssh.py --gpu a100-40gb
-# prints:  SSH ready:  ssh root@<host>.modal.host -p <port>
-
-# In another terminal, paste the printed ssh line, then run the same
-# setup.sh + sweep commands as above. The Modal box has the
-# `tgx-ae-results` volume mounted at /mirage/results so JSONs persist
-# across container restarts.
-```
+If you don't have an A100 host, see the **Optional: cloud hosting on
+Modal** section in the top-level [`AE_README.md`](../../AE_README.md).
