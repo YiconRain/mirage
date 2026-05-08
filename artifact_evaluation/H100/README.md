@@ -39,15 +39,20 @@ Linux box with CUDA + the right software. Two ways to drive them:
 
 ### Option A (recommended): SSH into a Modal box and run interactively
 
-Local prereq: `pip install sshtunnel` and `~/.ssh/id_rsa.pub` exists.
+Local prereq: `~/.ssh/id_rsa.pub` exists (`ssh-keygen` if not).
 
 ```bash
 # Terminal 1 — start the SSH-able container
 modal run scripts/ae/ae_ssh.py --gpu h100
+# prints:  SSH ready:  ssh root@<host>.modal.host -p <port>
 
-# Terminal 2 — connect and drive the sweeps
-ssh -p 9090 root@localhost
-cd /mirage && git pull --quiet
+# Terminal 2 — paste the printed ssh line, then run the sweeps
+ssh root@<host>.modal.host -p <port>
+git clone --recursive --branch tgx-osdi26-ae \
+    https://github.com/mirage-project/mirage.git
+cd mirage && export MIRAGE_HOME=$PWD
+pip install -e . -v transformers torch==2.6.0 mpi4py
+pip install flashinfer-python -i https://flashinfer.ai/whl/cu124/torch2.6
 export HF_TOKEN=hf_xxx     # for Llama-3.2 (gated)
 bash artifact_evaluation/H100/run_tgx.sh
 bash artifact_evaluation/H100/run_pytorch.sh

@@ -17,36 +17,25 @@ Why SSH
 
 Usage
 -----
-Local prereqs (one-time):
-
-    pip install sshtunnel
-    # Make sure ~/.ssh/id_rsa.pub exists; ssh-keygen if not.
+Local prereq: `~/.ssh/id_rsa.pub` exists (run `ssh-keygen` if not).
 
 Pick a GPU and start the box:
 
-    modal run scripts/ae/ae_ssh.py::ssh_h100
-    modal run scripts/ae/ae_ssh.py::ssh_a100_80gb
-    modal run scripts/ae/ae_ssh.py::ssh_b200
-    modal run scripts/ae/ae_ssh.py::ssh_h100x4
-    modal run scripts/ae/ae_ssh.py::ssh_h100x8
+    modal run scripts/ae/ae_ssh.py --gpu h100
+    modal run scripts/ae/ae_ssh.py --gpu a100-80gb
+    modal run scripts/ae/ae_ssh.py --gpu b200
+    modal run scripts/ae/ae_ssh.py --gpu h100x4
+    modal run scripts/ae/ae_ssh.py --gpu h100x8
 
-The script prints something like:
+The script prints a public host:port like:
 
-    SSH server running at <host>:<port>
-    SSH tunnel forwarded to localhost:9090
+    SSH ready:  ssh root@r447.modal.host -p 45333
 
-In another terminal:
+Copy-paste the `ssh ...` line into another terminal. Once inside, do
+whatever you need (git clone, pip install, run benchmarks).
 
-    ssh -p 9090 root@localhost
-    cd /mirage
-    git pull --quiet
-    bash artifact_evaluation/H100/run_tgx.sh
-
-When you are done, Ctrl-C the local entrypoint to tear down the tunnel
-(the container will idle until its 24-hour timeout).
-
-Use the baseline image variants (`ssh_*_baselines`) when you want to
-run vLLM / SGLang sweeps; that image has them pre-installed but no MPK.
+When you are done, Ctrl-C the `modal run` terminal to release the GPU
+(the container will idle until its 24-hour timeout otherwise).
 """
 
 import os
@@ -57,7 +46,6 @@ import time
 import modal
 
 APP_NAME = "tgx-osdi26-ae-ssh"
-LOCAL_PORT = 9090
 
 ssh_key_path = os.path.expanduser("~/.ssh/id_rsa.pub")
 
@@ -147,34 +135,22 @@ def ssh_h100x8(q): _serve(q)
 def ssh_b200(q): _serve(q)
 
 
-# ---------- Local entrypoint: spawn function, set up tunnel ----------
+# ---------- Local entrypoint: spawn function, print connection info ----------
 def _local_main(spawn):
-    """Run a chosen ssh_* function in the cloud and forward to LOCAL_PORT."""
-    import sshtunnel
-
+    """Run a chosen ssh_* function in the cloud and print its public host:port."""
     with modal.Queue.ephemeral() as q:
         spawn(q)
         host, port = q.get()
-        print(f"SSH server running at {host}:{port}")
-
-        server = sshtunnel.SSHTunnelForwarder(
-            (host, port),
-            ssh_username="root",
-            ssh_password="password",  # bypassed by pubkey auth
-            remote_bind_address=("127.0.0.1", 22),
-            local_bind_address=("127.0.0.1", LOCAL_PORT),
-            allow_agent=False,
-        )
+        print()
+        print(f"SSH ready:  ssh root@{host} -p {port}")
+        print()
+        print("Container will idle until you Ctrl-C this terminal")
+        print("or hit the 24h timeout.")
         try:
-            server.start()
-            print(f"SSH tunnel forwarded to localhost:{server.local_bind_port}")
-            print(f"Connect:  ssh -p {server.local_bind_port} root@localhost")
             while True:
-                time.sleep(1)
+                time.sleep(60)
         except KeyboardInterrupt:
-            print("\nShutting down SSH tunnel...")
-        finally:
-            server.stop()
+            print("\nReleasing GPU.")
 
 
 @app.local_entrypoint()
