@@ -17,10 +17,11 @@ A100 uses the Ampere demo files (also what CI runs):
 
 ## How to run
 
-Modal A100-80GB recommended (40GB likely OOMs at large batch sizes):
+Use the standard 40GB A100 (paper config; matches "model exceeds memory
+capacity of a single A100" omission for 30B-A3B).
 
 ```bash
-modal run scripts/ae/ae_ssh.py --gpu a100-80gb
+modal run scripts/ae/ae_ssh.py --gpu a100-40gb
 # prints:  SSH ready:  ssh root@<host>.modal.host -p <port>
 
 ssh root@<host>.modal.host -p <port>
@@ -33,13 +34,12 @@ bash artifact_evaluation/A100/run_tgx.sh
 bash artifact_evaluation/A100/run_pytorch.sh
 ```
 
-For the baseline sweeps (vLLM / SGLang) use the one-shot launcher with
-the baseline image (separate Modal entry point, separate dep set):
+For the baseline sweeps (vLLM / SGLang) use the one-shot launcher:
 
 ```bash
-modal run scripts/ae/ae_modal.py::baseline_a100_80gb \
+modal run scripts/ae/ae_modal.py::baseline_a100_40gb \
     --cmd "bash artifact_evaluation/A100/run_vllm.sh"
-modal run scripts/ae/ae_modal.py::baseline_a100_80gb \
+modal run scripts/ae/ae_modal.py::baseline_a100_40gb \
     --cmd "bash artifact_evaluation/A100/run_sglang.sh"
 ```
 

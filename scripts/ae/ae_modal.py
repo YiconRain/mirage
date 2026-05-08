@@ -158,6 +158,11 @@ def run_b200(cmd: str) -> None:
 
 
 # ---------- Baseline (vLLM/SGLang) entry points ----------
+@app.function(image=baselines_image, gpu="A100-40GB", timeout=3600 * 4)
+def baseline_a100_40gb(cmd: str) -> None:
+    _run(cmd)
+
+
 @app.function(image=baselines_image, gpu="A100-80GB", timeout=3600 * 4)
 def baseline_a100_80gb(cmd: str) -> None:
     _run(cmd)
