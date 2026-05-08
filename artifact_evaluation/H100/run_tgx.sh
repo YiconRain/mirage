@@ -63,15 +63,22 @@ run_cell() {
 
     echo "===== TGX  ${model_tag}  bs=${bs}  =====" | tee "$log"
 
-    if ! python "$script" \
-            --use-mirage \
-            --model "$hfid" \
-            --max-num-batched-requests "$bs" \
-            --max-num-batched-tokens 8 \
-            --max-seq-length "$MAX_SEQ_LEN" \
-            --ignore-eos \
-            >>"$log" 2>&1; then
-        echo "FAILED: TGX ${model_tag} bs=${bs}" >&2
+    set +e
+    python "$script" \
+        --use-mirage \
+        --model "$hfid" \
+        --max-num-batched-requests "$bs" \
+        --max-num-batched-tokens 8 \
+        --max-seq-length "$MAX_SEQ_LEN" \
+        --ignore-eos \
+        2>&1 | tee -a "$log"
+    local rc=${PIPESTATUS[0]}
+    set -e
+    if [[ "$rc" -ne 0 ]]; then
+        echo "FAILED: TGX ${model_tag} bs=${bs}  (exit $rc)" >&2
+        echo "--- last 20 lines of $log ---" >&2
+        tail -20 "$log" >&2
+        echo "--- end ---" >&2
         return 1
     fi
 
