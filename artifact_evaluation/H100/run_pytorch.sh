@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
-# E1 single-H100 sweep, PyTorch baseline (same Hopper demos, no --use-mirage).
-#
+# E1 single-H100 sweep, PyTorch baseline. See artifact_evaluation/H100/README.md.
 # Output: results/H100/pytorch/<model_tag>__bs<bs>.json
-#
-# Usage on Modal:
-#   modal run scripts/ae/ae_modal.py::run_h100 \
-#       --cmd "bash artifact_evaluation/H100/run_pytorch.sh"
 
 set -euo pipefail
 

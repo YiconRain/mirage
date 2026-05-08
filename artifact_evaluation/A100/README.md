@@ -10,7 +10,6 @@ OOMs on a single A100.
 | Model                 | Demo file                       |
 |-----------------------|---------------------------------|
 | Qwen3-0.6B / 1.7B / 8B| `demo/qwen3/demo.py`            |
-| Qwen3-30B-A3B (off)   | `demo/qwen3/demo_30B_A3B.py`    |
 | Llama-3.2-1B-Instruct | `demo/llama3/demo.py`           |
 
 ## How to run (any A100 host with CUDA 12.4)
@@ -90,14 +89,6 @@ pip install 'sglang[all]'
 deactivate
 
 bash artifact_evaluation/A100/run_sglang.sh     # ~30-40 min
-```
-
-### Filtering / spot-checks
-
-All sweep scripts respect `MODELS` and `BATCH_SIZES`:
-
-```bash
-MODELS=qwen3-0.6b BATCH_SIZES=1 bash artifact_evaluation/A100/run_tgx.sh
 ```
 
 ### Output schema

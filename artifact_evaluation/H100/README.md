@@ -81,12 +81,6 @@ deactivate
 bash artifact_evaluation/H100/run_sglang.sh
 ```
 
-### Filtering
-
-```bash
-MODELS=qwen3-0.6b BATCH_SIZES=1 bash artifact_evaluation/H100/run_tgx.sh
-```
-
 ### Output schema
 
 Same as A100 (`results/H100/<system>/<model_tag>__bs<bs>.json` with

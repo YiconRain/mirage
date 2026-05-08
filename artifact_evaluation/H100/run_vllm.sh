@@ -1,13 +1,6 @@
 #!/usr/bin/env bash
-# E1 single-H100 sweep, vLLM baseline.
-#
+# E1 single-H100 sweep, vLLM baseline. See artifact_evaluation/H100/README.md.
 # Output: results/H100/vllm/<model_tag>__bs<bs>.{log,json}
-#   .log = full vllm bench latency stdout
-#   .json = parsed { model, batch_size, latency_ms_per_token, ... }
-#
-# Run inside the BASELINES Modal image:
-#   modal run scripts/ae/ae_modal.py::baseline_h100 \
-#       --cmd "bash artifact_evaluation/H100/run_vllm.sh"
 
 set -euo pipefail
 

@@ -1,21 +1,8 @@
 #!/usr/bin/env bash
-# E1 single-H100 sweep, TGX/MPK system.
+# E1 single-H100 sweep, TGX/MPK system. See artifact_evaluation/H100/README.md.
 #
-# Hopper-tuned demo entry points:
-#   Qwen3-{0.6B,1.7B,8B}   -> demo/qwen3/demo_hopper.py
-#   Qwen3-30B-A3B          -> demo/qwen3/demo_30B_A3B_hopper.py
-#   Llama-3.2-1B-Instruct  -> demo/llama3/demo.py
-#
-# Each cell is parsed from stdout (the Hopper demos do not support
-# --save-tokens) and written to:
-#   results/H100/tgx/<model_tag>__bs<bs>.json
-#
-# Usage on Modal:
-#   modal run scripts/ae/ae_modal.py::run_h100 \
-#       --cmd "bash artifact_evaluation/H100/run_tgx.sh"
-#
-# Override with env vars:
-#   MODELS="qwen3-0.6b qwen3-1.7b" BATCH_SIZES="1 4" bash run_tgx.sh
+# Output: results/H100/tgx/<model_tag>__bs<bs>.json
+# Override defaults: MODELS=qwen3-0.6b BATCH_SIZES=1 bash run_tgx.sh
 
 set -euo pipefail
 

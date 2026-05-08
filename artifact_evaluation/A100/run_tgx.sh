@@ -1,21 +1,8 @@
 #!/usr/bin/env bash
-# E1 single-A100 sweep, TGX/MPK system.
-#
-# Ampere demo entry points (demo.py is what CI runs on A100):
-#   Qwen3-{0.6B,1.7B,8B}   -> demo/qwen3/demo.py
-#   Qwen3-30B-A3B          -> demo/qwen3/demo_30B_A3B.py  (OOMs on A100; off by default)
-#   Llama-3.2-1B-Instruct  -> demo/llama3/demo.py
+# E1 single-A100 sweep, TGX/MPK system. See artifact_evaluation/A100/README.md.
 #
 # Output: results/A100/tgx/<model_tag>__bs<bs>.json
-#
-# Usage on Modal (A100-80GB recommended):
-#   modal run scripts/ae/ae_ssh.py --gpu a100-80gb
-#   ssh root@<host> -p <port>
-#   bash artifact_evaluation/setup.sh
-#   bash artifact_evaluation/A100/run_tgx.sh
-#
-# Override:
-#   MODELS=qwen3-0.6b BATCH_SIZES=1 bash run_tgx.sh
+# Override defaults: MODELS=qwen3-0.6b BATCH_SIZES=1 bash run_tgx.sh
 
 set -euo pipefail
 
