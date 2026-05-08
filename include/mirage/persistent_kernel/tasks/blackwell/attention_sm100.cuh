@@ -40,7 +40,12 @@ template <typename T,
           int HEAD_DIM,
           int MAX_SEQ_LEN,
           int PAGE_SIZE,
-          int MAX_TOKENS = 8>
+          // Lowered from 8 to 4 so that the SM100 attention shmem budget
+          // (~228 KB on B200) accommodates Qwen3-30B-A3B (NUM_QO_PER_KV = 8).
+          // S_O_BUFFER scales as MMA_ITERS_M * 64 floats; halving MAX_TOKENS
+          // halves MMA_ITERS_M, halving S_O_BUFFER from 128 KB to 64 KB.
+          // 4 still covers chunked prefill (64-token prompt = 16 chunks).
+          int MAX_TOKENS = 4>
 __device__ __forceinline__ void multitoken_paged_attention_sm100_task_impl(
     void const *qkv_ptr,
     void *paged_k_cache_ptr,
