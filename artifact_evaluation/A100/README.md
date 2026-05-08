@@ -91,6 +91,17 @@ deactivate
 bash artifact_evaluation/A100/run_sglang.sh     # ~30-40 min
 ```
 
+**Non-root hosts** (e.g., shared clusters where `/opt` is not writable):
+substitute `$HOME/vllm-venv` / `$HOME/sglang-venv` for `/opt/...` and
+override the env vars:
+
+```bash
+BASELINES_VENV=$HOME/vllm-venv MIRAGE_HOME=$HOME/mirage-ae \
+    bash $HOME/mirage-ae/artifact_evaluation/A100/run_vllm.sh
+BASELINES_VENV=$HOME/sglang-venv MIRAGE_HOME=$HOME/mirage-ae \
+    bash $HOME/mirage-ae/artifact_evaluation/A100/run_sglang.sh
+```
+
 ### Output schema
 
 Each per-cell JSON looks like:

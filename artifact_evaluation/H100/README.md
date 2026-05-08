@@ -81,6 +81,17 @@ deactivate
 bash artifact_evaluation/H100/run_sglang.sh
 ```
 
+**Non-root hosts** (e.g., shared clusters where `/opt` is not writable):
+substitute `$HOME/vllm-venv` / `$HOME/sglang-venv` for `/opt/...` and
+override the env vars:
+
+```bash
+BASELINES_VENV=$HOME/vllm-venv MIRAGE_HOME=$HOME/mirage-ae \
+    bash $HOME/mirage-ae/artifact_evaluation/H100/run_vllm.sh
+BASELINES_VENV=$HOME/sglang-venv MIRAGE_HOME=$HOME/mirage-ae \
+    bash $HOME/mirage-ae/artifact_evaluation/H100/run_sglang.sh
+```
+
 ### Output schema
 
 Same as A100 (`results/H100/<system>/<model_tag>__bs<bs>.json` with
