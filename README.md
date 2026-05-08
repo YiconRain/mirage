@@ -32,7 +32,7 @@ run without `--use-mirage`), vLLM (`vllm bench latency`), SGLang
 (`python -m sglang.bench_one_batch`). All four systems write the same
 JSON schema with `latency_ms_per_token`.
 
-### Experiment (Fig. 9, §6.3)
+### Experiment
 
 End-to-end single-GPU decoding latency: 5 models × 5 batch sizes × 4
 systems on each of A100, H100, and B200 (Qwen3-30B-A3B omitted on A100
