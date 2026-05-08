@@ -4,6 +4,21 @@ Reproduces the H100 row of Fig. 9 (per-token decode latency, prompt = 64,
 generate = 1024, batch sizes 1/2/4/8/16, models Qwen3-{0.6B, 1.7B, 8B,
 30B-A3B} + Llama-3.2-1B-Instruct).
 
+## Demo entry points
+
+The `run_tgx.sh` and `run_pytorch.sh` scripts dispatch to **Hopper-tuned**
+demo files (WGMMA-aware grid sizing, lm_head split):
+
+| Model                 | Demo file                              |
+|-----------------------|----------------------------------------|
+| Qwen3-0.6B / 1.7B / 8B| `demo/qwen3/demo_hopper.py`            |
+| Qwen3-30B-A3B (MoE)   | `demo/qwen3/demo_30B_A3B_hopper.py`    |
+| Llama-3.2-1B-Instruct | `demo/llama3/demo.py`                  |
+
+The Hopper demos do not support `--save-tokens`, so latency is parsed
+from the demo's stdout line `per-token latency ... X.XXX ms`. Decode
+length is set via `--max-seq-length 1088` (= prompt 64 + generate 1024).
+
 Each script writes one JSON per (model, batch_size) cell to
 `results/H100/<system>/<model_tag>__bs<bs>.json`. JSON schema:
 

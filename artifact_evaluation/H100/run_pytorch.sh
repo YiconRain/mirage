@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# E1 single-H100 sweep, PyTorch baseline (same demo without --use-mirage).
+# E1 single-H100 sweep, PyTorch baseline (same Hopper demos, no --use-mirage).
 #
 # Output: results/H100/pytorch/<model_tag>__bs<bs>.json
 #
-# Run inside the TGX Modal image (PyTorch is bundled with the demos):
+# Usage on Modal:
 #   modal run scripts/ae/ae_modal.py::run_h100 \
 #       --cmd "bash artifact_evaluation/H100/run_pytorch.sh"
 
@@ -17,14 +17,16 @@ mkdir -p "$OUTPUT_ROOT"
 
 MODELS="${MODELS:-qwen3-0.6b llama-3.2-1b qwen3-1.7b qwen3-8b qwen3-30b-a3b}"
 BATCH_SIZES="${BATCH_SIZES:-1 2 4 8 16}"
-MAX_NEW_TOKENS="${MAX_NEW_TOKENS:-1024}"
+PROMPT_LEN="${PROMPT_LEN:-64}"
+GEN_LEN="${GEN_LEN:-1024}"
+MAX_SEQ_LEN="${MAX_SEQ_LEN:-$((PROMPT_LEN + GEN_LEN))}"
 
 declare -A SCRIPT
-SCRIPT[qwen3-0.6b]="demo/qwen3/demo.py"
+SCRIPT[qwen3-0.6b]="demo/qwen3/demo_hopper.py"
 SCRIPT[llama-3.2-1b]="demo/llama3/demo.py"
-SCRIPT[qwen3-1.7b]="demo/qwen3/demo.py"
-SCRIPT[qwen3-8b]="demo/qwen3/demo.py"
-SCRIPT[qwen3-30b-a3b]="demo/qwen3/demo_30B_A3B.py"
+SCRIPT[qwen3-1.7b]="demo/qwen3/demo_hopper.py"
+SCRIPT[qwen3-8b]="demo/qwen3/demo_hopper.py"
+SCRIPT[qwen3-30b-a3b]="demo/qwen3/demo_30B_A3B_hopper.py"
 
 declare -A HF_ID
 HF_ID[qwen3-0.6b]="Qwen/Qwen3-0.6B"
@@ -33,24 +35,53 @@ HF_ID[qwen3-1.7b]="Qwen/Qwen3-1.7B"
 HF_ID[qwen3-8b]="Qwen/Qwen3-8B"
 HF_ID[qwen3-30b-a3b]="Qwen/Qwen3-30B-A3B"
 
+parse_latency_ms() {
+    grep -oE 'per-token latency[^0-9]*[0-9]+\.[0-9]+ ms' "$1" \
+        | tail -1 \
+        | grep -oE '[0-9]+\.[0-9]+'
+}
+
 run_cell() {
     local model_tag="$1"
     local bs="$2"
     local script="${SCRIPT[$model_tag]}"
     local hfid="${HF_ID[$model_tag]}"
-    local out="$OUTPUT_ROOT/${model_tag}__bs${bs}.json"
     local log="$OUTPUT_ROOT/${model_tag}__bs${bs}.log"
+    local json="$OUTPUT_ROOT/${model_tag}__bs${bs}.json"
 
-    echo "===== PYTORCH  ${model_tag}  bs=${bs}  =====" | tee -a "$log"
+    echo "===== PYTORCH  ${model_tag}  bs=${bs}  =====" | tee "$log"
 
-    python "$script" \
-        --model "$hfid" \
-        --max-num-batched-requests "$bs" \
-        --max-num-batched-tokens 8 \
-        --max-new-tokens "$MAX_NEW_TOKENS" \
-        --temperature 0 \
-        --save-tokens "$out" \
-        2>&1 | tee -a "$log"
+    if ! python "$script" \
+            --model "$hfid" \
+            --max-num-batched-requests "$bs" \
+            --max-num-batched-tokens 8 \
+            --max-seq-length "$MAX_SEQ_LEN" \
+            --ignore-eos \
+            >>"$log" 2>&1; then
+        echo "FAILED: PyTorch ${model_tag} bs=${bs}" >&2
+        return 1
+    fi
+
+    local lat
+    lat=$(parse_latency_ms "$log" || true)
+    if [[ -z "${lat:-}" ]]; then
+        echo "Could not parse latency from $log" >&2
+        return 1
+    fi
+    python3 - <<EOF >"$json"
+import json
+print(json.dumps({
+    "system": "pytorch",
+    "model": "$hfid",
+    "model_tag": "$model_tag",
+    "script": "$script",
+    "batch_size": $bs,
+    "prompt_len": $PROMPT_LEN,
+    "gen_len": $GEN_LEN,
+    "max_seq_length": $MAX_SEQ_LEN,
+    "latency_ms_per_token": $lat,
+}, indent=2))
+EOF
 }
 
 for model_tag in $MODELS; do
@@ -59,9 +90,7 @@ for model_tag in $MODELS; do
         exit 1
     fi
     for bs in $BATCH_SIZES; do
-        if ! run_cell "$model_tag" "$bs"; then
-            echo "FAILED: PyTorch ${model_tag} bs=${bs}" >&2
-        fi
+        run_cell "$model_tag" "$bs" || true
     done
 done
 
