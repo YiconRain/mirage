@@ -54,7 +54,9 @@ def parse_arguments():
         default=True,
         help="Not use the cutlass version kernel.",
     )
-    
+    parser.add_argument("--ignore-eos", action="store_true",
+                       help="Ignore eos token during generation")
+
     return parser.parse_args()
 
 
@@ -299,7 +301,7 @@ def create_persistent_kernel(args, world_size, rank, input_data, config, eos_tok
         max_num_batched_tokens=args.max_num_batched_tokens,
         max_num_pages=args.max_num_pages,
         page_size=args.page_size,
-        eos_token_id=eos_token_id_for_mirage,
+        eos_token_id=(-1 if getattr(args, "ignore_eos", False) else eos_token_id_for_mirage),
         meta_tensors={
                 "step": input_data['step'],
                 "tokens": input_data['tokens'],
