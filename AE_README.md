@@ -2,10 +2,9 @@
 
 *TGX: A Compiler and Runtime for Mega-Kernelizing Tensor Programs*
 
-The system is called **MPK** in this codebase and **TGX** in the paper;
-the two names refer to the same artifact. This file is the AE entry
-point. It documents (1) what's reproduced, (2) how to run on any GPU
-host, and (3) optional shortcuts for running on Modal cloud GPUs.
+This file is the AE entry point. It documents (1) what's reproduced,
+(2) how to run on any GPU host, and (3) optional shortcuts for running
+on Modal cloud GPUs.
 
 > **Branch.** `tgx-osdi26-ae` — the frozen artifact for OSDI '26 AE.
 
