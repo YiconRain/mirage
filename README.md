@@ -32,15 +32,12 @@ run without `--use-mirage`), vLLM (`vllm bench latency`), SGLang
 (`python -m sglang.bench_one_batch`). All four systems write the same
 JSON schema with `latency_ms_per_token`.
 
-### Experiments
+### Experiment (Fig. 9, §6.3)
 
-| Exp. | Paper figure  | What it covers | Folder                          |
-|------|---------------|----------------|---------------------------------|
-| E1   | Fig. 9 (§6.3) | 5 models × 5 batch sizes × 4 systems on each of A100/H100/B200 (Qwen3-30B-A3B omitted on A100 per paper). 70 cells total. | `artifact_evaluation/{A100,H100,B200}/` |
-| E2   | Fig. 10 (§6.4)| Qwen3-30B-A3B MoE on B200, 5 batch sizes × 3 configurations (SGLang-MoE, TGX-Static, TGX-Hybrid). | `artifact_evaluation/B200/`     |
-| E3   | Fig. 11 (§6.5)| Qwen3-1.7B with TP on 2 / 4 / 8 × H100, 5 batch sizes × 4 systems. | `artifact_evaluation/H100xN/`   |
-| E4   | Fig. 12 (§6.6)| Qwen3-8B final linear layer on B200, 5 batch sizes × 3 configs (cuBLAS, TGX-No-Pipe, TGX-Pipe). | `artifact_evaluation/B200/`     |
-| E5   | Fig. 13 (§6.6)| Qwen3-1.7B on 4 × H100 with TP, 5 batch sizes × 2 configs (TGX with/without compute–comm overlap). | `artifact_evaluation/H100xN/`   |
+End-to-end single-GPU decoding latency: 5 models × 5 batch sizes × 4
+systems on each of A100, H100, and B200 (Qwen3-30B-A3B omitted on A100
+per the paper). 70 cells total. Folder layout:
+`artifact_evaluation/{A100,H100,B200}/`.
 
 **Workload.** Offline batched inference, prompt length **64**, decode
 **1024** tokens, batch sizes **{1, 2, 4, 8, 16}**, greedy
@@ -180,9 +177,9 @@ ungraceful container exits (OOM, force-stop, etc.).
 ```
 artifact_evaluation/
 ├── setup.sh              # bootstrap TGX on a fresh GPU host
-├── A100/                 # E1 row 3 of Fig. 9 (4 models × 5 bs × 4 systems)
-├── H100/                 # E1 row 2 of Fig. 9 (5 models × 5 bs × 4 systems)
-├── ...                   # B200, H100xN added as experiments complete
+├── A100/                 # Fig. 9 row 3 (4 models × 5 bs × 4 systems)
+├── H100/                 # Fig. 9 row 2 (5 models × 5 bs × 4 systems)
+└── B200/                 # Fig. 9 row 1 (5 models × 5 bs × 4 systems)
 scripts/ae/
 ├── ae_ssh.py             # Optional: Modal SSH launcher (cloud helper)
 └── ae_modal.py           # Optional: Modal one-shot launcher
