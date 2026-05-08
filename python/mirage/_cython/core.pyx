@@ -387,16 +387,19 @@ def convert_ctype_to_dtype(type):
     else:
         return None
 
+_TORCH_FP8_DTYPES = tuple(
+    dt for dt in (
+        getattr(torch, "float8_e4m3fn", None),
+        getattr(torch, "float8_e4m3fnuz", None),
+        getattr(torch, "float8_e5m2", None),
+        getattr(torch, "float8_e5m2fnuz", None),
+        getattr(torch, "float8_e8m0fnu", None),
+    )
+    if dt is not None
+)
+
 def convert_torch_type_to_dtype(type):
-    if type is torch.float8_e4m3fn:
-        return float8
-    elif type is torch.float8_e4m3fnuz:
-        return float8
-    elif type is torch.float8_e5m2:
-        return float8
-    elif type is torch.float8_e5m2fnuz:
-        return float8
-    elif type is torch.float8_e8m0fnu:
+    if type in _TORCH_FP8_DTYPES:
         return float8
     elif type is torch.int8:
         return int8
@@ -420,8 +423,6 @@ def convert_torch_type_to_dtype(type):
         return int64
     elif type is torch.float64:
         return float64
-    elif type is torch.float8_e4m3fn:
-        return float8_e4m3
     else:
         raise RuntimeError(f"Unsupported dtype: {type}")
 
