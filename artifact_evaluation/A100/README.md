@@ -2,12 +2,10 @@
 
 Reproduces the A100 row of Fig. 9 (per-token decode latency, prompt = 64,
 generate = 1024, batch sizes 1/2/4/8/16, models Qwen3-{0.6B, 1.7B, 8B} +
-Llama-3.2-1B-Instruct). **Qwen3-30B-A3B is omitted by default** — the paper
-notes it OOMs on a single A100.
+Llama-3.2-1B-Instruct). **Qwen3-30B-A3B is omitted** — the paper notes it
+OOMs on a single A100.
 
 ## Demo entry points
-
-A100 uses the Ampere demo files (also what CI runs):
 
 | Model                 | Demo file                       |
 |-----------------------|---------------------------------|
@@ -15,40 +13,90 @@ A100 uses the Ampere demo files (also what CI runs):
 | Qwen3-30B-A3B (off)   | `demo/qwen3/demo_30B_A3B.py`    |
 | Llama-3.2-1B-Instruct | `demo/llama3/demo.py`           |
 
-## How to run
+## How to run (any A100 host with CUDA 12.4)
 
-Use the standard 40GB A100 (paper config; matches "model exceeds memory
-capacity of a single A100" omission for 30B-A3B).
+These instructions work on **any** Linux + A100 host: bare metal, Lambda,
+Crusoe, GCP, on-prem cluster. They do not depend on Modal.
+
+### Prerequisites
+
+- A100 (40 GB or 80 GB) with NVIDIA driver supporting CUDA 12.4
+- Ubuntu 22.04+ with Python 3.10+
+- Network access (to clone GitHub + pull model weights from HuggingFace)
+- HuggingFace token if you want Llama-3.2 (gated model)
+
+### One-shot setup
+
+ssh into the host, then:
 
 ```bash
-modal run scripts/ae/ae_ssh.py --gpu a100-40gb
-# prints:  SSH ready:  ssh root@<host>.modal.host -p <port>
+curl -sSL https://raw.githubusercontent.com/mirage-project/mirage/tgx-osdi26-ae/artifact_evaluation/setup.sh | bash
+```
 
-ssh root@<host>.modal.host -p <port>
-bash <(curl -sSL https://raw.githubusercontent.com/mirage-project/mirage/tgx-osdi26-ae/artifact_evaluation/setup.sh)
+`setup.sh` installs apt deps, clones mirage at branch `tgx-osdi26-ae`,
+builds it, installs torch + transformers + flashinfer. Runtime ≈ 10–15 min
+on first run (mostly CMake + NVCC compilation of the C++/CUDA extension).
+
+After setup, in your shell:
+
+```bash
 export PATH=/usr/local/cuda/bin:$PATH
 export CUDA_HOME=/usr/local/cuda
-export HF_TOKEN=hf_xxx     # for Llama-3.2
-
-bash artifact_evaluation/A100/run_tgx.sh
-bash artifact_evaluation/A100/run_pytorch.sh
+export HF_TOKEN=hf_xxx   # only needed for Llama-3.2 (gated)
 ```
 
-For the baseline sweeps (vLLM / SGLang) use the one-shot launcher:
+### Run TGX/MPK + PyTorch sweeps
+
+These two share the MPK environment (no extra deps):
 
 ```bash
-modal run scripts/ae/ae_modal.py::baseline_a100_40gb \
-    --cmd "bash artifact_evaluation/A100/run_vllm.sh"
-modal run scripts/ae/ae_modal.py::baseline_a100_40gb \
-    --cmd "bash artifact_evaluation/A100/run_sglang.sh"
+bash artifact_evaluation/A100/run_tgx.sh        # ~30-40 min
+bash artifact_evaluation/A100/run_pytorch.sh    # ~30-40 min
 ```
 
-## Filtering
+Each writes one JSON per (model, batch_size) cell to
+`results/A100/<system>/<model_tag>__bs<bs>.json`.
 
-Override `MODELS` or `BATCH_SIZES`:
+### Run vLLM + SGLang baselines
+
+vLLM and SGLang pin their own torch versions and conflict with flashinfer,
+so install them in a separate Python venv to avoid clobbering MPK:
+
+```bash
+python3 -m venv /opt/baselines-venv
+source /opt/baselines-venv/bin/activate
+pip install --upgrade pip
+pip install vllm
+pip install 'sglang[all]'
+
+bash artifact_evaluation/A100/run_vllm.sh       # ~30-40 min
+bash artifact_evaluation/A100/run_sglang.sh     # ~30-40 min
+
+deactivate
+```
+
+### Filtering / spot-checks
+
+All sweep scripts respect `MODELS` and `BATCH_SIZES`:
 
 ```bash
 MODELS=qwen3-0.6b BATCH_SIZES=1 bash artifact_evaluation/A100/run_tgx.sh
+```
+
+### Output schema
+
+Each per-cell JSON looks like:
+
+```json
+{
+  "system":   "tgx" | "pytorch" | "vllm" | "sglang",
+  "gpu":      "A100",
+  "model":    "<HuggingFace ID>",
+  "batch_size": <int>,
+  "prompt_len": 64,
+  "gen_len":  1024,
+  "latency_ms_per_token": <float>
+}
 ```
 
 ## Coverage on A100
@@ -56,4 +104,25 @@ MODELS=qwen3-0.6b BATCH_SIZES=1 bash artifact_evaluation/A100/run_tgx.sh
 | Experiment | Covered? | Notes |
 |-----------|----------|-------|
 | E1 (Fig. 9 A100 row) | ✅ | 4 models × 5 batch sizes × 4 systems (no 30B-A3B) |
-| All others           | ❌ | E2/E3/E5 are H100; E4 is B200 |
+| Other experiments    | ❌ | E2/E4 are B200; E3/E5 are H100 |
+
+---
+
+## Optional: launching on Modal cloud GPUs
+
+If you have a [Modal](https://modal.com) account and want to run on rented
+A100s without provisioning your own host, this repo includes Modal helpers.
+These are entirely optional — the scripts above work on any A100 host.
+
+Local prereqs (one-time): `pip install modal && modal setup`.
+
+```bash
+# Start an SSH-accessible Modal A100 box
+modal run scripts/ae/ae_ssh.py --gpu a100-40gb
+# prints:  SSH ready:  ssh root@<host>.modal.host -p <port>
+
+# In another terminal, paste the printed ssh line, then run the same
+# setup.sh + sweep commands as above. The Modal box has the
+# `tgx-ae-results` volume mounted at /mirage/results so JSONs persist
+# across container restarts.
+```
