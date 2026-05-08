@@ -125,6 +125,22 @@ EOF
     export PATH="$HOME/.cargo/bin:$PATH"
 
     # ---------- 4. python deps + MPK build ----------
+    # Detect PEP 668 "externally-managed-environment". On modern Debian/Ubuntu
+    # the system python blocks pip; auto-create a venv if so.
+    if pip install --dry-run --quiet pip 2>&1 | grep -q "externally-managed"; then
+        MPK_VENV="${MPK_VENV:-$HOME/mirage-venv}"
+        echo "[setup] system python is PEP 668 protected; using venv at $MPK_VENV"
+        if [[ ! -d "$MPK_VENV" ]]; then
+            python3 -m venv "$MPK_VENV"
+        fi
+        # shellcheck disable=SC1091
+        source "$MPK_VENV/bin/activate"
+        if [[ -w "$BASHRC" || ! -e "$BASHRC" ]]; then
+            grep -q "^source $MPK_VENV/bin/activate" "$BASHRC" 2>/dev/null \
+                || echo "source $MPK_VENV/bin/activate" >> "$BASHRC"
+        fi
+    fi
+
     echo "[setup] pip install MPK + deps (this builds the C++/CUDA extension)"
     pip install --upgrade pip
     pip install torch==2.6.0 transformers mpi4py
