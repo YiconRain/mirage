@@ -59,6 +59,7 @@ source /opt/baselines-venv/bin/activate
 pip install --upgrade pip
 pip install --index-url https://download.pytorch.org/whl/cu124 torch==2.6.0
 pip install vllm==0.8.5
+pip install 'transformers==4.51.3'   # vllm 0.8.5 needs transformers 4.x
 pip install 'sglang[all]'
 deactivate
 
