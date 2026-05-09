@@ -77,12 +77,8 @@ auto-detects the GPU compute capability, and builds TGX. Takes
 
 ## Optional: cloud hosting on Modal
 
-If you don't have a GPU host, this artifact includes helpers to spin
-up Modal cloud GPUs. **This is entirely optional**; the per-GPU
-instructions above work on any A100/H100/B200 host.
-
-If you don't have a Modal account, contact the authors and we can
-provide temporary access to a pre-configured Modal instance.
+If you don't have a GPU host, contact the authors — we can provide
+Modal access.
 
 ### Local prereqs (one-time)
 
