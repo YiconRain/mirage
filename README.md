@@ -3,8 +3,6 @@
 *TGX: A Compiler and Runtime for Mega-Kernelizing Tensor Programs*
 
 > **Branch `tgx-osdi26-ae`** — the frozen artifact for OSDI '26 AE.
-> For the general Mirage project README, see the
-> [`mpk` branch](https://github.com/mirage-project/mirage/tree/mpk).
 
 This README documents (1) what's reproduced and (2) how to run on any
 GPU host.
