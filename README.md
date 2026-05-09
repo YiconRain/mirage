@@ -6,8 +6,8 @@
 > For the general Mirage project README, see the
 > [`mpk` branch](https://github.com/mirage-project/mirage/tree/mpk).
 
-This README documents (1) what's reproduced, (2) how to run on any
-GPU host, and (3) optional shortcuts for running on Modal cloud GPUs.
+This README documents (1) what's reproduced and (2) how to run on any
+GPU host.
 
 ---
 
@@ -43,14 +43,6 @@ Prompt length 64, generate length 1024, per-token latency (both prefill and deco
 
 All baselines are converted to the same metric. Each cell produces a
 JSON of the shape `{system, gpu, model, batch_size, latency_ms_per_token, ...}`.
-
-**TGX configuration (Table 1, set automatically per GPU).**
-
-| GPU  | # SMs | # workers | # schedulers | Shared-mem page |
-|------|-------|-----------|--------------|------|
-| A100 | 108   | 104       | 16           | 32 KB |
-| H100 | 132   | 128       | 16           | 32 KB |
-| B200 | 148   | 144       | 16           | 32 KB |
 
 ---
 
@@ -140,9 +132,9 @@ ungraceful container exits (OOM, force-stop, etc.).
 ```
 artifact_evaluation/
 ├── setup.sh              # bootstrap TGX on a fresh GPU host
-├── A100/                 # Fig. 9 row 3 (4 models × 5 bs × 4 systems)
-├── H100/                 # Fig. 9 row 2 (5 models × 5 bs × 4 systems)
-└── B200/                 # Fig. 9 row 1 (5 models × 5 bs × 4 systems)
+├── A100/                 # 4 models × 5 batch sizes × 4 systems
+├── H100/                 # 5 models × 5 batch sizes × 4 systems
+└── B200/                 # 5 models × 5 batch sizes × 4 systems
 scripts/ae/
 ├── ae_ssh.py             # Optional: Modal SSH launcher (cloud helper)
 └── ae_modal.py           # Optional: Modal one-shot launcher
