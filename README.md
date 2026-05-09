@@ -27,17 +27,7 @@ GPU host, and (3) optional shortcuts for running on Modal cloud GPUs.
 
 **GPU variants:** NVIDIA A100-40GB, NVIDIA H100-80GB SXM, NVIDIA B200.
 
-**Systems compared:** TGX (our system), PyTorch (the same demos
-run without `--use-mirage`), vLLM (`vllm bench latency`), SGLang
-(`python -m sglang.bench_one_batch`). All four systems write the same
-JSON schema with `latency_ms_per_token`.
-
-### Experiment
-
-End-to-end single-GPU decoding latency: 5 models × 5 batch sizes × 4
-systems on each of A100, H100, and B200 (Qwen3-30B-A3B omitted on A100
-per the paper). 70 cells total. Folder layout:
-`artifact_evaluation/{A100,H100,B200}/`.
+**Systems compared:** TGX, PyTorch, vLLM, SGLang.
 
 **Workload.** Offline batched inference, prompt length **64**, decode
 **1024** tokens, batch sizes **{1, 2, 4, 8, 16}**, greedy
@@ -70,31 +60,26 @@ Per-GPU instructions live in:
 
 - [`artifact_evaluation/A100/README.md`](artifact_evaluation/A100/README.md)
 - [`artifact_evaluation/H100/README.md`](artifact_evaluation/H100/README.md)
-- *(B200 / multi-GPU folders coming as we complete those experiments)*
+- [`artifact_evaluation/B200/README.md`](artifact_evaluation/B200/README.md)
 
-Each folder is self-contained and assumes a Linux + CUDA 12.4 host
-already provisioned. The minimum flow is:
+Each folder is self-contained and assumes a Linux + CUDA host already
+provisioned. The minimum flow:
 
 ```bash
-# inside the GPU host (any A100/H100/B200, bare metal or cloud)
 curl -sSL https://raw.githubusercontent.com/mirage-project/mirage/tgx-osdi26-ae/artifact_evaluation/setup.sh | bash
 export PATH=/usr/local/cuda/bin:$PATH
 export CUDA_HOME=/usr/local/cuda
 export HF_TOKEN=hf_xxx                                    # for Llama-3.2 (gated)
 bash artifact_evaluation/<gpu>/run_tgx.sh                  # TGX
 bash artifact_evaluation/<gpu>/run_pytorch.sh              # PyTorch baseline
-
-# vLLM and SGLang share a separate Python venv (their torch pin
-# conflicts with flashinfer's)
-python3 -m venv /opt/baselines-venv
-source /opt/baselines-venv/bin/activate
-pip install --upgrade pip vllm 'sglang[all]'
-bash artifact_evaluation/<gpu>/run_vllm.sh
-bash artifact_evaluation/<gpu>/run_sglang.sh
 ```
 
+For vLLM and SGLang, install each in its own venv (they have
+incompatible torch / transformers pins) — see the per-GPU README.
+
 `setup.sh` clones the branch into `/mirage`, installs apt + pip deps,
-and builds TGX. Takes ~10–15 min on first run.
+auto-detects the GPU compute capability, and builds TGX. Takes
+~10–15 min on first run.
 
 ---
 
@@ -103,6 +88,9 @@ and builds TGX. Takes ~10–15 min on first run.
 If you don't have a GPU host, this artifact includes helpers to spin
 up Modal cloud GPUs. **This is entirely optional**; the per-GPU
 instructions above work on any A100/H100/B200 host.
+
+If you don't have a Modal account, contact the authors and we can
+provide temporary access to a pre-configured Modal instance.
 
 ### Local prereqs (one-time)
 
@@ -146,31 +134,6 @@ The Modal container mounts:
 
 The launcher commits the results volume every 2 minutes to survive
 ungraceful container exits (OOM, force-stop, etc.).
-
-### Caveats
-
-- Image build is ~10 min the first time per cache.
-- A bare GPU host avoids Modal-specific concerns (volumes, auth,
-  per-second billing). Use whichever fits your workflow.
-
----
-
-## Reproduction notes
-
-- **First TGX run is slow.** Triggers a one-time NVCC compile of the
-  megakernel (~1–5 min depending on model). Cached under
-  `~/.cache/mirage/`. To pre-warm, run with a small `--max-seq-length`
-  once.
-- **Run-to-run variance.** Sweep drivers run a built-in warmup before
-  timing.
-- **HuggingFace gating.** Llama-3.2 requires accepting Meta's license.
-  Set `HF_TOKEN=<your_token>` before the sweep.
-- **Qwen3-30B-A3B on A100** is omitted in Fig. 9 (paper §6.2) due to
-  OOM on a 40 GB A100.
-- **Qwen3-30B-A3B on H100** at batch sizes >1 currently scales linearly
-  with batch (kernel limitation, see `artifact_evaluation/H100/README.md`).
-
----
 
 ## Layout
 
