@@ -139,6 +139,18 @@ if __name__ == "__main__":
     )
 
     parser.add_argument("--split-kv-cache", action="store_true", help="Use split-kv cache")
+    parser.add_argument(
+        "--lm-head-grid",
+        type=str,
+        default="default",
+        choices=["default", "pipe", "no-pipe"],
+        help=(
+            "Fig. 12 ablation knob for the lm_head linear_layer's grid_dim[0]. "
+            "'default' = mpk.num_workers (production setting); "
+            "'pipe' = 128 (small enough that MPK enables cross-task pipelining); "
+            "'no-pipe' = vocab_size // 256 = 600 (too large, pipelining cannot engage)."
+        ),
+    )
     args = parser.parse_args()
     try:
         from mpi4py import MPI
@@ -701,11 +713,17 @@ if __name__ == "__main__":
             grid_dim=(mpk.max_num_batched_tokens, 1, 1),
             block_dim=(128, 1, 1),
         )
+        if args.lm_head_grid == "pipe":
+            _lm_head_grid_x = 128
+        elif args.lm_head_grid == "no-pipe":
+            _lm_head_grid_x = vocab_size // 256
+        else:
+            _lm_head_grid_x = mpk.num_workers
         mpk.linear_layer(
             input=rmsnorm_out,
             weight=w_proj,
             output=argmax_in,
-            grid_dim=(mpk.num_workers, 1, 1),
+            grid_dim=(_lm_head_grid_x, 1, 1),
             block_dim=(128, 1, 1),
         )
         #mpk.rmsnorm_linear_layer(

@@ -1,7 +1,20 @@
-# B200 — single-GPU sweeps (E1 row 1 of Fig. 9)
+# B200 — single-GPU experiments (Fig. 9 + Fig. 10 + Fig. 12)
 
-Reproduces the B200 row of Fig. 9 (per-token decode latency, prompt = 64,
-generate = 1024, batch sizes 1/2/4/8/16, 5 models).
+Reproduces three single-B200 experiments from the paper:
+
+- **Fig. 9** — per-token decode latency, prompt = 64, generate = 1024,
+  batch sizes 1/2/4/8/16, 5 models × 4 systems. Driven by `run_tgx.sh`,
+  `run_pytorch.sh`, `run_vllm.sh`, `run_sglang.sh`.
+- **Fig. 10** — Qwen3-30B-A3B MoE microbench (MPK-Hybrid-MoE vs
+  SGLang-MoE). Driven by `run_fig10_moe.sh` (TGX side) +
+  `run_sglang.sh MODELS=qwen3-30b-a3b` (SGLang side).
+- **Fig. 12** — Qwen3-8B cross-task pipelining ablation
+  (MPK-Pipe vs MPK-No-Pipe). Driven by `run_fig12_pipe_ablation.sh`.
+  cuBLAS curve comes from the existing `run_pytorch.sh` Qwen3-8B cell.
+
+See the top-level [`README.md`](../../README.md)
+§"Additional experiments (Fig. 10 + Fig. 12)" for details and NCU
+recipes for the per-kernel μs numbers in the paper.
 
 ## Demo entry points
 
