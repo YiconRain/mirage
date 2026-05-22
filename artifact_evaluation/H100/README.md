@@ -1,8 +1,62 @@
-# H100 — single-GPU sweeps (E1 row 2 of Fig. 9)
+# H100 — single-GPU + multi-GPU sweeps (Fig. 9 row 2 + Fig. 11 + Fig. 13)
 
-Reproduces the H100 row of Fig. 9 (per-token decode latency, prompt = 64,
-generate = 1024, batch sizes 1/2/4/8/16, models Qwen3-{0.6B, 1.7B, 8B,
-30B-A3B} + Llama-3.2-1B-Instruct).
+Reproduces three H100 experiments from the paper:
+
+- **Fig. 9** (row 2) — per-token decode latency, prompt = 64, generate
+  = 1024, batch sizes 1/2/4/8/16, 5 models × 4 systems. Driven by
+  `run_tgx.sh`, `run_pytorch.sh`, `run_vllm.sh`, `run_sglang.sh`.
+- **Fig. 11** — Qwen3-1.7B multi-GPU comparison (PyTorch / vLLM /
+  SGLang / MPK at TP=2,4,8). Driven by `run_fig11_multigpu.sh` +
+  `plot_fig11.py`.
+- **Fig. 13** — Qwen3-1.7B compute–communication overlap ablation on
+  4 GPUs: MPK with vs without overlap of allgather-style allreduce.
+  Driven by `run_fig13_overlap.sh` + `plot_fig13.py`.
+
+The Fig. 11 and Fig. 13 scripts are paper-matching for H100 but also
+runnable on other architectures — set `GPU=<tag>` to retag the JSONs
+(e.g., `GPU=B200` when reproducing on a Blackwell host).
+
+## TL;DR — running Fig. 11 + Fig. 13
+
+```bash
+# 1. Activate the project conda env (used by pytorch + mpk).
+conda activate mirage_2
+
+# 2. One-time: install the two baseline venvs (vllm, sglang).
+#    Skip this if $HOME/{vllm,sglang}-venv already exist.
+rm -rf $HOME/vllm-venv && python3 -m venv $HOME/vllm-venv \
+  && source $HOME/vllm-venv/bin/activate \
+  && pip install --upgrade pip && pip install vllm && deactivate
+rm -rf $HOME/sglang-venv && python3 -m venv $HOME/sglang-venv \
+  && source $HOME/sglang-venv/bin/activate \
+  && pip install --upgrade pip && pip install 'sglang[all]' && deactivate
+
+# 3. Pick GPUs and run. Each script auto-generates a .png at the end.
+#    Fig. 13 needs 4 idle GPUs (TP=4). Fig. 11 sweeps TP=2,4,8 by default;
+#    cells whose TP exceeds available GPUs fail gracefully (|| true).
+export CUDA_VISIBLE_DEVICES=0,1,2,3   # adjust to your free GPUs
+
+bash artifact_evaluation/H100/run_fig13_overlap.sh
+bash artifact_evaluation/H100/run_fig11_multigpu.sh
+
+# Outputs:
+#   results/H100/fig13/fig13.png  (overlap vs no-overlap, BS=1..16)
+#   results/H100/fig11/fig11.png  (pytorch/vllm/sglang/mpk, TP=2,4,8)
+```
+
+Override TP if fewer GPUs are free:
+
+```bash
+WORLD_SIZE=2 bash artifact_evaluation/H100/run_fig13_overlap.sh
+TP_SIZES=2  bash artifact_evaluation/H100/run_fig11_multigpu.sh
+```
+
+Reproduce on B200 (or any other host) by retagging:
+
+```bash
+GPU=B200 bash artifact_evaluation/H100/run_fig13_overlap.sh
+GPU=B200 bash artifact_evaluation/H100/run_fig11_multigpu.sh
+```
 
 ## Demo entry points
 
@@ -101,10 +155,122 @@ BASELINES_VENV=$HOME/sglang-venv MIRAGE_HOME=$HOME/mirage-ae \
     bash $HOME/mirage-ae/artifact_evaluation/H100/run_sglang.sh
 ```
 
+### Multi-GPU prerequisites — NVSHMEM + MPI (Fig. 11 + Fig. 13)
+
+Fig. 11 and Fig. 13 require NVSHMEM and an MPI implementation, which
+the standalone `pip install -e .` workflow does **not** pull in. See
+the top-level [`README.md`](../../README.md) §"Multi-GPU prerequisites
+— NVSHMEM + MPI" for the install steps and the four env vars
+(`NVSHMEM_INC_PATH`, `NVSHMEM_LIB_PATH`, `MPI_INC_PATH`, `MPI_LIB_PATH`)
+that MPK looks up at compile time.
+
+### Fig. 11 — Qwen3-1.7B multi-GPU comparison (TP=2,4,8)
+
+Reproduces the cross-system bar chart: relative performance of
+PyTorch, vLLM, SGLang, and MPK on Qwen3-1.7B under tensor parallelism,
+normalized to MPK at each (TP, batch_size).
+
+Per-system invocation:
+
+- **pytorch**: `mpirun -np $TP python demo/qwen3/demo.py --model
+  Qwen/Qwen3-1.7B …` (no `--use-mirage`). Falls into the vanilla HF
+  decode loop in `demo.py`; TP collectives come from `Qwen3ShardLoader`.
+  Note: this path forces `total_num_requests=1` in `demo.py`, so the
+  PyTorch curve is effectively single-request across the BS sweep
+  (matches Fig 9 PyTorch behavior).
+- **vllm**: `vllm bench latency --tensor-parallel-size $TP …` from
+  `$VLLM_VENV` (default `$HOME/vllm-venv`). vLLM manages its own
+  worker procs; no mpirun.
+- **sglang**: `python -m sglang.bench_one_batch --tensor-parallel-size
+  $TP …` from `$SGLANG_VENV` (default `$HOME/sglang-venv`).
+- **mpk**: `mpirun -np $TP python demo/qwen3/demo.py --use-mirage …`
+  from the mirage_2 conda env.
+
+One-time baseline venv setup (same as the existing Fig. 9 vllm/sglang
+venvs but installed under `$HOME` to allow non-root hosts):
+
+```bash
+rm -rf $HOME/vllm-venv && python3 -m venv $HOME/vllm-venv
+source $HOME/vllm-venv/bin/activate && pip install --upgrade pip && pip install vllm
+deactivate
+
+rm -rf $HOME/sglang-venv && python3 -m venv $HOME/sglang-venv
+source $HOME/sglang-venv/bin/activate && pip install --upgrade pip && pip install 'sglang[all]'
+deactivate
+```
+
+Override `VLLM_VENV` / `SGLANG_VENV` to point elsewhere.
+
+Run the sweep:
+
+```bash
+# Ensure mirage_2 is the active env (used for pytorch + mpk runs).
+conda activate mirage_2
+
+# Pick free GPUs. For TP=4 you need 4 idle; for TP=8, eight.
+export CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7
+
+# Default: TP_SIZES="2 4 8" (override to "2 4" or "2" for fewer GPUs).
+# The script auto-invokes plot_fig11.py at the end and writes fig11.png.
+bash artifact_evaluation/H100/run_fig11_multigpu.sh
+```
+
+`run_fig11_multigpu.sh` writes
+`results/$GPU/fig11/<system>__tp<TP>__bs<BS>.json` (default
+`results/H100/fig11/…`) with `latency_ms_per_token`. `plot_fig11.py`
+normalizes per-(TP, BS) by MPK and emits `fig11.png` with one subplot
+per TP value and a "Nx" speedup annotation above each batch-size
+group.
+
+### Fig. 13 — compute–communication overlap ablation (TP=4)
+
+Measures the speedup from overlapping the allgather phase of MPK's
+split-phase allreduce with downstream computation, on Qwen3-1.7B with
+tensor parallelism across 4 GPUs.
+
+Two compiler env vars gate the experiment:
+
+| Env var                        | Layer  | What it does                                                              |
+|--------------------------------|--------|---------------------------------------------------------------------------|
+| `MPK_FORCE_ALLGATHER_REDUCE=1` | Python | Skip the NvshmemTile path on SM≥90; force allgather + local-reduce.       |
+| `MPK_DISABLE_AG_OVERLAP=1`     | C++    | Override `event_dim=1` on edges touching the allgather task (serializes). |
+
+`MPK_DISABLE_AG_OVERLAP` is read at compile time inside
+`build_annotated_graph()`; changes take effect on the next compile.
+Both env vars default off — leaving them unset preserves stock
+behavior.
+
+```bash
+# Pick 4 idle GPUs on the host.
+export CUDA_VISIBLE_DEVICES=0,1,2,3
+
+# The script auto-invokes plot_fig13.py at the end and writes fig13.png.
+bash artifact_evaluation/H100/run_fig13_overlap.sh
+```
+
+The run script sweeps `{overlap, no-overlap} × {bs=1,2,4,8,16}` and
+writes `results/$GPU/fig13/mpk-{overlap,no-overlap}__bs<bs>.json`
+(default `results/H100/fig13/…`). `plot_fig13.py` consumes those
+JSONs and produces `fig13.png` in the same directory, with the
+per-pair speedup annotated above each bar pair (paper reports ~1.1×).
+
+The shared HF cache at `/raid/catalyst/models` already contains
+`Qwen/Qwen3-1.7B` on the cluster used for development; the script
+defaults `HF_HOME` there. Override `HF_HOME` / `HF_ID` on other hosts.
+
+If your shell exports `NVSHMEM_LIB_PATH` (the standard NVSHMEM install
+layout — `~/.bashrc` usually sets it), the script auto-sets
+`LD_PRELOAD` to the matching `libnvshmem_host.so.3`. Without this the
+compiled megakernel can pick up an older `/usr/lib` libnvshmem and
+fail at import with `undefined symbol: nvshmem_selected_device_transport`.
+On hosts without a curated `NVSHMEM_LIB_PATH`, export it manually
+before invoking the script.
+
 ### Output schema
 
 Same as A100 (`results/H100/<system>/<model_tag>__bs<bs>.json` with
-`latency_ms_per_token`).
+`latency_ms_per_token`). Fig. 13 additionally records `mode`,
+`world_size`, and the two MPK env-var states per JSON.
 
 If you don't have an H100 host, see the **Optional: cloud hosting on
 Modal** section in the top-level [`README.md`](../../README.md).

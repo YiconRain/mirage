@@ -12,6 +12,7 @@
 
 #include <algorithm>
 #include <cstdlib>
+#include <iostream>
 #include <numeric>
 #include <queue>
 #include <sstream>
@@ -692,6 +693,54 @@ AnnotatedGraph build_annotated_graph(mirage::kernel::Graph const &kn_graph,
       ag.layers[cons].fork_parent_group = fg_id;
       ag.layers[cons].fork_branch_index = (int)b;
     }
+  }
+
+  // ---------------------------------------------------------------------
+  // Step (k): MPK_DISABLE_AG_OVERLAP override.
+  //
+  // For the Fig. 13 compute–communication overlap ablation: when this env
+  // var is set, force a single event on every edge whose producer or
+  // consumer is the nvshmem_allgather_strided_put task. Collapsing
+  // event_dim to 1 on those edges serializes the producer→allgather and
+  // allgather→consumer boundaries with the rest of computation, disabling
+  // overlap. Runs after steps (g)/(h)/(i) so it survives the GCD and the
+  // fork/join LCM passes.
+  // ---------------------------------------------------------------------
+  if (char const *env = std::getenv("MPK_DISABLE_AG_OVERLAP");
+      env != nullptr && std::string(env) == "1") {
+    int ag_edges_serialized = 0;
+    for (auto &e : ag.edges) {
+      if (e.is_residual_stripped) {
+        continue;
+      }
+      auto const prod_tt = ag.layers[e.prod_layer].task_type;
+      auto const cons_tt = ag.layers[e.cons_layer].task_type;
+      bool is_ag_edge =
+          (prod_tt == mirage::runtime::TASK_NVSHMEM_ALLGATHER_STRIDED_PUT) ||
+          (cons_tt == mirage::runtime::TASK_NVSHMEM_ALLGATHER_STRIDED_PUT);
+      if (!is_ag_edge) {
+        continue;
+      }
+      for (int d = 0; d < (int)mirage::config::MAX_TENSOR_DIMS; d++) {
+        e.event_dim[d] = 1;
+      }
+      auto const *prod_op = ag.layers[e.prod_layer].op;
+      auto const *cons_op = ag.layers[e.cons_layer].op;
+      e.producer_side_view.event_dim = e.event_dim;
+      e.producer_side_view.grid_dim = prod_op->bgraph.grid_dim;
+      e.producer_side_view.axis_map = e.output_map;
+      e.producer_side_view.last3 =
+          derive_last3(e.event_dim, prod_op->bgraph.grid_dim, e.output_map);
+      e.consumer_side_view.event_dim = e.event_dim;
+      e.consumer_side_view.grid_dim = cons_op->bgraph.grid_dim;
+      e.consumer_side_view.axis_map = e.input_map;
+      e.consumer_side_view.last3 =
+          derive_last3(e.event_dim, cons_op->bgraph.grid_dim, e.input_map);
+      ag_edges_serialized++;
+    }
+    std::cerr << "MPK: MPK_DISABLE_AG_OVERLAP=1, serialized "
+              << ag_edges_serialized << " allgather-adjacent edge(s)."
+              << std::endl;
   }
 
   return ag;

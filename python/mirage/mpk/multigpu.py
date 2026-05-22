@@ -235,6 +235,15 @@ def auto_select_allreduce_implementation(
     Returns:
         An AllReduceStrategy instance ready to register tasks
     """
+    # MPK_FORCE_ALLGATHER_REDUCE=1 bypasses the auto-select and uses the
+    # allgather+local-reduction strategy on any architecture. Needed for the
+    # Fig. 13 compute–communication overlap ablation, which requires a
+    # split-phase allreduce on SM>=90 hardware where NvshmemTile would
+    # otherwise be picked.
+    if os.environ.get("MPK_FORCE_ALLGATHER_REDUCE", "0") == "1":
+        print("MPK: MPK_FORCE_ALLGATHER_REDUCE=1, forcing AllgatherReduce strategy.")
+        return AllReduceStrategy_AllgatherReduce()
+
     capabilities = get_collective_capabilities(num_gpus, device_id)
 
     # For SM >= 90, prefer tile-based allreduce if available

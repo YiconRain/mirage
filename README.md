@@ -73,6 +73,121 @@ auto-detects the GPU compute capability, and builds TGX. Takes
 
 ---
 
+## Multi-GPU prerequisites — NVSHMEM + MPI
+
+The multi-GPU experiments (**Fig. 11** cross-system TP comparison and
+**Fig. 13** compute–communication overlap ablation) require NVSHMEM
+and an MPI implementation. The standalone `pip install -e .` workflow
+used by Fig. 9 does **not** pull these in — install them once before
+running the multi-GPU sweeps.
+
+### What MPK looks up
+
+At compile time `mpk.PersistentKernel.compile()` reads four env vars and
+validates the corresponding files exist (see
+[`python/mirage/mpk/persistent_kernel.py:2376-2442`](python/mirage/mpk/persistent_kernel.py#L2376-L2442)):
+
+| Env var             | Validates                                      | Falls back to                  |
+|---------------------|------------------------------------------------|--------------------------------|
+| `NVSHMEM_INC_PATH`  | `$NVSHMEM_INC_PATH/nvshmem.h`                  | `/usr/include/nvshmem_12/`     |
+| `NVSHMEM_LIB_PATH`  | `$NVSHMEM_LIB_PATH/libnvshmem_device.a`        | `/usr/lib/x86_64-linux-gnu/`   |
+| `MPI_INC_PATH`      | `$MPI_INC_PATH/mpi.h`                          | `/usr/include/`                |
+| `MPI_LIB_PATH`      | `$MPI_LIB_PATH/libmpi.so`                      | `/usr/lib/`                    |
+
+The generated `nvcc` command links with `-ccbin=mpic++ -lnvshmem_host
+-lnvshmem_device -lmpi` and bakes `$NVSHMEM_LIB_PATH` and `$MPI_LIB_PATH`
+into `DT_RPATH` (with `--disable-new-dtags`).
+
+### Install NVSHMEM
+
+The compiler needs **both** the host library (`libnvshmem_host.so`) and
+the device library (`libnvshmem_device.a`). The redistributable archive
+from NVIDIA Developer (`libnvshmem-linux-x86_64-<ver>_cuda<cuda>-archive`)
+contains both. Pick the CUDA major matching your toolkit (e.g.
+`cuda13` for CUDA 12.x/13.x, `cuda12` for CUDA 12.x).
+
+```bash
+# 1. Download the prebuilt archive (no sudo needed).
+NVSHMEM_VER=3.6.5
+NVSHMEM_CUDA=cuda13
+mkdir -p $HOME/lib && cd $HOME/lib
+wget -q https://developer.download.nvidia.com/compute/redist/nvshmem/${NVSHMEM_VER}/local_installers/libnvshmem-linux-x86_64-${NVSHMEM_VER}_${NVSHMEM_CUDA}-archive.tar.xz
+tar xJf libnvshmem-linux-x86_64-${NVSHMEM_VER}_${NVSHMEM_CUDA}-archive.tar.xz
+export NVSHMEM_HOME=$HOME/lib/libnvshmem-linux-x86_64-${NVSHMEM_VER}_${NVSHMEM_CUDA}-archive
+
+# 2. Export the env vars MPK reads.
+export NVSHMEM_INC_PATH=$NVSHMEM_HOME/include
+export NVSHMEM_LIB_PATH=$NVSHMEM_HOME/lib
+export NVSHMEM_PREFIX=$NVSHMEM_HOME
+export LD_LIBRARY_PATH=$NVSHMEM_HOME/lib:${LD_LIBRARY_PATH:-}
+
+# 3. Verify.
+ls $NVSHMEM_INC_PATH/nvshmem.h $NVSHMEM_LIB_PATH/libnvshmem_device.a
+```
+
+### Install MPI
+
+Any MPI ≥ 3.1 works. The simplest path is conda-installed Open MPI
+(no root needed); on hosts where MPI is already system-installed
+(`apt install libopenmpi-dev`), point the env vars at the system paths
+instead.
+
+```bash
+# Option A — conda (recommended for non-root hosts; assumes the
+# project conda env, e.g. mirage_2, is active):
+conda install -y -c conda-forge openmpi mpi4py
+export MPI_HOME=$CONDA_PREFIX
+export MPI_INC_PATH=$MPI_HOME/include
+export MPI_LIB_PATH=$MPI_HOME/lib
+
+# Option B — Ubuntu system Open MPI:
+sudo apt install -y libopenmpi-dev openmpi-bin
+export MPI_HOME=/usr
+export MPI_INC_PATH=/usr/include/openmpi
+export MPI_LIB_PATH=/usr/lib/x86_64-linux-gnu/openmpi/lib
+
+# Verify mpic++ is on PATH and resolves to the same install.
+which mpic++ mpirun
+ls $MPI_INC_PATH/mpi.h $MPI_LIB_PATH/libmpi.so
+```
+
+The Python multi-GPU launch path uses `mpi4py`; the conda command
+above pulls it in. With Option B, also run `pip install mpi4py`.
+
+### Persist the env vars
+
+Add the exports to `~/.bashrc` (or a project setup script) so every
+shell that runs the AE scripts inherits them:
+
+```bash
+cat >> ~/.bashrc <<'EOF'
+# MPK multi-GPU build deps
+export NVSHMEM_HOME=$HOME/lib/libnvshmem-linux-x86_64-3.6.5_cuda13-archive
+export NVSHMEM_INC_PATH=$NVSHMEM_HOME/include
+export NVSHMEM_LIB_PATH=$NVSHMEM_HOME/lib
+export NVSHMEM_PREFIX=$NVSHMEM_HOME
+export LD_LIBRARY_PATH=$NVSHMEM_HOME/lib:$LD_LIBRARY_PATH
+export MPI_HOME=$CONDA_PREFIX                  # adjust if not using conda
+export MPI_INC_PATH=$MPI_HOME/include
+export MPI_LIB_PATH=$MPI_HOME/lib
+EOF
+```
+
+Once `NVSHMEM_LIB_PATH` is set, `run_fig13_overlap.sh` /
+`run_fig11_multigpu.sh` automatically prepend the matching
+`libnvshmem_host.so.3` to `LD_PRELOAD` — this avoids picking up an
+older `/usr/lib` NVSHMEM at runtime (the well-known
+`undefined symbol: nvshmem_selected_device_transport` import error).
+
+### Rebuild MPK if any of these change
+
+You do not need to rebuild the C++ runtime library after installing or
+upgrading NVSHMEM / MPI — each kernel cell re-emits its `nvcc`
+command with the currently-set paths. Only edits under `src/` require
+`pip install -e . --no-deps -v`.
+
+---
+
 ## Optional: cloud hosting on Modal
 
 If you don't have a GPU host, contact the authors — we can provide
