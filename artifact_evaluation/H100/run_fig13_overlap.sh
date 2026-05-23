@@ -75,6 +75,7 @@ MPIRUN_ENVS=(
     -x MPI_INC_PATH -x MPI_LIB_PATH -x NVSHMEM_INC_PATH -x NVSHMEM_LIB_PATH
     -x HF_HOME
     -x MPK_FORCE_ALLGATHER_REDUCE -x MPK_DISABLE_AG_OVERLAP
+    -x NCCL_NVLS_ENABLE       # Modal H100: NVLS transport OOMs at >30 nvshmem teams
 )
 
 parse_latency_ms() {
@@ -90,15 +91,25 @@ run_cell() {
     local log="$OUTPUT_ROOT/${tag}__bs${bs}.log"
     local json="$OUTPUT_ROOT/${tag}__bs${bs}.json"
 
-    # Both modes force AllgatherReduce so the comparison is apples-to-apples.
-    export MPK_FORCE_ALLGATHER_REDUCE=1
+    # overlap mode = MPK's default auto-selected allreduce (NvshmemTile on
+    # SM>=90 when VMM/multicast/peer-access are supported, with built-in
+    # compute-comm overlap). no-overlap mode = force AllgatherReduce and
+    # then collapse the allgather event edges so the allgather phase is
+    # serialized with the rest of the megakernel.
     if [[ "$mode" == "no-overlap" ]]; then
+        export MPK_FORCE_ALLGATHER_REDUCE=1
         export MPK_DISABLE_AG_OVERLAP=1
     else
+        unset MPK_FORCE_ALLGATHER_REDUCE
         unset MPK_DISABLE_AG_OVERLAP
     fi
 
-    echo "===== Fig.13  ${tag}  bs=${bs}  world=${WORLD_SIZE}  =====" | tee "$log"
+    # Per-bs MPK megakernel batched-token budget (matches the wider AE sweep
+    # convention: max(8, bs) — 8 for bs<=8, bs itself when bs>8).
+    local mbt
+    if (( bs > 8 )); then mbt="$bs"; else mbt=8; fi
+
+    echo "===== Fig.13  ${tag}  bs=${bs}  world=${WORLD_SIZE}  mbt=${mbt}  =====" | tee "$log"
     echo "  MPK_FORCE_ALLGATHER_REDUCE=${MPK_FORCE_ALLGATHER_REDUCE}" | tee -a "$log"
     echo "  MPK_DISABLE_AG_OVERLAP=${MPK_DISABLE_AG_OVERLAP:-<unset>}" | tee -a "$log"
 
@@ -107,6 +118,7 @@ run_cell() {
         "${MPIRUN_ENVS[@]}" \
         python "$SCRIPT" \
         --use-mirage \
+        --max-num-batched-tokens "$mbt" \
         --model "$HF_ID" \
         --max-num-batched-requests "$bs" \
         --max-seq-length "$MAX_SEQ_LEN" \
@@ -141,7 +153,7 @@ print(json.dumps({
     "prompt_len": $PROMPT_LEN,
     "gen_len": $GEN_LEN,
     "max_seq_length": $MAX_SEQ_LEN,
-    "mpk_force_allgather_reduce": True,
+    "mpk_force_allgather_reduce": $( [[ "$mode" == "no-overlap" ]] && echo True || echo False ),
     "mpk_disable_ag_overlap": $( [[ "$mode" == "no-overlap" ]] && echo True || echo False ),
     "latency_ms_per_token": $lat,
 }, indent=2))

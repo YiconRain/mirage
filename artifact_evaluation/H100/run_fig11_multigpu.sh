@@ -66,8 +66,12 @@ OUTPUT_LEN="${OUTPUT_LEN:-$GEN_LEN}"
 
 SYSTEMS="${SYSTEMS:-pytorch vllm sglang mpk}"
 
-VLLM_VENV="${VLLM_VENV:-$HOME/vllm-venv}"
-SGLANG_VENV="${SGLANG_VENV:-$HOME/sglang-venv}"
+# Baseline venv paths. Defaults match the existing AE convention used by
+# run_vllm.sh / run_sglang.sh (separate venvs at /opt/{vllm,sglang}-venv).
+# Set BASELINES_VENV to a single shared venv (e.g. setup.sh --with-baselines
+# produces /opt/baselines-venv) to point both vllm and sglang there.
+VLLM_VENV="${VLLM_VENV:-${BASELINES_VENV:-/opt/vllm-venv}}"
+SGLANG_VENV="${SGLANG_VENV:-${BASELINES_VENV:-/opt/sglang-venv}}"
 
 # Path to the mirage_2 conda env's python and mpirun. We capture them
 # now (before activating baseline venvs) so we can switch back.
@@ -108,11 +112,22 @@ parse_sglang_total_s() {
 
 # Convert various latency forms to the canonical latency_ms_per_token.
 # Args: $1 = system, $2 = log path, $3 = batch_size
+#
+# Note on metrics: vllm/sglang report total_time / (bs * (input+output)),
+# i.e., per-batched-token. demo.py reports total_time / max_seq_length,
+# i.e., per-iteration (advancing one position for every request in
+# lockstep). At bs=1 they agree; at bs>1 demo.py is bs× inflated. We
+# divide by bs to put pytorch/mpk on the same per-batched-token axis as
+# the vllm/sglang baselines.
 to_ms_per_token() {
     local system="$1" log="$2" bs="$3"
     case "$system" in
         pytorch|mpk)
-            parse_demo_latency_ms "$log"
+            local raw_ms
+            raw_ms=$(parse_demo_latency_ms "$log") || true
+            if [[ -n "$raw_ms" ]]; then
+                python3 -c "print($raw_ms / $bs)"
+            fi
             ;;
         vllm)
             local avg_s
@@ -160,7 +175,11 @@ run_cell() {
     local log="$OUTPUT_ROOT/${tag}__bs${bs}.log"
     local json="$OUTPUT_ROOT/${tag}__bs${bs}.json"
 
-    echo "===== Fig.11  ${system}  tp=${tp}  bs=${bs}  =====" | tee "$log"
+    # MPK megakernel batched-token budget per cell: max(8, bs).
+    local mbt
+    if (( bs > 8 )); then mbt="$bs"; else mbt=8; fi
+
+    echo "===== Fig.11  ${system}  tp=${tp}  bs=${bs}  mbt=${mbt}  =====" | tee "$log"
 
     case "$system" in
         pytorch)
@@ -186,10 +205,12 @@ run_cell() {
                 -x CUDA_VISIBLE_DEVICES -x LD_LIBRARY_PATH -x LD_PRELOAD -x PATH \
                 -x MPI_INC_PATH -x MPI_LIB_PATH \
                 -x NVSHMEM_INC_PATH -x NVSHMEM_LIB_PATH -x HF_HOME \
+                -x MPK_FORCE_ALLGATHER_REDUCE \
                 "$MPK_PYTHON" "$SCRIPT" \
                 --use-mirage \
                 --model "$HF_ID" \
                 --max-num-batched-requests "$bs" \
+                --max-num-batched-tokens "$mbt" \
                 --max-seq-length "$MAX_SEQ_LEN" \
                 --ignore-eos \
                 2>&1 | tee -a "$log"

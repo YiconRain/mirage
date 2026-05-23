@@ -102,23 +102,36 @@ def main() -> int:
                    color=SYSTEM_COLOR[s],
                    edgecolor="black", linewidth=0.4)
 
-        # Speedup of MPK over the next-best non-MPK system (the one with
-        # the highest relative perf among {pytorch, vllm, sglang}).
+        # Annotate each batch group with the MPK-vs-best-other ratio.
+        # Paper convention: "Nx" = MPK speedup over best other system.
+        # When MPK is faster, value > 1 (matches paper). When MPK is
+        # slower on this hardware (e.g., B200 vs vLLM 0.21), value < 1.
+        max_h = 1.0
+        annot_positions = []
         for i, bs in enumerate(bss):
             others = [per_system[s][i] for s in SYSTEM_ORDER if s != "mpk"]
             others = [v for v in others if v == v]  # drop NaN
             if not others:
+                annot_positions.append(None)
                 continue
             best_other = max(others)
+            max_h = max(max_h, best_other)
             speedup = 1.0 / best_other if best_other > 0 else float("nan")
-            ax.text(x[i], 1.05, f"{speedup:.1f}x",
+            annot_positions.append((best_other, speedup))
+
+        # Cap visible y-axis at the largest bar in the subplot, +20% padding.
+        ax.set_ylim(0, max_h * 1.20)
+        for i, ap in enumerate(annot_positions):
+            if ap is None:
+                continue
+            best_other, speedup = ap
+            ax.text(x[i], best_other + max_h * 0.03, f"{speedup:.2f}x",
                     ha="center", va="bottom",
                     color=SYSTEM_COLOR["mpk"], fontsize=10, fontweight="bold")
 
         ax.set_xticks(x)
         ax.set_xticklabels([f"BS={b}" for b in bss], fontsize=9)
         ax.set_xlabel(f"{tp} GPUs", fontsize=11)
-        ax.set_ylim(0, 1.25)
         ax.grid(axis="y", alpha=0.3, linestyle="--", linewidth=0.5)
 
     axes[0].set_ylabel("Relative Performance", fontsize=11)

@@ -7,6 +7,7 @@
 
 #ifdef USE_NVSHMEM
 #include "tasks/ampere/allreduce.cuh"
+#include "tasks/hopper/allreduce.cuh"
 #endif // USE_NVSHMEM
 
 // Hopper task impls

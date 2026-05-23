@@ -18,30 +18,37 @@ runnable on other architectures — set `GPU=<tag>` to retag the JSONs
 
 ## TL;DR — running Fig. 11 + Fig. 13
 
+Reviewer one-shot (assumes a fresh H100x8 host, e.g., Lambda / Modal):
+
 ```bash
-# 1. Activate the project conda env (used by pytorch + mpk).
+# 1. Bootstrap repo + MPI + vLLM + SGLang. Takes ~10 min the first time.
+curl -sSL https://raw.githubusercontent.com/mirage-project/mirage/tgx-osdi26-ae/artifact_evaluation/setup.sh \
+    | bash -s -- --with-baselines
+
+# 2. Activate the project conda env, install NVSHMEM, and export the env vars
+#    MPK reads at megakernel-compile time. See the top-level
+#    `README.md` §"Multi-GPU prerequisites — NVSHMEM + MPI" for the exact
+#    NVSHMEM_HOME / NVSHMEM_INC_PATH / NVSHMEM_LIB_PATH / MPI_* exports.
 conda activate mirage_2
+export NVSHMEM_HOME=$HOME/lib/libnvshmem-linux-x86_64-3.6.5_cuda12-archive   # adjust
+export NVSHMEM_INC_PATH=$NVSHMEM_HOME/include
+export NVSHMEM_LIB_PATH=$NVSHMEM_HOME/lib
+export LD_LIBRARY_PATH=$NVSHMEM_HOME/lib:$LD_LIBRARY_PATH
+export MPI_HOME=/usr  MPI_INC_PATH=/usr/include/x86_64-linux-gnu/openmpi  MPI_LIB_PATH=/usr/lib/x86_64-linux-gnu/openmpi/lib
+export BASELINES_VENV=/opt/baselines-venv   # setup.sh --with-baselines drops both vllm + sglang here
+export NCCL_NVLS_ENABLE=0                   # virtualized H100s (Modal): avoids NVLS OOM at TP=4
 
-# 2. One-time: install the two baseline venvs (vllm, sglang).
-#    Skip this if $HOME/{vllm,sglang}-venv already exist.
-rm -rf $HOME/vllm-venv && python3 -m venv $HOME/vllm-venv \
-  && source $HOME/vllm-venv/bin/activate \
-  && pip install --upgrade pip && pip install vllm && deactivate
-rm -rf $HOME/sglang-venv && python3 -m venv $HOME/sglang-venv \
-  && source $HOME/sglang-venv/bin/activate \
-  && pip install --upgrade pip && pip install 'sglang[all]' && deactivate
+# 3. Run. Each script auto-plots at the end.
+export CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7
+bash artifact_evaluation/H100/run_fig13_overlap.sh    # ~30 min: TP=4, BS=1..16, 2 modes
+bash artifact_evaluation/H100/run_fig11_multigpu.sh   # ~90 min: TP=2/4/8, BS=1..16, 4 systems
+```
 
-# 3. Pick GPUs and run. Each script auto-generates a .png at the end.
-#    Fig. 13 needs 4 idle GPUs (TP=4). Fig. 11 sweeps TP=2,4,8 by default;
-#    cells whose TP exceeds available GPUs fail gracefully (|| true).
-export CUDA_VISIBLE_DEVICES=0,1,2,3   # adjust to your free GPUs
+Outputs:
 
-bash artifact_evaluation/H100/run_fig13_overlap.sh
-bash artifact_evaluation/H100/run_fig11_multigpu.sh
-
-# Outputs:
-#   results/H100/fig13/fig13.png  (overlap vs no-overlap, BS=1..16)
-#   results/H100/fig11/fig11.png  (pytorch/vllm/sglang/mpk, TP=2,4,8)
+```
+results/H100/fig13/fig13.png  # overlap (NvshmemTile) vs no-overlap, BS=1..16, ~1.07–1.17x
+results/H100/fig11/fig11.png  # pytorch/vllm/sglang/mpk relative perf, TP=2,4,8 subplots
 ```
 
 Override TP if fewer GPUs are free:
@@ -51,7 +58,7 @@ WORLD_SIZE=2 bash artifact_evaluation/H100/run_fig13_overlap.sh
 TP_SIZES=2  bash artifact_evaluation/H100/run_fig11_multigpu.sh
 ```
 
-Reproduce on B200 (or any other host) by retagging:
+Reproduce on a different GPU type by retagging the JSONs:
 
 ```bash
 GPU=B200 bash artifact_evaluation/H100/run_fig13_overlap.sh
@@ -179,27 +186,40 @@ Per-system invocation:
   PyTorch curve is effectively single-request across the BS sweep
   (matches Fig 9 PyTorch behavior).
 - **vllm**: `vllm bench latency --tensor-parallel-size $TP …` from
-  `$VLLM_VENV` (default `$HOME/vllm-venv`). vLLM manages its own
-  worker procs; no mpirun.
+  `$VLLM_VENV` (default `/opt/vllm-venv`, or `$BASELINES_VENV` if set).
+  vLLM manages its own worker procs; no mpirun.
 - **sglang**: `python -m sglang.bench_one_batch --tensor-parallel-size
-  $TP …` from `$SGLANG_VENV` (default `$HOME/sglang-venv`).
+  $TP …` from `$SGLANG_VENV` (default `/opt/sglang-venv`, or
+  `$BASELINES_VENV` if set).
 - **mpk**: `mpirun -np $TP python demo/qwen3/demo.py --use-mirage …`
   from the mirage_2 conda env.
 
-One-time baseline venv setup (same as the existing Fig. 9 vllm/sglang
-venvs but installed under `$HOME` to allow non-root hosts):
+**One-time baseline venv setup.** Run `setup.sh --with-baselines` to
+install both vLLM and SGLang into `/opt/baselines-venv`, then point
+the Fig 11 script at that shared venv via `BASELINES_VENV`:
 
 ```bash
-rm -rf $HOME/vllm-venv && python3 -m venv $HOME/vllm-venv
-source $HOME/vllm-venv/bin/activate && pip install --upgrade pip && pip install vllm
-deactivate
-
-rm -rf $HOME/sglang-venv && python3 -m venv $HOME/sglang-venv
-source $HOME/sglang-venv/bin/activate && pip install --upgrade pip && pip install 'sglang[all]'
-deactivate
+bash artifact_evaluation/setup.sh --with-baselines
+export BASELINES_VENV=/opt/baselines-venv
 ```
 
-Override `VLLM_VENV` / `SGLANG_VENV` to point elsewhere.
+The shared venv works for vLLM versions that don't require the older
+`flash_attn.ops` API (latest releases). If you hit
+`ModuleNotFoundError: No module named 'flash_attn.ops'` from vLLM,
+install vLLM into its own venv at `/opt/vllm-venv` (or `$HOME/vllm-venv`)
+to keep its `flash_attn` lineage clean.
+
+**MPK batched-token policy.** The run scripts auto-set
+`--max-num-batched-tokens = max(8, bs)` per cell (8 for bs ≤ 8, bs
+itself when bs > 8) to match the wider AE sweep convention. This is
+baked into both `run_fig11_multigpu.sh` and `run_fig13_overlap.sh`;
+no manual flag needed.
+
+**Cloud / virtualized hosts (Modal, etc.).** NCCL's NVLink-SHARP (NVLS)
+transport can OOM during NVSHMEM team allocation on virtualized H100s
+(seen at TP=4 with ~32 NVSHMEM teams). Set
+`export NCCL_NVLS_ENABLE=0` before running the scripts; both already
+forward this env var to all MPI ranks via `mpirun -x`.
 
 Run the sweep:
 
