@@ -3,14 +3,14 @@
 #
 # The paper plots MoE-block runtime (in μs) for three configurations:
 #   - SGLang-MoE       : SGLang's MoE implementation
-#   - MPK-Static-MoE   : MPK with static per-expert SM assignment (ablation
+#   - TGX-Static-MoE   : TGX with static per-expert SM assignment (ablation
 #                        baseline, NOT exposed in this AE branch — used for
 #                        internal justification of the hybrid balancer)
-#   - MPK-Hybrid-MoE   : MPK with the hybrid workload balancer + fused
+#   - TGX-Hybrid-MoE   : TGX with the hybrid workload balancer + fused
 #                        gather-GEMM (the production setting; what this
 #                        artifact reproduces)
 #
-# This script runs the MPK-Hybrid-MoE configuration (TGX) and emits
+# This script runs the TGX-Hybrid-MoE configuration (TGX) and emits
 # per-token end-to-end latency across batch sizes 1..16. Qwen3-30B-A3B is
 # dominated by its MoE blocks, so the per-token latency tracks MoE-only
 # runtime closely. For the per-MoE-block μs numbers in the paper, run an
@@ -18,7 +18,7 @@
 # §"Fig. 10".
 #
 # The SGLang-MoE bar is produced by `run_sglang.sh MODELS=qwen3-30b-a3b`.
-# Compare the two outputs to reproduce Fig. 10's MPK-Hybrid vs SGLang
+# Compare the two outputs to reproduce Fig. 10's TGX-Hybrid vs SGLang
 # comparison.
 #
 # Note: the demo's MAX_TOKENS = 1 attention quirk that previously required

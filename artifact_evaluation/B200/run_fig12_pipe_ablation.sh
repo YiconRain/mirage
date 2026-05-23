@@ -4,10 +4,10 @@
 # The paper plots the runtime of the final lm_head linear layer in Qwen3-8B
 # with three settings:
 #   - CUBLAS         : cuBLAS baseline (PyTorch / vanilla)
-#   - MPK-No-Pipe    : MPK, lm_head split into too many tasks for the
+#   - TGX-No-Pipe    : TGX, lm_head split into too many tasks for the
 #                      cross-task pipeliner to engage
 #                      (vocab_size // 256 = 153600 // 256 = 600 tasks)
-#   - MPK-Pipe       : MPK, lm_head split into 128 tasks so the pipeliner
+#   - TGX-Pipe       : TGX, lm_head split into 128 tasks so the pipeliner
 #                      can overlap the next layer's pre-load with the
 #                      current layer's compute (the default for production)
 #
@@ -53,7 +53,7 @@ parse_latency_ms() {
 run_cell() {
     local mode="$1"
     local bs="$2"
-    local tag="mpk-${mode}"
+    local tag="tgx-${mode}"
     local log="$OUTPUT_ROOT/${tag}__bs${bs}.log"
     local json="$OUTPUT_ROOT/${tag}__bs${bs}.json"
 
