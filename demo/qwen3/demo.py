@@ -843,7 +843,7 @@ if __name__ == "__main__":
                 (ttft_ms + run_time) / max(num_decode_tokens, 1)
             )
         )
-        print("TTFT (time to first token): {:.3f} ms".format(ttft_ms))
+        print("TTFT (time to [flag] first token): {:.3f} ms".format(ttft_ms))
         print("TBT (time between tokens, decode only): {:.3f} ms".format(tbt_ms))
 
         # -------- CI dumps outputs to json files ----------
