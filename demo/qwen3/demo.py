@@ -296,7 +296,7 @@ if __name__ == "__main__":
 
         if args.profiling:
             profiler_tensor = torch.zeros(
-                3000 * 128, dtype=torch.uint64, device="cuda"
+                30000 * 128, dtype=torch.uint64, device="cuda"
             ).contiguous()
         else:
             profiler_tensor = None
@@ -893,7 +893,6 @@ if __name__ == "__main__":
             profiler_host = profiler_tensor.cpu()
             num_blocks, num_groups = profiler_host[:1].view(dtype=torch.int32)
             num_blocks, num_groups = int(num_blocks), int(num_groups)
-            # Collect end-timestamps of ARGMAX_REDUCE events grouped by event_no (iteration)
             argmax_end_times = {}
             for i in range(1, len(profiler_host)):
                 if profiler_host[i] == 0:
@@ -903,7 +902,6 @@ if __name__ == "__main__":
                 event_no, block_idx, group_idx, event_idx, event_type = decode_tag(tag, num_blocks, num_groups)
                 if event_idx in ARGMAX_REDUCE_IDS and event_type == 1:
                     argmax_end_times.setdefault(event_no, []).append(timestamp)
-            # Find global start (earliest begin event)
             global_start = None
             for i in range(1, len(profiler_host)):
                 if profiler_host[i] == 0:
@@ -917,7 +915,6 @@ if __name__ == "__main__":
                     break
             if argmax_end_times and global_start is not None:
                 sorted_iters = sorted(argmax_end_times.keys())
-                # GPU clock is in nanoseconds on most NVIDIA GPUs
                 first_argmax_end = max(argmax_end_times[sorted_iters[0]])
                 ttft_ns = first_argmax_end - global_start
                 ttft_ms = ttft_ns / 1e6
@@ -926,9 +923,11 @@ if __name__ == "__main__":
                     last_end = max(argmax_end_times[sorted_iters[-1]])
                     tbt_ns = (last_end - second_end) / max(len(sorted_iters) - 2, 1)
                     tbt_ms = tbt_ns / 1e6
+                elif ttft_ms is not None and decode_steps > 1:
+                    tbt_ms = (run_time - ttft_ms) / (decode_steps - 1)
                 print("TTFT (time to first token, from profiler): {:.3f} ms".format(ttft_ms))
                 if tbt_ms is not None:
-                    print("TBT (time between tokens, decode only, from profiler): {:.3f} ms".format(tbt_ms))
+                    print("TBT (time between tokens, decode only): {:.3f} ms".format(tbt_ms))
             else:
                 print("(Could not extract TTFT/TBT from profiler data)")
         else:
