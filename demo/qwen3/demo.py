@@ -271,6 +271,12 @@ if __name__ == "__main__":
     if args.use_mirage:
         import mirage as mi
 
+        if args.max_new_tokens is not None:
+            effective_max_seq = min(args.max_seq_length, prompt_lengths[0].item() + args.max_new_tokens)
+        else:
+            effective_max_seq = args.max_seq_length
+        tokens = tokens[:, :effective_max_seq].contiguous()
+
         hidden_size = model.config.hidden_size
         intermediate_size = model.config.intermediate_size
         # pad vocab_size to facilitate task graph creation
@@ -292,11 +298,13 @@ if __name__ == "__main__":
         head_dim = model.config.head_dim
         fused_outdim_1 = (num_q_heads + 2 * num_kv_heads) * head_dim
         fused_outdim_2 = 2 * intermediate_size
-        num_kv_cache_chunks = max(1, args.max_seq_length // 256)
+        num_kv_cache_chunks = max(1, effective_max_seq // 256)
 
         if args.profiling:
+            decode_iters = effective_max_seq - prompt_lengths[0].item() + 1
+            profiler_buf_size = decode_iters * 250 * 128
             profiler_tensor = torch.zeros(
-                30000 * 128, dtype=torch.uint64, device="cuda"
+                profiler_buf_size, dtype=torch.uint64, device="cuda"
             ).contiguous()
         else:
             profiler_tensor = None
@@ -323,7 +331,7 @@ if __name__ == "__main__":
             num_workers=num_workers,
             num_local_schedulers=num_schedulers,
             num_remote_schedulers=0,
-            max_seq_length=args.max_seq_length,
+            max_seq_length=effective_max_seq,
             max_num_batched_requests=args.max_num_batched_requests,
             max_num_batched_tokens=args.max_num_batched_tokens,
             max_num_pages=args.max_num_pages,
