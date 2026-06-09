@@ -9,6 +9,14 @@ reproduced, (3) how to reproduce each figure, (4) prerequisites, and
 (5) optional cloud hosting.
 
 ---
+## Commands
+```bash
+git clone --recursive --branch main git@github.com:YiconRain/mirage.git
+cd mirage
+pip install -e . -v
+export MIRAGE_HOME=$(pwd)
+```
+
 
 ## Paper
 
