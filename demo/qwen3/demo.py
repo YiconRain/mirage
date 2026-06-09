@@ -781,11 +781,21 @@ if __name__ == "__main__":
     if not args.use_mirage:
         prompt_len = prompt_lengths[0].item()
         decode_limit = prompt_len + output_len
+        ttft_event_start = torch.cuda.Event(enable_timing=True)
+        ttft_event_end = torch.cuda.Event(enable_timing=True)
+        ttft_ms = 0.0
+        cur_pos = prompt_len
         for cur_pos in range(prompt_len, decode_limit):
             step.fill_(cur_pos - 1)
             input_ids = tokens[:, prev_pos:cur_pos]
             cos_embeddings = position_embeddings[0][:, prev_pos:cur_pos]
             sin_embeddings = position_embeddings[1][:, prev_pos:cur_pos]
+            if cur_pos == prompt_len:
+                torch.cuda.synchronize()
+                ttft_event_start.record()
+            elif cur_pos == prompt_len + warmup + 1:
+                torch.cuda.synchronize()
+                starter.record()
             logits = model.forward(
                 input_ids=input_ids,
                 position_embeddings=(cos_embeddings, sin_embeddings),
@@ -796,27 +806,38 @@ if __name__ == "__main__":
             next_token = next_token[0, -1]
             tokens[0, cur_pos] = next_token
             prev_pos = cur_pos
+            if cur_pos == prompt_len:
+                ttft_event_end.record()
+                torch.cuda.synchronize()
+                ttft_ms = ttft_event_start.elapsed_time(ttft_event_end)
             if next_token == model.config.eos_token_id:
                 break
-            if cur_pos == prompt_len + warmup:
-                torch.cuda.synchronize()
-                starter.record()
 
         ender.record()
         torch.cuda.synchronize()
-        run_time = starter.elapsed_time(ender)
 
         end_idx = prev_pos + 1
         generated_ids = tokens[:, :end_idx]
+        num_decode_tokens = cur_pos - prompt_len
+
+        if num_decode_tokens > warmup + 1:
+            run_time = starter.elapsed_time(ender)
+            tbt_ms = run_time / (num_decode_tokens - warmup - 1)
+        else:
+            run_time = 0.0
+            tbt_ms = 0.0
 
         response = tokenizer.batch_decode(generated_ids, skip_special_tokens=True)[0]
         print(response)
         print(
-            "Prompt length {}, generate length {}, per-token latency {} ms".format(
-                prompt_len, cur_pos - prompt_len, run_time / (cur_pos - prompt_len)
+            "Prompt length {}, generate length {}, per-token latency {:.3f} ms".format(
+                prompt_len, num_decode_tokens,
+                (ttft_ms + run_time) / max(num_decode_tokens, 1)
             )
         )
-        
+        print("TTFT (time to first token): {:.3f} ms".format(ttft_ms))
+        print("TBT (time between tokens, decode only): {:.3f} ms".format(tbt_ms))
+
         # -------- CI dumps outputs to json files ----------
         if save_path and rank == 0:
             tokens_generated = max(0, end_idx - prompt_len)
@@ -827,6 +848,8 @@ if __name__ == "__main__":
                 "token_ids": token_ids,
                 "text": tokenizer.decode(tokens[0, :end_idx], skip_special_tokens=True),
                 "latency_ms_per_token": per_tok_ms,
+                "ttft_ms": ttft_ms,
+                "tbt_ms": tbt_ms,
                 "prompt_length": prompt_len,
                 "generate_length": tokens_generated,
                 "mode": "torch",
@@ -847,21 +870,74 @@ if __name__ == "__main__":
             generated_ids = tokens[r, : step[r] + 1]
             response = tokenizer.decode(generated_ids, skip_special_tokens=True)
             print(response)
-        
+
         if total_num_requests > 1:
             print(f"Output length of each batch is same: {(step.max() == step.min()).item()}")
 
+        total_steps = step.max().item() + 1
+        prompt_len = prompt_lengths[0].item()
+        decode_steps = total_steps - prompt_len
+        per_tok_ms = run_time / max(total_steps, 1)
+
         print("Prompt length {}, generate length {}, per-token latency (both prefill and decode): {:.3f} ms".format(
-              prompt_lengths[0], step.max().item() + 1 - prompt_lengths[0], run_time / (step.max().item() + 1)
+              prompt_len, decode_steps, per_tok_ms
             )
         )
+
+        # Extract TTFT and TBT from profiler buffer if --profiling is enabled
+        ttft_ms = None
+        tbt_ms = None
+        if profiler_tensor is not None:
+            from mirage.mpk.profiler_persistent import decode_tag
+            ARGMAX_REDUCE_IDS = {111, 258}
+            profiler_host = profiler_tensor.cpu()
+            num_blocks, num_groups = profiler_host[:1].view(dtype=torch.int32)
+            num_blocks, num_groups = int(num_blocks), int(num_groups)
+            # Collect end-timestamps of ARGMAX_REDUCE events grouped by event_no (iteration)
+            argmax_end_times = {}
+            for i in range(1, len(profiler_host)):
+                if profiler_host[i] == 0:
+                    continue
+                tag, timestamp = profiler_host[i : i + 1].view(dtype=torch.uint32)
+                tag, timestamp = int(tag), int(timestamp)
+                event_no, block_idx, group_idx, event_idx, event_type = decode_tag(tag, num_blocks, num_groups)
+                if event_idx in ARGMAX_REDUCE_IDS and event_type == 1:
+                    argmax_end_times.setdefault(event_no, []).append(timestamp)
+            # Find global start (earliest begin event)
+            global_start = None
+            for i in range(1, len(profiler_host)):
+                if profiler_host[i] == 0:
+                    continue
+                tag, timestamp = profiler_host[i : i + 1].view(dtype=torch.uint32)
+                tag, timestamp = int(tag), int(timestamp)
+                _, _, _, _, event_type = decode_tag(tag, num_blocks, num_groups)
+                if event_type == 0:
+                    if global_start is None or timestamp < global_start:
+                        global_start = timestamp
+                    break
+            if argmax_end_times and global_start is not None:
+                sorted_iters = sorted(argmax_end_times.keys())
+                # GPU clock is in nanoseconds on most NVIDIA GPUs
+                first_argmax_end = max(argmax_end_times[sorted_iters[0]])
+                ttft_ns = first_argmax_end - global_start
+                ttft_ms = ttft_ns / 1e6
+                if len(sorted_iters) >= 3:
+                    second_end = max(argmax_end_times[sorted_iters[1]])
+                    last_end = max(argmax_end_times[sorted_iters[-1]])
+                    tbt_ns = (last_end - second_end) / max(len(sorted_iters) - 2, 1)
+                    tbt_ms = tbt_ns / 1e6
+                print("TTFT (time to first token, from profiler): {:.3f} ms".format(ttft_ms))
+                if tbt_ms is not None:
+                    print("TBT (time between tokens, decode only, from profiler): {:.3f} ms".format(tbt_ms))
+            else:
+                print("(Could not extract TTFT/TBT from profiler data)")
+        else:
+            print("(TTFT/TBT not available without --profiling; only total per-token latency reported)")
 
         # -------- CI dumps outputs to json files ----------
         if save_path and rank == 0:
             end_idx = step[0].item() + 1
-            prompt_len = prompt_lengths[0].item()
             tokens_generated = max(0, end_idx - prompt_len)
-            per_tok_ms = run_time / max(tokens_generated, 1)
             slice_end = min(end_idx, prompt_len + MAX_SAVE_TOKENS)
             token_ids = tokens[0, prompt_len:slice_end].tolist()
             response_text = tokenizer.decode(tokens[0, :end_idx], skip_special_tokens=True)
@@ -869,6 +945,8 @@ if __name__ == "__main__":
                 "token_ids": token_ids,
                 "text": response_text,
                 "latency_ms_per_token": per_tok_ms,
+                "ttft_ms": ttft_ms,
+                "tbt_ms": tbt_ms,
                 "prompt_length": prompt_len,
                 "generate_length": tokens_generated,
                 "mode": "mpk",
