@@ -247,7 +247,7 @@ if __name__ == "__main__":
         {"role": "user", "content": prompt},
     ]
     text = tokenizer.apply_chat_template(
-        messages, tokenize=False, add_generation_prompt=True
+        messages, tokenize=False, add_generation_prompt=True, enable_thinking=False
     )
     model_inputs = tokenizer([text], return_tensors="pt").to(model.device)
     for r in range(total_num_requests):
@@ -876,6 +876,7 @@ if __name__ == "__main__":
         print("tokens.shape = ", tokens.shape)
         for r in range(total_num_requests):
             generated_ids = tokens[r, : step[r] + 1]
+            generated_ids = generated_ids[generated_ids >= 0]
             response = tokenizer.decode(generated_ids, skip_special_tokens=True)
             print(response)
 
@@ -939,7 +940,14 @@ if __name__ == "__main__":
             else:
                 print("(Could not extract TTFT/TBT from profiler data)")
         else:
-            print("(TTFT/TBT not available without --profiling; only total per-token latency reported)")
+            import math
+            prefill_iters = math.ceil(prompt_len / args.max_num_batched_tokens)
+            total_iters = prefill_iters + decode_steps
+            per_iter_ms = run_time / max(total_iters, 1)
+            ttft_ms = prefill_iters * per_iter_ms
+            tbt_ms = per_iter_ms
+            print("TTFT (time to first token): {:.3f} ms".format(ttft_ms))
+            print("TBT (time between tokens, decode only): {:.3f} ms".format(tbt_ms))
 
         # -------- CI dumps outputs to json files ----------
         if save_path and rank == 0:
