@@ -159,11 +159,13 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    # Auto-adjust max_seq_length when --prompt-length requires more space
+    # Auto-adjust max_seq_length and page_size when --prompt-length requires more space
     if args.prompt_length is not None:
         required_seq_len = args.prompt_length + args.max_new_tokens
         if args.max_seq_length < required_seq_len:
             args.max_seq_length = required_seq_len
+        if args.page_size < required_seq_len:
+            args.page_size = required_seq_len
 
     try:
         from mpi4py import MPI
