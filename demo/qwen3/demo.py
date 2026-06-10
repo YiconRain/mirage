@@ -118,7 +118,7 @@ if __name__ == "__main__":
     parser.add_argument("--ignore-eos", action="store_true", help="Ignore eos token during generation")
 
     # -------- Args for CI tests ----------
-    parser.add_argument("--max-new-tokens", type=int, default=None, help="Decode cap for CI determinism")
+    parser.add_argument("--max-new-tokens", type=int, default=128, help="Decode cap (default 128)")
     parser.add_argument("--temperature", type=float, default=0.0)
     parser.add_argument("--top_p", type=float, default=1.0)
     parser.add_argument("--do-sample", dest="do_sample", action="store_true", help="Enable sampling (default off)")
@@ -137,6 +137,12 @@ if __name__ == "__main__":
         default="Give me a short introduction to large language model.",
         help="Custom prompt text to generate from.",
     )
+    parser.add_argument("--prompt-length",
+        type=int,
+        default=None,
+        choices=[16, 39, 64, 256, 1024, 4096, 8192],
+        help="Target prompt length in tokens. Overrides --prompt with a synthetic prompt of this length.",
+    )
 
     parser.add_argument("--split-kv-cache", action="store_true", help="Use split-kv cache")
     parser.add_argument(
@@ -152,6 +158,13 @@ if __name__ == "__main__":
         ),
     )
     args = parser.parse_args()
+
+    # Auto-adjust max_seq_length when --prompt-length requires more space
+    if args.prompt_length is not None:
+        required_seq_len = args.prompt_length + args.max_new_tokens
+        if args.max_seq_length < required_seq_len:
+            args.max_seq_length = required_seq_len
+
     try:
         from mpi4py import MPI
         comm = MPI.COMM_WORLD
@@ -220,6 +233,32 @@ if __name__ == "__main__":
     tokens = torch.full((total_num_requests, args.max_seq_length), 0, dtype=torch.long, device="cuda")
 
     prompt = args.prompt
+    # If --prompt-length is specified, generate a synthetic prompt of that token length
+    if args.prompt_length is not None:
+        target_len = args.prompt_length
+        base_text = "Explain the concept of distributed systems, including consistency models, fault tolerance, replication strategies, and consensus protocols. "
+        # Repeat base text to exceed target length, then truncate to exact token count
+        repeated = base_text * ((target_len // 5) + 1)
+        temp_messages = [
+            {"role": "system", "content": "You are Qwen, created by Alibaba Cloud. You are a helpful assistant."},
+            {"role": "user", "content": repeated},
+        ]
+        temp_text = tokenizer.apply_chat_template(temp_messages, tokenize=False, add_generation_prompt=True, enable_thinking=False)
+        temp_ids = tokenizer(temp_text, return_tensors="pt").input_ids[0]
+        if len(temp_ids) >= target_len:
+            # Truncate the input_ids to target_len and decode back to text for the user content
+            # We'll directly use the truncated token ids instead of going through chat template again
+            truncated_ids = temp_ids[:target_len]
+            # Override the chat template flow: we'll set model_inputs directly later
+            prompt = None
+            _use_raw_ids = True
+            _raw_ids = truncated_ids
+        else:
+            print(f"Warning: could not reach target prompt length {target_len}, got {len(temp_ids)}")
+            prompt = repeated
+            _use_raw_ids = False
+    else:
+        _use_raw_ids = False
     # This prompt is copied from https://github.com/apoorvumang/prompt-lookup-decoding/blob/main/demo-pld.ipynb
     code_text = """import numpy as np
                 import matplotlib.pyplot as plt
@@ -239,21 +278,25 @@ if __name__ == "__main__":
                 """
     #question = "Can you please change x axis to start from 0"
     #prompt = code_text + "\n" + question
-    messages = [
-        {
-            "role": "system",
-            "content": "You are Qwen, created by Alibaba Cloud. You are a helpful assistant.",
-        },
-        {"role": "user", "content": prompt},
-    ]
-    text = tokenizer.apply_chat_template(
-        messages, tokenize=False, add_generation_prompt=True, enable_thinking=False
-    )
-    model_inputs = tokenizer([text], return_tensors="pt").to(model.device)
+    if _use_raw_ids:
+        model_inputs_ids = _raw_ids.unsqueeze(0).to(model.device)
+    else:
+        messages = [
+            {
+                "role": "system",
+                "content": "You are Qwen, created by Alibaba Cloud. You are a helpful assistant.",
+            },
+            {"role": "user", "content": prompt},
+        ]
+        text = tokenizer.apply_chat_template(
+            messages, tokenize=False, add_generation_prompt=True, enable_thinking=False
+        )
+        model_inputs_ids = tokenizer([text], return_tensors="pt").input_ids.to(model.device)
     for r in range(total_num_requests):
-        for i in range(model_inputs.input_ids.shape[-1]):
-            tokens[r, i] = model_inputs.input_ids[0, i]
-    prompt_lengths = torch.full((total_num_requests,), model_inputs.input_ids.shape[-1], dtype=torch.int, device="cuda")
+        for i in range(model_inputs_ids.shape[-1]):
+            tokens[r, i] = model_inputs_ids[0, i]
+    prompt_lengths = torch.full((total_num_requests,), model_inputs_ids.shape[-1], dtype=torch.int, device="cuda")
+    print(f"Actual prompt length: {model_inputs_ids.shape[-1]} tokens")
     positions = torch.arange(32768).unsqueeze(0).to(model.device)
     position_embeddings = model.model.rotary_emb(positions)
 
