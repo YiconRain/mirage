@@ -871,7 +871,7 @@ if __name__ == "__main__":
 
         end_idx = prev_pos + 1
         generated_ids = tokens[:, :end_idx]
-        num_decode_tokens = cur_pos - prompt_len
+        num_decode_tokens = cur_pos - prompt_len + 1
 
         if num_decode_tokens > warmup + 1:
             run_time = starter.elapsed_time(ender)
