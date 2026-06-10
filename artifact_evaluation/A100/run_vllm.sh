@@ -18,14 +18,13 @@ cd "$MIRAGE_HOME"
 OUTPUT_ROOT="${OUTPUT_ROOT:-$MIRAGE_HOME/results/A100/vllm}"
 mkdir -p "$OUTPUT_ROOT"
 
-MODELS="${MODELS:-qwen3-0.6b llama-3.2-1b qwen3-1.7b qwen3-8b}"
+MODELS="${MODELS:-qwen3-0.6b qwen3-1.7b qwen3-8b}"
 BATCH_SIZES="${BATCH_SIZES:-1 2 4 8 16}"
 INPUT_LEN="${INPUT_LEN:-64}"
 OUTPUT_LEN="${OUTPUT_LEN:-1024}"
 
 declare -A HF_ID
 HF_ID[qwen3-0.6b]="Qwen/Qwen3-0.6B"
-HF_ID[llama-3.2-1b]="meta-llama/Llama-3.2-1B-Instruct"
 HF_ID[qwen3-1.7b]="Qwen/Qwen3-1.7B"
 HF_ID[qwen3-8b]="Qwen/Qwen3-8B"
 HF_ID[qwen3-30b-a3b]="Qwen/Qwen3-30B-A3B"

@@ -14,7 +14,7 @@ cd "$MIRAGE_HOME"
 OUTPUT_ROOT="${OUTPUT_ROOT:-$MIRAGE_HOME/results/A100/pytorch}"
 mkdir -p "$OUTPUT_ROOT"
 
-MODELS="${MODELS:-qwen3-0.6b llama-3.2-1b qwen3-1.7b qwen3-8b}"
+MODELS="${MODELS:-qwen3-0.6b qwen3-1.7b qwen3-8b}"
 BATCH_SIZES="${BATCH_SIZES:-1 2 4 8 16}"
 PROMPT_LEN="${PROMPT_LEN:-64}"
 GEN_LEN="${GEN_LEN:-1024}"
@@ -22,14 +22,12 @@ MAX_SEQ_LEN="${MAX_SEQ_LEN:-$((PROMPT_LEN + GEN_LEN))}"
 
 declare -A SCRIPT
 SCRIPT[qwen3-0.6b]="demo/qwen3/demo.py"
-SCRIPT[llama-3.2-1b]="demo/llama3/demo.py"
 SCRIPT[qwen3-1.7b]="demo/qwen3/demo.py"
 SCRIPT[qwen3-8b]="demo/qwen3/demo.py"
 SCRIPT[qwen3-30b-a3b]="demo/qwen3/demo_30B_A3B.py"
 
 declare -A HF_ID
 HF_ID[qwen3-0.6b]="Qwen/Qwen3-0.6B"
-HF_ID[llama-3.2-1b]="meta-llama/Llama-3.2-1B-Instruct"
 HF_ID[qwen3-1.7b]="Qwen/Qwen3-1.7B"
 HF_ID[qwen3-8b]="Qwen/Qwen3-8B"
 HF_ID[qwen3-30b-a3b]="Qwen/Qwen3-30B-A3B"
