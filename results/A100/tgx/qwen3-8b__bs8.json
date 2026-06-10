@@ -8,5 +8,5 @@
   "prompt_len": 64,
   "gen_len": 1024,
   "max_seq_length": 1088,
-  "latency_ms_per_token": 13.212
+  "latency_ms_per_token": 13.161
 }

@@ -1,0 +1,31 @@
+===== PYTORCH  qwen3-1.7b  bs=1  =====
+/usr/local/lib/python3.12/dist-packages/torch/library.py:357: UserWarning: Warning only once for all operators,  other operators may also be overridden.
+  Overriding a previously registered kernel for the same operator and the same dispatch key
+  operator: flash_attn::_flash_attn_backward(Tensor dout, Tensor q, Tensor k, Tensor v, Tensor out, Tensor softmax_lse, Tensor(a6!)? dq, Tensor(a7!)? dk, Tensor(a8!)? dv, float dropout_p, float softmax_scale, bool causal, SymInt window_size_left, SymInt window_size_right, float softcap, Tensor? alibi_slopes, bool deterministic, Tensor? rng_state=None) -> Tensor
+    registered at /usr/local/lib/python3.12/dist-packages/torch/_library/custom_ops.py:926
+  dispatch key: ADInplaceOrView
+  previous kernel: no debug info
+       new kernel: registered at /usr/local/lib/python3.12/dist-packages/torch/_library/custom_ops.py:926 (Triggered internally at /opt/pytorch/pytorch/aten/src/ATen/core/dispatch/OperatorEntry.cpp:208.)
+  self.m.impl(
+Input arguments: Namespace(use_mirage=False, max_num_batched_tokens=8, max_num_batched_requests=1, page_size=4096, max_num_pages=16, output_dir=None, trace_name='', profiling=False, spec_decode=None, ngram_size=3, max_seq_length=1088, spec_length=3, model_path=None, model='Qwen/Qwen3-1.7B', use_cutlass_kernel=True, ignore_eos=True, max_new_tokens=None, temperature=0.0, top_p=1.0, do_sample=False, save_tokens=None, prompt='Give me a short introduction to large language model.', split_kv_cache=False, lm_head_grid='default')
+world_size(1) rank(0)
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards:  50%|█████     | 1/2 [00:00<00:00,  1.81it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00,  3.08it/s]
+system
+You are Qwen, created by Alibaba Cloud. You are a helpful assistant.
+user
+Give me a short introduction to large language model.
+assistant
+<think>
+Okay, the user wants a short introduction to large language models. Let me start by defining what they are. Large language models (LLMs) are AI systems trained on vast amounts of text data. They can understand and generate human-like text.
+
+I should mention their key features: they can generate text, understand context, and adapt to different tasks. Also, they're used in various applications like writing, coding, and customer service. But I need to keep it concise.
+
+Wait, the user might be a beginner, so I should avoid technical jargon. Maybe start with a simple definition, then explain their capabilities, and mention common applications. Also, note that they're trained on massive datasets, which allows them to learn a wide range of topics.
+
+I should check if there's any important point I'm missing. Maybe mention that they're trained on a lot of data, which allows them to generate coherent and contextually relevant responses. Also, highlight that they can be fine-tuned for specific tasks, making them versatile.
+
+Make sure the introduction is not too long. Keep each paragraph short. Avoid any markdown. Use clear, straightforward language. Alright, that should cover the basics without overwhelming the user.
+</think>
+
+Large Language Models (LLMs) are advanced AI systems designed to understand and generate human-like text. They are trained on vast amounts of data to learn patterns, grammar, and context, enabling them to perform tasks like writing, coding, answering questions, and more. LLMs can adapt to various scenarios, providing coherent and contextually relevant responses. Their ability to process and generate text makes them versatile tools in fields such as education, customer service, and creative writing. However, they are typically fine-tuned for specific tasks, requiring customization to optimize performance.
+Prompt length 39, generate length 358, per-token latency 23.270125916550278 ms

@@ -9,7 +9,7 @@
   self.m.impl(
 Input arguments: Namespace(use_mirage=True, max_num_batched_tokens=8, max_num_batched_requests=2, page_size=4096, max_num_pages=16, output_dir=None, trace_name='', profiling=False, spec_decode=None, ngram_size=3, max_seq_length=1088, spec_length=3, model_path=None, model='Qwen/Qwen3-8B', use_cutlass_kernel=True, ignore_eos=True, max_new_tokens=None, temperature=0.0, top_p=1.0, do_sample=False, save_tokens=None, prompt='Give me a short introduction to large language model.', split_kv_cache=False, lm_head_grid='default')
 world_size(1) rank(0)
-Loading checkpoint shards:   0%|          | 0/5 [00:00<?, ?it/s]Loading checkpoint shards:  20%|██        | 1/5 [00:00<00:02,  1.65it/s]Loading checkpoint shards:  40%|████      | 2/5 [00:01<00:01,  1.63it/s]Loading checkpoint shards:  60%|██████    | 3/5 [00:01<00:01,  1.53it/s]Loading checkpoint shards:  80%|████████  | 4/5 [00:02<00:00,  1.69it/s]Loading checkpoint shards: 100%|██████████| 5/5 [00:02<00:00,  1.93it/s]Loading checkpoint shards: 100%|██████████| 5/5 [00:02<00:00,  1.78it/s]
+Loading checkpoint shards:   0%|          | 0/5 [00:00<?, ?it/s]Loading checkpoint shards:  20%|██        | 1/5 [00:00<00:02,  1.79it/s]Loading checkpoint shards:  40%|████      | 2/5 [00:01<00:01,  1.78it/s]Loading checkpoint shards:  60%|██████    | 3/5 [00:01<00:01,  1.79it/s]Loading checkpoint shards:  80%|████████  | 4/5 [00:02<00:00,  1.94it/s]Loading checkpoint shards: 100%|██████████| 5/5 [00:02<00:00,  2.57it/s]Loading checkpoint shards: 100%|██████████| 5/5 [00:02<00:00,  2.18it/s]
 /root/mirage/python/mirage/../../include/mirage/persistent_kernel/persistent_kernel.cuh(692): warning #177-D: variable "_trace_t" was declared but never referenced
         bool _trace_t =
              ^
@@ -23,22 +23,22 @@ Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
 /root/mirage/python/mirage/../../include/mirage/persistent_kernel/tasks/ampere/multitoken_paged_attention_32_64.cuh(219): warning #177-D: variable "s_m_buffer" was declared but never referenced
     float *s_m_buffer = reinterpret_cast<float *>(smem + S_M_BUFFER_OFFSET);
            ^
-          detected during instantiation of "void kernel::multitoken_paged_attention_task_impl<T,NUM_QO_HEADS,NUM_KV_HEADS,KV_CACHE_STRIDE,QKV_STRIDE,O_STRIDE,HEAD_DIM,MAX_SEQ_LEN,PAGE_SIZE,MAX_TOKENS>(const void *, void *, void *, void *, const int *, const int *, const int *, const int *, int16_t, __nv_bool, __nv_bool, const void *, const void *, const void *, const void *, float, float) [with T=bfloat16, NUM_QO_HEADS=4, NUM_KV_HEADS=1, KV_CACHE_STRIDE=1024, QKV_STRIDE=6144, O_STRIDE=4096, HEAD_DIM=128, MAX_SEQ_LEN=1088, PAGE_SIZE=4096, MAX_TOKENS=8]" at line 1212 of /tmp/tmpvbc1vmu7/test.cu
+          detected during instantiation of "void kernel::multitoken_paged_attention_task_impl<T,NUM_QO_HEADS,NUM_KV_HEADS,KV_CACHE_STRIDE,QKV_STRIDE,O_STRIDE,HEAD_DIM,MAX_SEQ_LEN,PAGE_SIZE,MAX_TOKENS>(const void *, void *, void *, void *, const int *, const int *, const int *, const int *, int16_t, __nv_bool, __nv_bool, const void *, const void *, const void *, const void *, float, float) [with T=bfloat16, NUM_QO_HEADS=4, NUM_KV_HEADS=1, KV_CACHE_STRIDE=1024, QKV_STRIDE=6144, O_STRIDE=4096, HEAD_DIM=128, MAX_SEQ_LEN=1088, PAGE_SIZE=4096, MAX_TOKENS=8]" at line 1212 of /tmp/tmps5p_8k81/test.cu
 
 /root/mirage/python/mirage/../../include/mirage/persistent_kernel/tasks/ampere/multitoken_paged_attention_32_64.cuh(220): warning #177-D: variable "s_d_buffer" was declared but never referenced
     float *s_d_buffer = reinterpret_cast<float *>(smem + S_D_BUFFER_OFFSET);
            ^
-          detected during instantiation of "void kernel::multitoken_paged_attention_task_impl<T,NUM_QO_HEADS,NUM_KV_HEADS,KV_CACHE_STRIDE,QKV_STRIDE,O_STRIDE,HEAD_DIM,MAX_SEQ_LEN,PAGE_SIZE,MAX_TOKENS>(const void *, void *, void *, void *, const int *, const int *, const int *, const int *, int16_t, __nv_bool, __nv_bool, const void *, const void *, const void *, const void *, float, float) [with T=bfloat16, NUM_QO_HEADS=4, NUM_KV_HEADS=1, KV_CACHE_STRIDE=1024, QKV_STRIDE=6144, O_STRIDE=4096, HEAD_DIM=128, MAX_SEQ_LEN=1088, PAGE_SIZE=4096, MAX_TOKENS=8]" at line 1212 of /tmp/tmpvbc1vmu7/test.cu
+          detected during instantiation of "void kernel::multitoken_paged_attention_task_impl<T,NUM_QO_HEADS,NUM_KV_HEADS,KV_CACHE_STRIDE,QKV_STRIDE,O_STRIDE,HEAD_DIM,MAX_SEQ_LEN,PAGE_SIZE,MAX_TOKENS>(const void *, void *, void *, void *, const int *, const int *, const int *, const int *, int16_t, __nv_bool, __nv_bool, const void *, const void *, const void *, const void *, float, float) [with T=bfloat16, NUM_QO_HEADS=4, NUM_KV_HEADS=1, KV_CACHE_STRIDE=1024, QKV_STRIDE=6144, O_STRIDE=4096, HEAD_DIM=128, MAX_SEQ_LEN=1088, PAGE_SIZE=4096, MAX_TOKENS=8]" at line 1212 of /tmp/tmps5p_8k81/test.cu
 
 /root/mirage/python/mirage/../../include/mirage/persistent_kernel/tasks/ampere/multitoken_paged_attention_32_64.cuh(221): warning #177-D: variable "s_o_buffer" was declared but never referenced
     float *s_o_buffer = reinterpret_cast<float *>(smem + S_O_BUFFER_OFFSET);
            ^
-          detected during instantiation of "void kernel::multitoken_paged_attention_task_impl<T,NUM_QO_HEADS,NUM_KV_HEADS,KV_CACHE_STRIDE,QKV_STRIDE,O_STRIDE,HEAD_DIM,MAX_SEQ_LEN,PAGE_SIZE,MAX_TOKENS>(const void *, void *, void *, void *, const int *, const int *, const int *, const int *, int16_t, __nv_bool, __nv_bool, const void *, const void *, const void *, const void *, float, float) [with T=bfloat16, NUM_QO_HEADS=4, NUM_KV_HEADS=1, KV_CACHE_STRIDE=1024, QKV_STRIDE=6144, O_STRIDE=4096, HEAD_DIM=128, MAX_SEQ_LEN=1088, PAGE_SIZE=4096, MAX_TOKENS=8]" at line 1212 of /tmp/tmpvbc1vmu7/test.cu
+          detected during instantiation of "void kernel::multitoken_paged_attention_task_impl<T,NUM_QO_HEADS,NUM_KV_HEADS,KV_CACHE_STRIDE,QKV_STRIDE,O_STRIDE,HEAD_DIM,MAX_SEQ_LEN,PAGE_SIZE,MAX_TOKENS>(const void *, void *, void *, void *, const int *, const int *, const int *, const int *, int16_t, __nv_bool, __nv_bool, const void *, const void *, const void *, const void *, float, float) [with T=bfloat16, NUM_QO_HEADS=4, NUM_KV_HEADS=1, KV_CACHE_STRIDE=1024, QKV_STRIDE=6144, O_STRIDE=4096, HEAD_DIM=128, MAX_SEQ_LEN=1088, PAGE_SIZE=4096, MAX_TOKENS=8]" at line 1212 of /tmp/tmps5p_8k81/test.cu
 
 [MPK INIT] Total tasks: 14604, Total events: 2334
 sm_cnt:  108
 Compiling megakernel using the following command line:
-['/usr/local/cuda/bin/nvcc', '/tmp/tmpvbc1vmu7/test.cu', '-O3', '-lineinfo', '-I/usr/include/python3.12', '-I/root/mirage/python/mirage/../../include', '-I/root/mirage/python/mirage/../../include/mirage/persistent_kernel', '-I/root/mirage/python/mirage/../../deps/cutlass/include', '-I/root/mirage/python/mirage/../../deps/cutlass/tools/util/include', '-I/root/mirage/python/mirage/../../deps/json/include', '-DMAX_WORKER_PER_SCHEDULER=3', '-DMIRAGE_USE_CUTLASS_KERNEL=1', '-arch=native', '-shared', '-std=c++20', '-rdc=false', '-use_fast_math', '-lcuda', '-lcudart', '-lstdc++fs', '-Xcompiler=-fPIC', '--expt-relaxed-constexpr', '-o', '/tmp/tmpvbc1vmu7/test.cpython-312-x86_64-linux-gnu.so', '-DMPK_TARGET_CC=80', '-DMIRAGE_BACKEND_USE_CUDA', '-DMODE_OFFLINE', '-DMPK_MAX_NUM_BATCHED_REQUESTS=2', '-DMPK_MAX_NUM_BATCHED_TOKENS=8', '-DMPK_MAX_NUM_PAGES=16', '-DMPK_PAGE_SIZE=4096', '-DMPK_MAX_SEQ_LENGTH=1088']
+['/usr/local/cuda/bin/nvcc', '/tmp/tmps5p_8k81/test.cu', '-O3', '-lineinfo', '-I/usr/include/python3.12', '-I/root/mirage/python/mirage/../../include', '-I/root/mirage/python/mirage/../../include/mirage/persistent_kernel', '-I/root/mirage/python/mirage/../../deps/cutlass/include', '-I/root/mirage/python/mirage/../../deps/cutlass/tools/util/include', '-I/root/mirage/python/mirage/../../deps/json/include', '-DMAX_WORKER_PER_SCHEDULER=3', '-DMIRAGE_USE_CUTLASS_KERNEL=1', '-arch=native', '-shared', '-std=c++20', '-rdc=false', '-use_fast_math', '-lcuda', '-lcudart', '-lstdc++fs', '-Xcompiler=-fPIC', '--expt-relaxed-constexpr', '-o', '/tmp/tmps5p_8k81/test.cpython-312-x86_64-linux-gnu.so', '-DMPK_TARGET_CC=80', '-DMIRAGE_BACKEND_USE_CUDA', '-DMODE_OFFLINE', '-DMPK_MAX_NUM_BATCHED_REQUESTS=2', '-DMPK_MAX_NUM_BATCHED_TOKENS=8', '-DMPK_MAX_NUM_PAGES=16', '-DMPK_PAGE_SIZE=4096', '-DMPK_MAX_SEQ_LENGTH=1088']
 Finished megakernel compilation...
 tokens.shape =  torch.Size([2, 1088])
 system
@@ -47,208 +47,167 @@ user
 Give me a short introduction to large language model.
 assistant
 <think>
-
+Okay, the user asked for a short introduction to large language models. Let me start by defining what they are. They're AI models trained on vast amounts of text data, right? I should mention their ability to understand and generate human-like text. Maybe include examples like GPT, BERT, or others. Also, highlight their applications in areas like answering questions, writing, coding, and more. Keep it concise but cover the key points. Make sure to explain why they're called "large" – probably due to their size in terms of parameters and data. Avoid technical jargon so it's accessible. Check if there's anything else important, like their impact on various industries. Alright, that should cover it without getting too detailed.
 </think>
 
-Large language models (LLMs) are a type of artificial intelligent system that can understand, generate, and respond to human language. These models are trained on vast amounts of text data, allowing them to perform a wide range of tasks, such as answering questions, writing stories, coding, and translating languages. LLMs are capable of generating coherent and contextually relevant responses, often indistinguishable from human-generated text. They are widely used in various applications, including chatbots, virtual assistants, content creation, and data analysis. The development of LLMs has been driven by advancements in deep learning and the availability of large-scale datasets, enabling them to achieve remarkable performance in natural language processing tasks.
+Large language models (LLMs) are advanced artificial Intelligence systems trained on vast amounts of text data to understand and generate human-like language. They can answer questions, write stories, code, translate languages, and perform tasks requiring comprehension and creativity. Their "large" designation reflects their scale—billions of parameters and extensive data training—enabling them to handle complex tasks with high accuracy. LLMs are revolutionizing fields like customer service, education, and content creation by providing efficient, scalable solutions for natural language processing.
 
-If you have any specific questions or need further details, feel free to ask!
+**Key Features:**
+- **Scale:** Trained on massive datasets (e.g., books, articles, code) and billions of parameters.
+- **Versatility:** Can adapt to multiple languages and tasks (e.g., summarization, dialogue, coding).
+- **Context Understanding:** Captures nuanced relationships in text for coherent responses.
+- **Applications:** From chatbots to research assistance, LLMs are reshaping how we interact with technology.
 
-If you have any specific questions or need further details, feel free to ask!
+Let me know if you'd like examples or deeper insights! 😊
 
-If you have any specific questions or need further details, feel free to ask!
+**Key Features:**
+- **Scale:** Trained on massive datasets (e.g., books, articles, code) and billions of parameters.
+- **Versatility:** Can adapt to multiple languages and tasks (e.g., summarization, dialogue, coding).
+- **Context Understanding:** Captures nuanced relationships in text for coherent responses.
+- **Applications:** From chatbots to research assistance, LLMs are reshaping how we interact with technology.
 
-If you have any specific questions or need further details, feel free to ask!
+Let me know if you'd like examples or deeper insights! 😊
 
-If you have any specific questions or need further details, feel free to ask!
+**Key Features:**
+- **Scale:** Trained on massive datasets (e.g., books, articles, code) and billions of parameters.
+- **Versatility:** Can adapt to multiple languages and tasks (e.g., summarization, dialogue, coding).
+- **Context Understanding:** Captures nuanced relationships in text for coherent responses.
+- **Applications:** From chatbots to research assistance, LLMs are reshaping how we interact with technology.
 
-If you have any specific questions or need further details, feel free to ask!
+Let me know if you'd like examples or deeper insights! 😊
 
-If you have any specific questions or need further details, feel free to ask!
+**Key Features:**
+- **Scale:** Trained on massive datasets (e.g., books, articles, code) and billion parameters.
+- **Versatility:** Can adapt to multiple languages and tasks (e.g., summarization, dialogue, coding).
+- **Context Understanding:** Captures nuanced relationships in text for coherent responses.
+- **Applications:** From chatbots to research assistance, LLMs are reshaping how we interact with technology.
 
-If you have any specific questions or need further details, feel free to ask!
+Let me know if you'd like examples or deeper insights! 😊
 
-If you have any specific questions or need further details, feel free to ask!
+**Key Features:**
+- **Scale:** Trained on massive datasets (e.g., books, articles, code) and billions of parameters.
+- **Versatility:** Can adapt to multiple languages and tasks (e.g., summarization, dialogue, coding).
+- **Context Understanding:** Captures nuanced relationships in text for coherent responses.
+- **Applications:** From chatbots to research assistance, LLMs are reshaping how we interact with technology.
 
-If you have any specific questions or need further details, feel free to ask!
+Let me know if you'd like examples or deeper insights! 😊
 
-If you have any specific questions or need further details, feel free to ask!
+**Key Features:**
+- **Scale:** Trained on massive datasets (e.g., books, articles, code) and billion parameters.
+- **Versatility:** Can adapt to multiple languages and tasks (e.g., summarization, dialogue, coding).
+- **Context Understanding:** Captures nuanced relationships in text for coherent responses.
+- **Applications:** From chatbots to research assistance, LLMs are reshaping how we interact with technology.
 
-If you have any specific questions or need further details, feel free to ask!
+Let me know if you'd like examples or deeper insights! 😊
 
-If you have any specific questions or need further details, feel free to ask!
+**Key Features:**
+- **Scale:** Trained on massive datasets (e.g., books, articles, code) and billions of parameters.
+- **Versatility:** Can adapt to multiple languages and tasks (e.g., summarization, dialogue, coding).
+- **Context Understanding:** Captures nuanced relationships in text for coherent responses.
+- **Applications:** From chatbots to research assistance, LLMs are reshaping how we interact with technology.
 
-If you have any specific questions or need further details, feel free to ask!
+Let me know if you'd like examples or deeper insights! 😊
 
-If you have any specific questions or need further details, feel free to ask!
-
-If you have any specific questions or need further details, feel free to ask!
-
-If you have any specific questions or need further details, feel free to ask!
-
-If you have any specific questions or need further details, feel free to ask!
-
-If you have any specific questions or need further details, feel free to ask!
-
-If you have any specific questions or need further details, feel free to ask!
-
-If you have any specific questions or need further details, feel free to ask!
-
-If you have any specific questions or need further details, feel free to ask!
-
-If you have any specific questions or need further details, feel free to ask!
-
-If you have any specific questions or need further details, feel free to ask!
-
-If you have any specific questions or need further details, feel free to ask!
-
-If you have any specific questions or need further details, feel free to ask!
-
-If you have any specific questions or need further details, feel free to ask!
-
-If you have any specific questions or need further details, feel free to ask!
-
-If you have any specific questions or need further details, feel free to ask!
-
-If you have any specific questions or need further details, feel free to ask!
-
-If you have any specific questions or need further details, feel free to ask!
-
-If you have any specific questions or need further details, feel free to ask!
-
-If you have any specific questions or need further details, feel free to ask!
-
-If you have any specific questions or need further details, feel free to ask!
-
-If you have any specific questions or need further details, feel free to ask!
-
-If you have any specific questions or need further details, feel free to ask!
-
-If you have any specific questions or need further details, feel free to ask!
-
-If you have any specific questions or need further details, feel free to ask!
-
-If you have any specific questions or need further details, feel free to ask!
-
-If you have any specific questions or need further details, feel free to ask!
-
-If you have any specific questions or need further details, feel free to ask!
-
-If you have any specific questions or need further details, feel free to ask!
-
-If you have any specific questions or need further details, feel free to ask!
-
-If you have any specific questions or need further details, feel free to ask!
-
-If you have any specific questions or need further details, feel free to ask!
-
-If you have any specific questions or need further details, feel free to ask!
-
-If you have any specific questions or need further details, feel free to ask!
-
-If you have any specific questions or need further details, feel free to ask!
-
-If you have any specific questions or need further details, feel free to ask!
-
-If you have any specific questions or need further details, feel free to ask!
-
-If you have
+**Key Features:**
+- **Scale:** Trained on massive datasets (e.g., books, articles, code) and billion parameters.
+- **Versatility:** Can adapt to
 system
 You are Qwen, created by Alibaba Cloud. You are a helpful assistant.
 user
 Give me a short introduction to large language model.
 assistant
 <think>
+Okay，the user asked for a short introduction to large language models.
 
+First，我 need to define what a large language模型 is. They are AI models trained on vast amounts of text data. 
+
+Next，mention their key features like understanding and generating human-like text across various tasks.
+
+Also，include examples of their applications，比如 answering questions，writing，and coding.
+
+Make sure it's concise but covers the essentials：definition，training data，capabilities，and use cases.
+
+Check for clarity and avoid technical jargon to keep it accessible.
 </think>
 
-Large language models (LLMs), such as Qwen (通义千問), are advanced artificial intelligent systems designed to understand and generate human-like text. These models are trained on vast amounts of text data from the internet, books, and other sources to learn patterns in language, enabling them to perform a wide range of tasks, including answering questions、writing stories、creating code、and engaging in conversations.
+Large language models (LLMs), like Qwen，are advanced artificial intelligent systems trained on vast amounts of text data to understand and generate human-like language across a wide range of tasks。They excel at answering questions，creating content，coding，and even reasoning，making them versatile tools for communication，learning，and problem-solving in everyday life。
 
-LLMs are typically based on deep learning architectures, such as transformer networks，which allow them to process and generate text efficiently and effectively. They can understand context and maintain coherence over long sequences of text, which makes them powerful tools for various applications in fields like education, business, and entertainment.
+**Key Features**:
+✅ **Extensive Training**: Built on massive text datasets to grasp language patterns and knowledge.
+✅ **Multilingual Support**: Understand and generate text in multiple languages.
+✅ **Versatile Applications**: From writing and coding to analysis and creative tasks.
+✅ **Continuous Learning**: Improve through interactions and feedback.
 
-With continuous advancements in AI technology，large language models are becoming increasingly sophisticated，offering more accurate and contextually relevant responses to user queries。They represent a significant leap in the field of natural language processing and are playing an increasingly important role in the development of intelligent systems and services。
+**Use Cases**:
+🔹 Assist with research and writing
+🔹 Generate code and scripts
+🔹 Provide language translation
+🔹 Offer customer support via chatbots
+🔹 Support decision-making through data analysis
 
-If you have any specific questions or need further information about large language models，feel free to ask!
+These models are revolutionising how we interact with technology，making complex tasks more accessible and efficient for users worldwide。
 
-If you have any specific questions or need further information about large language models, feel free to ask!
+**Note**: This response is tailored for a general audience，highlighting key aspects while keeping explanations clear and concise。
 
-If you have any specific questions or need further information about large language models，feel free to ask!
+**Note**: This response is tailored for a general audience，highlighting key aspects while keeping explanations clear and concise。
 
-If you have any specific questions or need further information about large language models，feel free to ask！
+**Note**: This response is tailored for a general audience，highlighting key aspects while keeping explanations clear and concise。
 
-If you have any specific questions or need further information about large language models，feel free to ask！
+**Note**: This response is tailored for a general audience，highlighting key aspects while keeping explanations clear and concise。
 
-If you have any specific questions or need further information about large language models，feel free to ask！
+**Note**: This response is tailored for a general audience，highlighting key aspects while keeping explanations clear and concise。
 
-If you have any specific questions or need further information about large language models，feel free to ask！
+**Note**: This response is tailored for a general audience，highlighting key aspects while keeping explanations clear and concise。
 
-If you have any specific questions or need further information about large language models，feel free to ask！
+**Note**: This response is tailored for a general audience，highlighting key aspects while keeping explanations clear and concise。
 
-If you have any specific questions or need further information about large language models，feel free to ask！
+**Note**: This response is tailored for a general audience，highlighting key aspects while keeping explanations clear and concise。
 
-If you have any specific questions or need further information about large language models，feel free to ask！
+**Note**: This response is tailored for a general audience，highlighting key aspects while keeping explanations clear and concise。
 
-If you have any specific questions or need further information about large language models，feel free to ask！
+**Note**: This response is tailored for a general audience，highlighting key aspects while keeping explanations clear and concise。
 
-If you have any specific questions or need further information about large language models，feel free to ask！
+**Note**: This response is tailored for a general audience，highlighting key aspects while keeping explanations clear and concise。
 
-If you have any specific questions or need further information about large language models，feel free to ask！
+**Note**: This response is tailored for a general audience，highlighting key aspects while keeping explanations clear and concise。
 
-If you have any specific questions or need further information about large language models，feel free to ask！
+**Note**: This response is tailored for a general audience，highlighting key aspects while keeping explanations clear and concise。
 
-If you have any specific questions or need further information about large language models，feel free to ask！
+**Note**: This response is tailored for a general audience，highlighting key aspects while keeping explanations clear and concise。
 
-If you have any specific questions or need further information about large language models，feel free to ask！
+**Note**: This response is tailored for a general audience，highlighting key aspects while keeping explanations clear and concise。
 
-If you have any specific questions or need further information about large language models，feel free to ask！
+**Note**: This response is tailored for a general audience，highlighting key aspects while keeping explanations clear and concise。
 
-If you have any specific questions or need further information about large language models，feel free to ask！
+**Note**: This response is tailored for a general audience，highlighting key aspects while keeping explanations clear and concise。
 
-If you have any specific questions or need further information about large language models，feel free to ask！
+**Note**: This response is tailored for a general audience，highlighting key aspects while keeping explanations clear and concise。
 
-If you have any specific questions or need further information about large language models，feel free to ask！
+**Note**: This response is tailored for a general audience，highlighting key aspects while keeping explanations clear and concise。
 
-If you have any specific questions or need further information about large language models，feel free to ask！
+**Note**: This response is tailored for a general audience，highlighting key aspects while keeping explanations clear and concise。
 
-If you have any specific questions or need further information about large language models，feel free to ask！
+**Note**: This response is tailored for a general audience，highlighting key aspects while keeping explanations clear and concise。
 
-If you have any specific questions or need further information about large language models，feel free to ask！
+**Note**: This response is tailored for a general audience，highlighting key aspects while keeping explanations clear and concise。
 
-If you have any specific questions or need further information about large language models，feel free to ask！
+**Note**: This response is tailored for a general audience，highlighting key aspects while keeping explanations clear and concise。
 
-If you have any specific questions or need further information about large language models，feel free to ask！
+**Note**: This response is tailored for a general audience，highlighting key aspects while keeping explanations clear and concise。
 
-If you have any specific questions or need further information about large language models，feel free to ask！
+**Note**: This response is tailored for a general audience，highlighting key aspects while keeping explanations clear and concise。
 
-If you have any specific questions or need further information about large language models，feel free to ask！
+**Note**: This response is tailored for a general audience，highlighting key aspects while keeping explanations clear and concise。
 
-If you have any specific questions or need further information about large language models，feel free to ask！
+**Note**: This response is tailored for a general audience，highlighting key aspects while keeping explanations clear and concise。
 
-If you have any specific questions or need further information about large language models，feel free to ask！
+**Note**: This response is tailored for a general audience，highlighting key aspects while keeping explanations clear and concise。
 
-If you have any specific questions or need further information about large language models，feel free to ask！
+**Note**: This response is tailored for a general audience，highlighting key aspects while keeping explanations clear and concise。
 
-If you have any specific questions or need further information about large language models，feel free to ask！
-
-If you have any specific questions or need further information about large language models，feel free to ask！
-
-If you have any specific questions or need further information about large language models，feel free to ask！
-
-If you have any specific questions or need further information about large language models，feel free to ask！
-
-If you have any specific questions or need further information about large language models，feel free to ask！
-
-If you have any specific questions or need further information about large language models，feel free to ask！
-
-If you have any specific questions or need further information about large language models，feel free to ask！
-
-If you have any specific questions or need further information about large language models，feel free to ask！
-
-If you have any specific questions or need further information about large
+**Note**: This response is tailored for a general audience，highlighting key
 Output length of each batch is same: True
-Prompt length 43, generate length 1045, per-token latency (both prefill and decode): 11.651 ms
-TTFT (time to first token): 72.368 ms
-TBT (time between tokens, decode only): 12.061 ms
+Prompt length 39, generate length 1049, per-token latency (both prefill and decode): 11.716 ms
 worker kernel & scheduler kernel
 smem size: 163840
 Finished Launching Persistent Kernel (Async)

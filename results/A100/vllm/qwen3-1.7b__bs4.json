@@ -1,0 +1,10 @@
+{
+  "system": "vllm",
+  "gpu": "A100",
+  "model": "Qwen/Qwen3-1.7B",
+  "batch_size": 4,
+  "input_len": 64,
+  "output_len": 1024,
+  "avg_iter_seconds": 4.063687256211415,
+  "latency_ms_per_token": 0.9337516673279904
+}

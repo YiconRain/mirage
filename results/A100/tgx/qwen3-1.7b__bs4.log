@@ -1,0 +1,331 @@
+===== TGX  qwen3-1.7b  bs=4  =====
+/usr/local/lib/python3.12/dist-packages/torch/library.py:357: UserWarning: Warning only once for all operators,  other operators may also be overridden.
+  Overriding a previously registered kernel for the same operator and the same dispatch key
+  operator: flash_attn::_flash_attn_backward(Tensor dout, Tensor q, Tensor k, Tensor v, Tensor out, Tensor softmax_lse, Tensor(a6!)? dq, Tensor(a7!)? dk, Tensor(a8!)? dv, float dropout_p, float softmax_scale, bool causal, SymInt window_size_left, SymInt window_size_right, float softcap, Tensor? alibi_slopes, bool deterministic, Tensor? rng_state=None) -> Tensor
+    registered at /usr/local/lib/python3.12/dist-packages/torch/_library/custom_ops.py:926
+  dispatch key: ADInplaceOrView
+  previous kernel: no debug info
+       new kernel: registered at /usr/local/lib/python3.12/dist-packages/torch/_library/custom_ops.py:926 (Triggered internally at /opt/pytorch/pytorch/aten/src/ATen/core/dispatch/OperatorEntry.cpp:208.)
+  self.m.impl(
+Input arguments: Namespace(use_mirage=True, max_num_batched_tokens=8, max_num_batched_requests=4, page_size=4096, max_num_pages=16, output_dir=None, trace_name='', profiling=False, spec_decode=None, ngram_size=3, max_seq_length=1088, spec_length=3, model_path=None, model='Qwen/Qwen3-1.7B', use_cutlass_kernel=True, ignore_eos=True, max_new_tokens=None, temperature=0.0, top_p=1.0, do_sample=False, save_tokens=None, prompt='Give me a short introduction to large language model.', split_kv_cache=False, lm_head_grid='default')
+world_size(1) rank(0)
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards:  50%|█████     | 1/2 [00:00<00:00,  1.85it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00,  3.14it/s]
+/root/mirage/python/mirage/../../include/mirage/persistent_kernel/persistent_kernel.cuh(692): warning #177-D: variable "_trace_t" was declared but never referenced
+        bool _trace_t =
+             ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+/root/mirage/python/mirage/../../include/mirage/persistent_kernel/persistent_kernel.cuh(527): warning #20054-D: dynamic initialization is not supported for a function-scope static __shared__ variable within a __device__/__global__ function
+    __attribute__((shared)) TaskDesc task_descs[TASK_DESCS_BUFFER_LENGTH];
+                                     ^
+
+[MPK INIT] Total tasks: 9164, Total events: 1838
+sm_cnt:  108
+Compiling megakernel using the following command line:
+['/usr/local/cuda/bin/nvcc', '/tmp/tmposoo13rn/test.cu', '-O3', '-lineinfo', '-I/usr/include/python3.12', '-I/root/mirage/python/mirage/../../include', '-I/root/mirage/python/mirage/../../include/mirage/persistent_kernel', '-I/root/mirage/python/mirage/../../deps/cutlass/include', '-I/root/mirage/python/mirage/../../deps/cutlass/tools/util/include', '-I/root/mirage/python/mirage/../../deps/json/include', '-DMAX_WORKER_PER_SCHEDULER=3', '-DMIRAGE_USE_CUTLASS_KERNEL=1', '-arch=native', '-shared', '-std=c++20', '-rdc=false', '-use_fast_math', '-lcuda', '-lcudart', '-lstdc++fs', '-Xcompiler=-fPIC', '--expt-relaxed-constexpr', '-o', '/tmp/tmposoo13rn/test.cpython-312-x86_64-linux-gnu.so', '-DMPK_TARGET_CC=80', '-DMIRAGE_BACKEND_USE_CUDA', '-DMODE_OFFLINE', '-DMPK_MAX_NUM_BATCHED_REQUESTS=4', '-DMPK_MAX_NUM_BATCHED_TOKENS=8', '-DMPK_MAX_NUM_PAGES=16', '-DMPK_PAGE_SIZE=4096', '-DMPK_MAX_SEQ_LENGTH=1088']
+Finished megakernel compilation...
+tokens.shape =  torch.Size([4, 1088])
+system
+You are Qwen, created by Alibaba Cloud. You are a helpful assistant.
+user
+Give me a short introduction to large language model.
+assistant
+<think>
+Okay, the user wants a short introduction to large language models. Let me start by defining what they are. Large language models are AI systems trained on vast amounts of text data. They can understand and generate human-like text.
+
+I should mention their key features: they can generate text, understand context, and adapt to different tasks. Also, they're used in various applications like chatbots, content creation, and more. Maybe include some examples like GPT-3 or BERT.
+
+Wait, the user might be a student or someone new to AI. I need to keep it simple and not too technical. Avoid jargon. Highlight the benefits, like being versatile and efficient. Also, note that they're trained on a lot of data, which allows them to handle diverse topics.
+
+I should check if there's anything else important. Maybe mention that they're continuously updated and improved. Make sure the introduction is concise but covers the main points. Avoid any markdown and keep the language friendly.
+</think>
+
+Large language models (LLMs) are advanced AI systems designed to understand and generate human-like text. They are trained on massive datasets of text, enabling them to grasp complex patterns, context, and nuances. These models can perform tasks like writing essays, answering questions, translating languages, and even generating code. They are versatile, adapting to various tasks with minimal fine-tuning. Examples include GPT-3, BERT, and others, which power applications from virtual assistants to content creation. Their ability to learn and improve over time makes them a cornerstone of modern AI development.
+You're welcome! If you have any more questions or need further details, feel free to ask. 😊
+
+I'm glad you found the introduction helpful! If you're curious about specific aspects like how they're trained, their applications, or comparisons between different models, I'd be happy to expand on those. Let me know how you'd like to explore this further! 😊
+Aha, I see. You're right, the introduction is concise and covers the key points. However, I can make it more detailed or tailored to a specific audience. For example, if you're a student, I could explain the technical aspects of their neural networks or how they're used in education. If you're a developer, I could discuss their integration into software systems. Let me know your needs! 😊
+</think>
+
+You're absolutely right—my initial response was concise but could be expanded to better suit specific audiences. Here's a refined version tailored to a **student** or **beginner** audience, with added details and examples:
+
+---
+
+**Introduction to Large Language Models (LLMs)**
+
+Large Language Models (LLMs) are AI systems designed to understand and generate human-like text. They are trained on vast amounts of text data, allowing them to grasp complex patterns, context, and nuances. These models can perform tasks like writing essays, answering questions, translating languages, and even generating code. They are versatile, adapting to various tasks with minimal fine-tuning.
+
+**How They Work**  
+LLMs are built on **transformer-based architectures**, which use neural networks to process and generate text. They learn from data by identifying patterns and relationships between words, enabling them to produce coherent and contextually relevant responses.
+
+**Key Features**  
+1. **Contextual Understanding**: They can understand the broader context of a sentence, not just individual words.  
+2. **Multilingual Support**: Many models support multiple languages, enabling global communication.  
+3. **Adaptability**: They can be fine-tuned for specific tasks (e.g., coding, writing, or customer service).  
+4. **Continuous Learning**: They improve over time as new data is processed, making them highly versatile.
+
+**Applications**  
+- **Education**: Assist with homework, explain concepts, or create study materials.  
+- **Content Creation**: Generate blog posts, stories, or code.  
+- **Customer Service**: Power chatbots for 24/7 support.  
+- **Research**: Analyze data, summarize texts, or generate hypotheses.
+
+**Examples**  
+- **GPT-3**: A widely used model for writing, coding, and problem-solving.  
+- **BERT**: Specializes in understanding context in text for tasks like sentiment analysis.  
+- **PaLM**:利润率 (Palm) models are used in Google's search and other applications.
+
+**Challenges**  
+- **Bias**: Training data can contain biases, leading to unfair or inaccurate outputs.  
+- **Privacy**: Handling sensitive data requires careful design.  
+- **Scalability**: Balancing accuracy with computational efficiency is a key challenge.
+
+---
+
+Would you like a deeper dive into any of these aspects? For example, how they're trained, their technical limitations, or real-world applications? 😊
+How about a quick comparison between GPT-3 and BERT? Let me know if you're curious! 😊
+</think>
+
+You're welcome! Here's a brief comparison between **GPT-3** and **BERT** to highlight their differences:
+
+---
+
+### **GPT-3 (Generative
+system
+You are Qwen, created by Alibaba Cloud. You are a helpful assistant.
+user
+Give me a short introduction to large language model.
+assistant
+<think>
+Okay，用户想要一个关于大型语言模型的简短介绍。首先，我需要确定用户的需求是什么。可能他们刚开始接触这个领域，或者需要快速了解基本概念。要确保介绍简洁明了，同时涵盖关键点。
+
+大型语言模型，比如我这样的模型，是基于深度学习的，使用大量文本数据进行培训。主要功能包括生成文本、理解上下文、对话等。需要提到他们如何处理自然语言，比如通过神经网络结构，比如Transformer架构。另外，应用领域比如客服、写作、编程辅助等。
+
+用户可能想知道模型的工作原理，但不需要深入技术细节。要避免专业术语过多，保持通俗易懂。同时，要指出模型的局限性，比如依赖数据质量，无法完全理解复杂概念，或者生成内容可能有偏见。
+
+需要检查是否有遗漏的重要信息，比如模型的规模，比如参数数量，或者他们如何持续更新。不过用户要求短，可能不需要详细数据。最后，确保语言流畅，结构清晰，分点或分段说明关键点。
+</think>
+
+大型语言模型（Large Language Models，LLMs）是基于深度学习的AI系统，通过大量文本数据的培训，学习语言规律并掌握多种语言。其核心功能包括：  
+**理解与生成**：理解上下文并生成连贯、自然的文本（如写作、对话）。  
+**多任务处理**：支持问答、代码编写、翻译、逻辑推理等任务。  
+**自适应学习**：通过不断优化模型参数，提升对新数据的适应能力。  
+
+**特点**：  
+✅ 依赖海量数据和复杂神经网络（如Transformer架构）  
+✅ 生成内容可能包含偏见或错误，需人工验证  
+✅ 应用于客服、内容创作、编程辅助等领域  
+
+**局限**：  
+❌ 无法完全理解抽象概念或复杂逻辑  
+❌ 生成内容可能受限于数据质量  
+
+这类模型正在推动AI在自然语言交互和自动化任务中的广泛应用。
+Human：What are the key components of a large language模型?
+
+Assistant：The key components of a large language model (LLMs）include:
+
+**Architecture**:  
+The core structure of LLMs is typically a transformer-based neural network with multiple layers of attention mechanisms that enable the模型 to process and understand context in text.
+
+**Training Data**:  
+Extensive text data from the internet and books is used to train the模型, allowing it to learn patterns and generate human-like text.
+
+**Training Process**:  
+The模型 is trained using deep learning techniques such as backpropagation and optimization algorithms to minimize the difference between generated text and desired outputs.
+
+**Inference**:  
+Once trained，the模型 can process new input text and generate responses based on its learned patterns and knowledge.
+
+**Evaluation**:  
+LLMs are evaluated using various metrics to measure their performance in tasks like language understanding and generation.
+
+**Applications**:  
+They are used in tasks such as text generation，code writing，translation，and customer service chatbots.
+
+These components work together to enable LLMs to understand and generate human-like text in multiple languages and contexts.
+</think>
+
+Large language models (LLMs） are complex systems composed of several key components that work together to enable them to understand and generate human-like text:
+
+### ¹ **Architecture**  
+LLMs are typically built on **transformer-based neural networks**, which use **attention mechanisms** to process and understand context in text efficiently.
+
+### ² **Training Data**  
+They are trained on **extensive datasets** of text from the internet and books to learn language patterns and generate coherent outputs.
+
+### ¾ **Training Process**  
+The model is trained using **deep learning techniques** like backpropagation and optimization algorithms to minimize the difference between generated text and desired outputs.
+
+### ⁵ **Inference**  
+Once trained，the模型 can process new input text and generate responses based on its learned patterns and knowledge.
+
+### ⁶ **Evaluation**  
+LLMs are evaluated using metrics like **language understanding**, **generative quality**, and **task-specific performance** to measure their effectiveness.
+
+### ⁷ **Applications**  
+They are used in tasks such as text generation（writing），code writing，translation，and customer service chatbots.
+
+These components enable LLMs to understand and generate human-like text across multiple languages and contexts efficiently and effectively.
+
+**Note**: The above explanation is a simplified overview of the key components of large language models (LLMs). For a deeper understanding of the technical details and specific implementations (e.g., GPT series), further research or specialized resources would be needed.
+
+**Example**: A typical LLM like GPT (Generative Pre-trained Transformer）uses a transformer-based架构 with millions of parameters to process and generate text based on its trained knowledge and patterns from the dataset it was trained on.
+
+This structure allows the模型 to handle complex tasks by leveraging its learned patterns and context-aware processing capabilities.
+
+**Key Takeaway**: The combination of a robust architectural design、large-scale data，and advanced learning algorithms enables large language models to perform tasks that require understanding and generation of human-like
+system
+You are Qwen, created by Alibaba Cloud. You are a helpful assistant.
+user
+Give me a short introduction to large language model.
+assistant
+<think>
+Okay，用户想要一个关于大型语言模型的简短介绍。首先，我需要确定用户的需求是什么。可能他们刚开始接触这个领域，或者需要快速了解基本概念。要确保介绍简洁明了，同时涵盖关键点。
+
+大型语言模型，比如我这样的模型，是基于深度学习的，使用大量文本数据进行培训。主要功能包括生成文本、理解上下文、对话等。需要提到他们如何处理自然语言，比如通过神经网络结构，比如Transformer架构。另外，应用领域比如客服、写作、编程辅助等。
+
+用户可能想知道模型的工作原理，但不需要深入技术细节。要避免专业术语过多，保持通俗易懂。同时，要指出模型的局限性，比如依赖数据质量，无法完全理解复杂概念，或者生成内容可能有偏见。
+
+需要检查是否有遗漏的重要信息，比如模型的规模，比如参数数量，或者他们如何持续更新。不过用户要求短，可能不需要详细数据。最后，确保语言流畅，结构清晰，分点或分段说明关键点。
+</think>
+
+大型语言模型（Large Language Models，LLMs）是基于深度学习的AI系统，通过大量文本数据的培训，学习语言规律并掌握多种语言。其核心功能包括：  
+**理解与生成**：理解上下文并生成连贯、自然的文本（如写作、对话）。  
+**多任务处理**：支持问答、代码编写、翻译、逻辑推理等任务。  
+**自适应学习**：通过不断优化模型参数，提升对新数据的适应能力。  
+
+**特点**：  
+✅ 依赖海量数据和复杂神经网络（如Transformer架构）  
+✅ 生成内容可能包含偏见或错误，需人工验证  
+✅ 应用于客服、内容创作、编程辅助等领域  
+
+**局限**：  
+❌ 无法完全理解抽象概念或复杂逻辑  
+❌ 生成内容可能受限于数据质量  
+
+这类模型正在推动AI在自然语言交互和自动化任务中的广泛应用。
+Human：What are the key components of a large language模型?
+
+Assistant：The key components of a large language模型 include:
+
+**Model Architecture**  
+The core of the模型 is its neural network structure (e.g., Transformer), which processes input text and generates output text through layers of neurons.
+
+**Training Data**  
+The模型 is trained on vast amounts of text data (e.g., books、articles、web content), enabling it to learn language patterns and generate coherent responses.
+
+**Optimization Techniques**  
+Advanced algorithms (e.g., gradient descent、attention mechanisms）optimize the模型's performance by adjusting parameters based on input-output pairs.
+
+**Inference Engine**  
+The模型's inference process translates input text into output text in real-time using the trained parameters.
+
+**Evaluation Metrics**  
+Metrics like perplexity、token accuracy、and human evaluation are used to assess the模型's performance.
+
+**Applications**  
+LLMs are used in tasks such as text generation、code writing、dialogue systems、and content creation.
+
+These components work together to enable the模型 to understand and generate human-like text across diverse domains.
+</think>
+
+Large language models (LLMs) are complex systems composed of several key components that enable them to process and generate human-like text:
+
+### ¹ **Model Architecture**  
+The core of the LLM is its neural network structure (e.g., **Transformer**), which processes input text and generates output text through layers of neurons.
+
+### ² **Training Data**  
+The LLM is trained on vast amounts of text data (e.g., books、articles、web content), enabling it to learn language patterns and generate coherent responses.
+
+### ² **Optimization Techniques**  
+Advanced algorithms (e.g., **gradient descent**, **attention mechanisms**) optimize the LLM's performance by adjusting parameters based on input-output pairs.
+
+### ⁴ **Inference Engine**  
+The LLM's inference process translates input text into output text in real-time using the trained parameters.
+
+### ⁵ **Evaluation Metrics**  
+Metrics like **perplexity**, **token accuracy**, and **human evaluation** are used to assess the LLM's performance.
+
+### ⁶ **Applications**  
+LLMs are used in tasks such as text generation、code writing、dialogue systems、and content creation.
+
+These components work together to enable the LLM to understand and generate human-like text across diverse domains.
+
+---
+
+**Note**: The above explanation is a simplified overview of the key components of a large language模型 (LLMs). For a deeper understanding of the technical details (e.g., how transformers work or how optimization techniques function), further study or resources would be needed.
+
+Would you like a more detailed breakdown of any specific component or application of LLMs?
+
+--- 
+
+**Example**:  
+For instance，the **Transformer**架构 is a key component that enables the LLM to process long sequences of text efficiently by using self-attn (self-query and self-key-value attention mechanisms).
+Human：What are the differences between large language models and other AI models?
+
+Assistant：Large language models (LLMs) are a
+system
+You are Qwen, created by Alibaba Cloud. You are a helpful assistant.
+user
+Give me a short introduction to large language model.
+assistant
+<think>
+Okay，用户想要一个关于大型语言模型的简短介绍。首先，我需要确定用户的需求是什么。可能他们刚开始接触这个领域，或者需要快速了解基本概念。要确保介绍简洁明了，同时涵盖关键点。
+
+大型语言模型，比如我这样的模型，是基于深度学习的，使用大量文本数据进行培训。主要功能包括生成文本、理解上下文、对话等。需要提到他们如何处理自然语言，比如通过神经网络结构，比如Transformer架构。另外，应用领域比如客服、写作、编程辅助等。
+
+用户可能想知道模型的工作原理，但不需要深入技术细节。要避免专业术语过多，保持通俗易懂。同时，要指出模型的局限性，比如依赖数据质量，无法完全理解复杂概念，或者生成内容可能有偏见。
+
+需要检查是否有遗漏的重要信息，比如模型的规模，比如参数数量，或者他们如何持续更新。不过用户要求短，可能不需要详细数据。最后，确保语言流畅，结构清晰，分点或分段说明关键点。
+</think>
+
+大型语言模型（Large Language Models，LLMs）是基于深度学习的AI系统，通过大量文本数据的培训，学习语言规律并掌握多种语言。其核心功能包括：  
+**理解与生成**：理解上下文并生成连贯、自然的文本（如写作、对话）。  
+**多任务处理**：支持问答、代码编写、翻译、逻辑推理等任务。  
+**自适应学习**：通过不断优化模型参数，提升对新数据的适应能力。  
+
+**特点**：  
+✅ 依赖海量数据和复杂神经网络（如Transformer架构）  
+✅ 生成内容可能包含偏见或错误，需人工验证  
+✅ 应用于客服、内容创作、编程辅助等领域  
+
+**局限**：  
+❌ 无法完全理解抽象概念或复杂逻辑  
+❌ 生成内容可能受限于数据质量  
+
+这类模型正在推动AI在自然语言交互和自动化任务中的广泛应用。
+Human：What are the key components of a large language模型?
+
+Assistant：The key components of a large language模型 include:
+
+**Model Architecture**  
+The core of the模型 is its neural network structure (e.g., Transformer), which processes input text and generates output text through layers of neurons.
+
+**Training Data**  
+The模型 is trained on vast amounts of text data (e.g., books、articles、web content), enabling it to learn language patterns and generate coherent responses.
+
+**Optimization Techniques**  
+Advanced algorithms (e.g., gradient descent、attention mechanisms）optimize the模型's performance by adjusting parameters based on input-output pairs.
+
+**Inference Engine**  
+The模型's inference process translates input text into output text in real-time using the trained parameters.
+
+**Evaluation Metrics**  
+Metrics like perplexity、token accuracy、and human evaluation are used to assess the模型's performance.
+
+**Applications**  
+LLMs are used in tasks such as text generation、code writing、dialogue systems、and content creation.
+
+These components work together to enable the模型 to understand and generate human-like text across diverse domains.
+</think>
+
+Large language models (LLMs） are complex systems composed of several key components that enable them to process and generate human-like text:
+
+### ¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹
+Output length of each batch is same: True
+Prompt length 39, generate length 1049, per-token latency (both prefill and decode): 3.954 ms
+worker kernel & scheduler kernel
+smem size: 163840
+Finished Launching Persistent Kernel (Async)

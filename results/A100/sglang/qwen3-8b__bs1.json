@@ -1,0 +1,10 @@
+{
+  "system": "sglang",
+  "gpu": "A100",
+  "model": "Qwen/Qwen3-8B",
+  "batch_size": 1,
+  "input_len": 64,
+  "output_len": 1024,
+  "total_iter_seconds": 11.473,
+  "latency_ms_per_token": 10.545036764705882
+}

@@ -1,0 +1,98 @@
+===== TGX  qwen3-1.7b  bs=1  =====
+/usr/local/lib/python3.12/dist-packages/torch/library.py:357: UserWarning: Warning only once for all operators,  other operators may also be overridden.
+  Overriding a previously registered kernel for the same operator and the same dispatch key
+  operator: flash_attn::_flash_attn_backward(Tensor dout, Tensor q, Tensor k, Tensor v, Tensor out, Tensor softmax_lse, Tensor(a6!)? dq, Tensor(a7!)? dk, Tensor(a8!)? dv, float dropout_p, float softmax_scale, bool causal, SymInt window_size_left, SymInt window_size_right, float softcap, Tensor? alibi_slopes, bool deterministic, Tensor? rng_state=None) -> Tensor
+    registered at /usr/local/lib/python3.12/dist-packages/torch/_library/custom_ops.py:926
+  dispatch key: ADInplaceOrView
+  previous kernel: no debug info
+       new kernel: registered at /usr/local/lib/python3.12/dist-packages/torch/_library/custom_ops.py:926 (Triggered internally at /opt/pytorch/pytorch/aten/src/ATen/core/dispatch/OperatorEntry.cpp:208.)
+  self.m.impl(
+Input arguments: Namespace(use_mirage=True, max_num_batched_tokens=8, max_num_batched_requests=1, page_size=4096, max_num_pages=16, output_dir=None, trace_name='', profiling=False, spec_decode=None, ngram_size=3, max_seq_length=1088, spec_length=3, model_path=None, model='Qwen/Qwen3-1.7B', use_cutlass_kernel=True, ignore_eos=True, max_new_tokens=None, temperature=0.0, top_p=1.0, do_sample=False, save_tokens=None, prompt='Give me a short introduction to large language model.', split_kv_cache=False, lm_head_grid='default')
+world_size(1) rank(0)
+Fetching 2 files:   0%|          | 0/2 [00:00<?, ?it/s]Fetching 2 files:  50%|█████     | 1/2 [00:06<00:06,  6.19s/it]Fetching 2 files: 100%|██████████| 2/2 [00:06<00:00,  3.09s/it]
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards:  50%|█████     | 1/2 [00:00<00:00,  1.38it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00,  2.68it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00,  2.35it/s]
+/root/mirage/python/mirage/../../include/mirage/persistent_kernel/persistent_kernel.cuh(692): warning #177-D: variable "_trace_t" was declared but never referenced
+        bool _trace_t =
+             ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+/root/mirage/python/mirage/../../include/mirage/persistent_kernel/persistent_kernel.cuh(527): warning #20054-D: dynamic initialization is not supported for a function-scope static __shared__ variable within a __device__/__global__ function
+    __attribute__((shared)) TaskDesc task_descs[TASK_DESCS_BUFFER_LENGTH];
+                                     ^
+
+[MPK INIT] Total tasks: 8492, Total events: 1838
+sm_cnt:  108
+Compiling megakernel using the following command line:
+['/usr/local/cuda/bin/nvcc', '/tmp/tmp6c00hr7t/test.cu', '-O3', '-lineinfo', '-I/usr/include/python3.12', '-I/root/mirage/python/mirage/../../include', '-I/root/mirage/python/mirage/../../include/mirage/persistent_kernel', '-I/root/mirage/python/mirage/../../deps/cutlass/include', '-I/root/mirage/python/mirage/../../deps/cutlass/tools/util/include', '-I/root/mirage/python/mirage/../../deps/json/include', '-DMAX_WORKER_PER_SCHEDULER=3', '-DMIRAGE_USE_CUTLASS_KERNEL=1', '-arch=native', '-shared', '-std=c++20', '-rdc=false', '-use_fast_math', '-lcuda', '-lcudart', '-lstdc++fs', '-Xcompiler=-fPIC', '--expt-relaxed-constexpr', '-o', '/tmp/tmp6c00hr7t/test.cpython-312-x86_64-linux-gnu.so', '-DMPK_TARGET_CC=80', '-DMIRAGE_BACKEND_USE_CUDA', '-DMODE_OFFLINE', '-DMPK_MAX_NUM_BATCHED_REQUESTS=1', '-DMPK_MAX_NUM_BATCHED_TOKENS=8', '-DMPK_MAX_NUM_PAGES=16', '-DMPK_PAGE_SIZE=4096', '-DMPK_MAX_SEQ_LENGTH=1088']
+Finished megakernel compilation...
+tokens.shape =  torch.Size([1, 1088])
+system
+You are Qwen, created by Alibaba Cloud. You are a helpful assistant.
+user
+Give me a short introduction to large language model.
+assistant
+<think>
+Okay, the user wants a short introduction to large language models. Let me start by defining what they are. Large language models are AI systems trained on vast amounts of text data. They can understand and generate human-like text.
+
+I should mention their key features: they can generate text, understand context, and adapt to different tasks. Also, they're used in various applications like chatbots, content creation, and more. Maybe include some examples like GPT-3 or BERT.
+
+Wait, the user might be a student or someone new to AI. I need to keep it simple and not too technical. Avoid jargon. Highlight the benefits, like efficiency and versatility. Also, note that they're trained on diverse data to handle different topics.
+
+Make sure the introduction is concise, around 100-150 words. Check for clarity and correctness. Avoid any markdown. Alright, that should cover the main points.
+</think>
+
+Large language models (LLMs) are advanced AI systems designed to understand and generate human-like text. They are trained on massive datasets of text, enabling them to grasp complex patterns, context, and nuances. These models can perform tasks like writing essays, answering questions, translating languages, and generating code. Their versatility allows them to adapt to various applications, from customer service chatbots to creative writing. LLMs like GPT-3 or BERT demonstrate remarkable capabilities in generating coherent, context-aware responses. However, they rely on data quality and are continually refined through iterative improvements. While they offer efficiency and flexibility, they also highlight the importance of ethical considerations in their development and use.
+You're welcome! If you have any more questions or need further details, feel free to ask. 😊
+
+I'm glad you found the introduction helpful! If you have any specific questions about how large language models work, their applications, or their limitations, I'd be happy to explain further. Let me know how I can assist you! 😊
+
+You're welcome! If you have any questions about large language models or need help with anything else, feel free to ask. 😊
+
+You're welcome! If you have any questions about large language models or need help with anything else, feel free to ask. 😊
+
+You're welcome! If you have any questions about large language models or need help with anything else, feel free to ask. 😊
+
+You're welcome! If you have any questions about large language models or need help with anything else, feel free to ask. 😊
+
+You're welcome! If you have any questions about large language models or need help with anything else, feel free to ask. 😊
+
+You're welcome! If you have any questions about large language models or need help with anything else, feel free to ask. 😊
+
+You're welcome! If you have any questions about large language models or need help with anything else, feel free to ask. 😊
+
+You're welcome! If you have any questions about large language models or need help with anything else, feel free to ask. 😊
+
+You're welcome! If you have any questions about large language models or need help with anything else, feel free to ask. 😊
+
+You're welcome! If you have any questions about large language models or need help with anything else, feel free to ask. 😊
+
+You're welcome! If you have any questions about large language models or need help with anything else, feel free to ask. 😊
+
+You're welcome! If you have any questions about large language models or need help with anything else, feel free to ask. 😊
+
+You're welcome! If you have any questions about large language models or need help with anything else, feel free to ask. 😊
+
+You're welcome! If you have any questions about large language models or need help with anything else, feel free to ask. 😊
+
+You're welcome! If you have any questions about large language models or need help with anything else, feel free to ask. 😊
+
+You're welcome! If you have any questions about large language models or need help with anything else, feel free to ask. 😊
+
+You're welcome! If you have any questions about large language models or need help with anything else, feel free to ask. 😊
+
+You're welcome! If you have any questions about large language models or need help with anything else, feel free to ask. 😊
+
+You're welcome! If you have any questions about large language models or need help with anything else, feel free to ask. 😊
+
+You're welcome! If you have any questions about large language models or need help with anything else, feel free to ask. 😊
+
+You're welcome! If you have any questions about large language models or need help with anything else, feel free to ask. 😊
+
+You're welcome! If you have any questions about large language models or need help with anything else, feel free to ask. 😊
+
+You're welcome! If you
+Prompt length 39, generate length 1049, per-token latency (both prefill and decode): 3.818 ms
+worker kernel & scheduler kernel
+smem size: 163840
+Finished Launching Persistent Kernel (Async)
