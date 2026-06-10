@@ -861,7 +861,7 @@ if __name__ == "__main__":
                 ttft_event_end.record()
                 torch.cuda.synchronize()
                 ttft_ms = ttft_event_start.elapsed_time(ttft_event_end)
-            if next_token == model.config.eos_token_id:
+            if not args.ignore_eos and next_token == model.config.eos_token_id:
                 break
 
         ender.record()
