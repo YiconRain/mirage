@@ -1,0 +1,1438 @@
+===== TGX  qwen3-8b  bs=16  =====
+/usr/local/lib/python3.12/dist-packages/torch/library.py:357: UserWarning: Warning only once for all operators,  other operators may also be overridden.
+  Overriding a previously registered kernel for the same operator and the same dispatch key
+  operator: flash_attn::_flash_attn_backward(Tensor dout, Tensor q, Tensor k, Tensor v, Tensor out, Tensor softmax_lse, Tensor(a6!)? dq, Tensor(a7!)? dk, Tensor(a8!)? dv, float dropout_p, float softmax_scale, bool causal, SymInt window_size_left, SymInt window_size_right, float softcap, Tensor? alibi_slopes, bool deterministic, Tensor? rng_state=None) -> Tensor
+    registered at /usr/local/lib/python3.12/dist-packages/torch/_library/custom_ops.py:926
+  dispatch key: ADInplaceOrView
+  previous kernel: no debug info
+       new kernel: registered at /usr/local/lib/python3.12/dist-packages/torch/_library/custom_ops.py:926 (Triggered internally at /opt/pytorch/pytorch/aten/src/ATen/core/dispatch/OperatorEntry.cpp:208.)
+  self.m.impl(
+Input arguments: Namespace(use_mirage=True, max_num_batched_tokens=8, max_num_batched_requests=16, page_size=4096, max_num_pages=16, output_dir=None, trace_name='', profiling=False, spec_decode=None, ngram_size=3, max_seq_length=1088, spec_length=3, model_path=None, model='Qwen/Qwen3-8B', use_cutlass_kernel=True, ignore_eos=True, max_new_tokens=None, temperature=0.0, top_p=1.0, do_sample=False, save_tokens=None, prompt='Give me a short introduction to large language model.', split_kv_cache=False, lm_head_grid='default')
+world_size(1) rank(0)
+Loading checkpoint shards:   0%|          | 0/5 [00:00<?, ?it/s]Loading checkpoint shards:  20%|██        | 1/5 [00:00<00:02,  1.66it/s]Loading checkpoint shards:  40%|████      | 2/5 [00:01<00:01,  1.60it/s]Loading checkpoint shards:  60%|██████    | 3/5 [00:01<00:01,  1.57it/s]Loading checkpoint shards:  80%|████████  | 4/5 [00:02<00:00,  1.69it/s]Loading checkpoint shards: 100%|██████████| 5/5 [00:02<00:00,  2.22it/s]Loading checkpoint shards: 100%|██████████| 5/5 [00:02<00:00,  1.91it/s]
+/root/mirage/python/mirage/../../include/mirage/persistent_kernel/persistent_kernel.cuh(692): warning #177-D: variable "_trace_t" was declared but never referenced
+        bool _trace_t =
+             ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+/root/mirage/python/mirage/../../include/mirage/persistent_kernel/persistent_kernel.cuh(527): warning #20054-D: dynamic initialization is not supported for a function-scope static __shared__ variable within a __device__/__global__ function
+    __attribute__((shared)) TaskDesc task_descs[TASK_DESCS_BUFFER_LENGTH];
+                                     ^
+
+/root/mirage/python/mirage/../../include/mirage/persistent_kernel/tasks/ampere/multitoken_paged_attention_32_64.cuh(219): warning #177-D: variable "s_m_buffer" was declared but never referenced
+    float *s_m_buffer = reinterpret_cast<float *>(smem + S_M_BUFFER_OFFSET);
+           ^
+          detected during instantiation of "void kernel::multitoken_paged_attention_task_impl<T,NUM_QO_HEADS,NUM_KV_HEADS,KV_CACHE_STRIDE,QKV_STRIDE,O_STRIDE,HEAD_DIM,MAX_SEQ_LEN,PAGE_SIZE,MAX_TOKENS>(const void *, void *, void *, void *, const int *, const int *, const int *, const int *, int16_t, __nv_bool, __nv_bool, const void *, const void *, const void *, const void *, float, float) [with T=bfloat16, NUM_QO_HEADS=4, NUM_KV_HEADS=1, KV_CACHE_STRIDE=1024, QKV_STRIDE=6144, O_STRIDE=4096, HEAD_DIM=128, MAX_SEQ_LEN=1088, PAGE_SIZE=4096, MAX_TOKENS=8]" at line 1212 of /tmp/tmphqdehq_s/test.cu
+
+/root/mirage/python/mirage/../../include/mirage/persistent_kernel/tasks/ampere/multitoken_paged_attention_32_64.cuh(220): warning #177-D: variable "s_d_buffer" was declared but never referenced
+    float *s_d_buffer = reinterpret_cast<float *>(smem + S_D_BUFFER_OFFSET);
+           ^
+          detected during instantiation of "void kernel::multitoken_paged_attention_task_impl<T,NUM_QO_HEADS,NUM_KV_HEADS,KV_CACHE_STRIDE,QKV_STRIDE,O_STRIDE,HEAD_DIM,MAX_SEQ_LEN,PAGE_SIZE,MAX_TOKENS>(const void *, void *, void *, void *, const int *, const int *, const int *, const int *, int16_t, __nv_bool, __nv_bool, const void *, const void *, const void *, const void *, float, float) [with T=bfloat16, NUM_QO_HEADS=4, NUM_KV_HEADS=1, KV_CACHE_STRIDE=1024, QKV_STRIDE=6144, O_STRIDE=4096, HEAD_DIM=128, MAX_SEQ_LEN=1088, PAGE_SIZE=4096, MAX_TOKENS=8]" at line 1212 of /tmp/tmphqdehq_s/test.cu
+
+/root/mirage/python/mirage/../../include/mirage/persistent_kernel/tasks/ampere/multitoken_paged_attention_32_64.cuh(221): warning #177-D: variable "s_o_buffer" was declared but never referenced
+    float *s_o_buffer = reinterpret_cast<float *>(smem + S_O_BUFFER_OFFSET);
+           ^
+          detected during instantiation of "void kernel::multitoken_paged_attention_task_impl<T,NUM_QO_HEADS,NUM_KV_HEADS,KV_CACHE_STRIDE,QKV_STRIDE,O_STRIDE,HEAD_DIM,MAX_SEQ_LEN,PAGE_SIZE,MAX_TOKENS>(const void *, void *, void *, void *, const int *, const int *, const int *, const int *, int16_t, __nv_bool, __nv_bool, const void *, const void *, const void *, const void *, float, float) [with T=bfloat16, NUM_QO_HEADS=4, NUM_KV_HEADS=1, KV_CACHE_STRIDE=1024, QKV_STRIDE=6144, O_STRIDE=4096, HEAD_DIM=128, MAX_SEQ_LEN=1088, PAGE_SIZE=4096, MAX_TOKENS=8]" at line 1212 of /tmp/tmphqdehq_s/test.cu
+
+[MPK INIT] Total tasks: 18636, Total events: 2334
+sm_cnt:  108
+Compiling megakernel using the following command line:
+['/usr/local/cuda/bin/nvcc', '/tmp/tmphqdehq_s/test.cu', '-O3', '-lineinfo', '-I/usr/include/python3.12', '-I/root/mirage/python/mirage/../../include', '-I/root/mirage/python/mirage/../../include/mirage/persistent_kernel', '-I/root/mirage/python/mirage/../../deps/cutlass/include', '-I/root/mirage/python/mirage/../../deps/cutlass/tools/util/include', '-I/root/mirage/python/mirage/../../deps/json/include', '-DMAX_WORKER_PER_SCHEDULER=3', '-DMIRAGE_USE_CUTLASS_KERNEL=1', '-arch=native', '-shared', '-std=c++20', '-rdc=false', '-use_fast_math', '-lcuda', '-lcudart', '-lstdc++fs', '-Xcompiler=-fPIC', '--expt-relaxed-constexpr', '-o', '/tmp/tmphqdehq_s/test.cpython-312-x86_64-linux-gnu.so', '-DMPK_TARGET_CC=80', '-DMIRAGE_BACKEND_USE_CUDA', '-DMODE_OFFLINE', '-DMPK_MAX_NUM_BATCHED_REQUESTS=16', '-DMPK_MAX_NUM_BATCHED_TOKENS=8', '-DMPK_MAX_NUM_PAGES=16', '-DMPK_PAGE_SIZE=4096', '-DMPK_MAX_SEQ_LENGTH=1088']
+Finished megakernel compilation...
+tokens.shape =  torch.Size([16, 1088])
+system
+You are Qwen, created by Alibaba Cloud. You are a helpful assistant.
+user
+Give me a short introduction to large language model.
+assistant
+<think>
+
+</think>
+
+A large language模型 (LLM) is a type of artificial intelligent system that is trained on vast amounts of text data to understand and generate human-like text. These models can perform a wide range of tasks, such as answering questions, writing stories, translating languages, and even coding. LLMs are characterized by their large number of parameters, which allows them to capture complex patterns in language and produce highly accurate and contextually relevant responses. They are widely used in various applications, including chatbots, virtual assistants, content creation, and more.
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+system
+You are Qwen, created by Alibaba Cloud. You are a helpful assistant.
+user
+Give me a short introduction to large language model.
+assistant
+<think>
+
+</think>
+
+Large language models (LLMs) are a type of artificial intelligent system that can understand, generate, and respond to human language in a natural and context-aware manner. These models are trained on vast amounts of text data from the internet and other sources to learn the patterns and structures of language.
+
+LLMs can perform a wide range of tasks such as answering questions and writing stories, creating code, and even engaging in conversations with humans. They are capable of understanding and generating text in multiple languages and can be fine-tuned for specific applications.
+
+The development of large language models has been driven by advances in deep learning and the availability of large-scale data sets. These models are often based on transformer architectures that allow them to process and generate text efficiently.
+
+Overall large language models represent a significant advancement in the field of artificial intelligent and have the potential to revolutionize various industries and applications.
+
+If you have any specific questions or need further information about large language models please let me know and I'll be happy to help.
+
+If you have any specific questions or need further information about large language models, please let me know and I'll be happy to help you further.
+
+Let me know if you'd like a more detailed explanation or examples of how large language models are used in practice.
+
+Let me know if you'd like a more detailed explanation or examples of how large language models are used in practice.
+
+Let me know if you'd like a more detailed explanation or examples of how large language models are used in practice.
+
+Let me know if you'd like a more detailed explanation or examples of how large language models are used in practice.
+
+Let me know if you'd like a more detailed explanation or examples of how large language models are used in practice.
+
+Let me know if you'd like a more detailed explanation or examples of how large language models are used in practice.
+
+Let me know if you'd like a more detailed explanation or examples of how large language models are used in practice.
+
+Let me know if you'd like a more detailed explanation or examples of how large language models are used in practice.
+
+Let me know if you'd like a more detailed explanation or examples of how large language models are used in practice.
+
+Let me know if you'd like a more detailed explanation or examples of how large language models are used in practice.
+
+Let me know if you'd like a more detailed explanation or examples of how large language models are used in practice.
+
+Let me know if you'd like a more detailed explanation or examples of how large language models are used in practice.
+
+Let me know if you'd like a more detailed explanation or examples of how large language models are used in practice.
+
+Let me know if you'd like a more detailed explanation or examples of how large language models are used in practice.
+
+Let me know if you'd like a more detailed explanation or examples of how large language models are used in practice.
+
+Let me know if you'd like a more detailed explanation or examples of how large language models are used in practice.
+
+Let me know if you'd like a more detailed explanation or examples of how large language models are used in practice.
+
+Let me know if you'd like a more detailed explanation or examples of how large language models are used in practice.
+
+Let me know if you'd like a more detailed explanation or examples of how large language models are used in practice.
+
+Let me know if you'd like a more detailed explanation or examples of how large language models are used in practice.
+
+Let me know if you'd like a more detailed explanation or examples of how large language models are used in practice.
+
+Let me know if you'd like a more detailed explanation or examples of how large language models are used in practice.
+
+Let me know if you'd like a more detailed explanation or examples of how large language models are used in practice.
+
+Let me know if you'd like a more detailed explanation or examples of how large language models are used in practice.
+
+Let me know if you'd like a more detailed explanation or examples of how large language models are used in practice.
+
+Let me know if you'd like a more detailed explanation or examples of how large language models are used in practice.
+
+Let me know if you'd like a more detailed explanation or examples of how large language models are used in practice.
+
+Let me know if you'd like a more detailed explanation or examples of how large language models are used in practice.
+
+Let me know if you'd like a more detailed explanation or examples of how large language models are used in practice.
+
+Let me know if you'd like a more detailed explanation or examples of how large language models are used in practice.
+
+Let me know if you'd like a more detailed explanation or examples of how large language models are used in practice.
+
+Let me know if you'd like a more detailed explanation or examples of how large language models are used in practice.
+
+Let me know if you'd like a more detailed explanation or examples of how large language models are used in practice.
+
+Let me know if you'd like a more detailed explanation or examples of how large language models are used in practice.
+
+Let me know if you'd like a more detailed explanation or examples of
+system
+You are Qwen, created by Alibaba Cloud. You are a helpful assistant.
+user
+Give me a short introduction to large language model.
+assistant
+<think>
+
+</think>
+
+Large language models (LLMs), such as Qwen (通义千問), are advanced artificial intelligent systems designed to understand and generate human-like text across a wide range of topics and languages.
+
+These models are trained on vast amounts of text data, enabling them to perform tasks such as answering questions、writing stories、creating code、and more. They can understand context and generate coherent responses in natural language, making them powerful tools for various applications.
+
+Large language models are typically based on deep learning architectures like the transformer，which allows them to process and generate text efficiently and effectively.
+
+If you have any specific questions or need assistance with something related to large language models，feel free to ask！
+
+If you have any specific questions or need assistance with something related to large language models，feel free to ask！
+
+If you have any specific questions or need assistance with something related to large language models，feel free to ask！
+
+If you have any specific questions or need assistance with something related to large language models，feel free to ask！
+
+If you have any specific questions or need assistance with something related to large language models，feel free to ask！
+
+If you have any specific questions or need assistance with something related to large language models，feel free to ask！
+
+If you have any specific questions or need assistance with something related to large language models，feel free to ask！
+
+If you have any specific questions or need assistance with something related to large language models，feel free to ask！
+
+If you have any specific questions or need assistance with something related to large language models，feel free to ask！
+
+If you have any specific questions or need assistance with something related to large language models，feel free to ask！
+
+If you have any specific questions or need assistance with something related to large language models，feel free to ask！
+
+If you have any specific questions or need assistance with something related to large language models，feel free to ask！
+
+If you have any specific questions or need assistance with something related to large language models，feel free to ask！
+
+If you have any specific questions or need assistance with something related to large language models，feel free to ask！
+
+If you have any specific questions or need assistance with something related to large language models，feel free to ask！
+
+If you have any specific questions or need assistance with something related to large language models，feel free to ask！
+
+If you have any specific questions or need assistance with something related to large language models，feel free to ask！
+
+If you have any specific questions or need assistance with something related to large language models，feel free to ask！
+
+If you have any specific questions or need assistance with something related to large language models，feel free to ask！
+
+If you have any specific questions or need assistance with something related to large language models，feel free to ask！
+
+If you have any specific questions or need assistance with something related to large language models，feel free to ask！
+
+If you have any specific questions or need assistance with something related to large language models，feel free to ask！
+
+If you have any specific questions or need assistance with something related to large language models，feel free to ask！
+
+If you have any specific questions or need assistance with something related to large language models，feel free to ask！
+
+If you have any specific questions or need assistance with something related to large language models，feel free to ask！
+
+If you have any specific questions or need assistance with something related to large language models，feel free to ask！
+
+If you have any specific questions or need assistance with something related to large language models，feel free to ask！
+
+If you have any specific questions or need assistance with something related to large language models，feel free to ask！
+
+If you have any specific questions or need assistance with something related to large language models，feel free to ask！
+
+If you have any specific questions or need assistance with something related to large language models，feel free to ask！
+
+If you have any specific questions or need assistance with something related to large language models，feel free to ask！
+
+If you have any specific questions or need assistance with something related to large language models，feel free to ask！
+
+If you have any specific questions or need assistance with something related to large language models，feel free to ask！
+
+If you have any specific questions or need assistance with something related to large language models，feel free to ask！
+
+If you have any specific questions or need assistance with something related to large language models，feel free to ask！
+
+If you have any specific questions or need assistance with something related to large language models，feel free to ask！
+
+If you have any specific questions or need assistance with something related to large language models，feel free to ask！
+
+If you have any specific questions or need assistance with something related to large language models，feel free to ask！
+
+If you have any specific questions or need assistance with something related to large language models，feel
+system
+You are Qwen, created by Alibaba Cloud. You are a helpful assistant.
+user
+Give me a short introduction to large language model.
+assistant
+<think>
+
+</think>
+
+Large language models (LLMs), such as Qwen (通义千問), are advanced artificial intelligent systems designed to understand and generate human-like text across a wide range of topics and languages.
+
+These models are trained on vast amounts of text data from the internet and other sources to learn patterns in language and develop the ability to perform tasks such as answering questions、writing stories、creating code、and more.
+
+Large language models can be used in various applications such as customer service、content creation、data analysis、and research.
+
+They are a key part of the development of artificial general intelligences and are expected to play an important role in the future of technology and society.
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel
+system
+You are Qwen, created by Alibaba Cloud. You are a helpful assistant.
+user
+Give me a short introduction to large language model.
+assistant
+<think>
+
+</think>
+
+Large language models (LLMs), such as Qwen (通义千問), are advanced artificial intelligent systems designed to understand and generate human-like text across a wide range of topics and languages.
+
+These models are trained on vast amounts of text data from the internet and other sources to learn patterns in language and develop the ability to perform tasks such as answering questions、writing stories、creating code、and more.
+
+Large language models can be used in various applications such as customer service、content creation、data analysis、and research.
+
+They are a key part of the development of artificial general intelligences and are expected to play an important role in the future of technology and society.
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel
+system
+You are Qwen, created by Alibaba Cloud. You are a helpful assistant.
+user
+Give me a short introduction to large language model.
+assistant
+<think>
+
+</think>
+
+Large language models (LLMs), such as Qwen (通义千問), are advanced artificial intelligent systems designed to understand and generate human-like text across a wide range of topics and languages.
+
+These models are trained on vast amounts of text data from the internet and other sources to learn patterns in language and develop the ability to perform tasks such as answering questions、writing stories、creating code、and more.
+
+Large language models can be used in various applications such as customer service、content creation、data analysis、and research.
+
+They are a key part of the development of artificial general intelligences and are expected to play an important role in the future of technology and society.
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel
+system
+You are Qwen, created by Alibaba Cloud. You are a helpful assistant.
+user
+Give me a short introduction to large language model.
+assistant
+<think>
+
+</think>
+
+Large language models (LLMs), such as Qwen (通义千問), are advanced artificial intelligent systems designed to understand and generate human-like text across a wide range of topics and languages.
+
+These models are trained on vast amounts of text data from the internet and other sources to learn patterns in language and develop the ability to perform tasks such as answering questions、writing stories、creating code、and more.
+
+Large language models can be used in various applications such as customer service、content creation、data analysis、and research.
+
+They are a key part of the development of artificial general intelligences and are expected to play an important role in the future of technology and society.
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel
+system
+You are Qwen, created by Alibaba Cloud. You are a helpful assistant.
+user
+Give me a short introduction to large language model.
+assistant
+<think>
+
+</think>
+
+Large language models (LLMs), such as Qwen (通义千問), are advanced artificial intelligent systems designed to understand and generate human-like text across a wide range of topics and languages.
+
+These models are trained on vast amounts of text data from the internet and other sources to learn patterns in language and develop the ability to perform tasks such as answering questions、writing stories、creating code、and more.
+
+Large language models can be used in various applications such as customer service、content creation、data analysis、and research.
+
+They are a key part of the development of artificial general intelligences and are expected to play an important role in the future of technology and society.
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel
+system
+You are Qwen, created by Alibaba Cloud. You are a helpful assistant.
+user
+Give me a short introduction to large language model.
+assistant
+<think>
+
+</think>
+
+Large language models (LLMs), such as Qwen (通义千問), are advanced artificial intelligent systems designed to understand and generate human-like text across a wide range of topics and languages.
+
+These models are trained on vast amounts of text data, enabling them to perform tasks such as answering questions、writing stories、creating code、and more.
+
+Large language models are widely used in various fields, including customer service、content creation、education、and research.
+
+They are a key part of the development of artificial generalintelligence (AGI), and continue to evolve with ongoing research and innovation.
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need
+system
+You are Qwen, created by Alibaba Cloud. You are a helpful assistant.
+user
+Give me a short introduction to large language model.
+assistant
+<think>
+
+</think>
+
+Large language models (LLMs), such as Qwen (通义千問), are advanced artificial intelligent systems designed to understand and generate human-like text across a wide range of topics and languages.
+
+These models are trained on vast amounts of text data, enabling them to perform tasks such as answering questions、writing stories、creating code、and more.
+
+Large language models are widely used in various fields, including customer service、content creation、education、and research.
+
+They are a key part of the development of artificial generalintelligence (AGAI), and continue to evolve with ongoing research and innovation.
+
+If you have any specific questions or need further information, feel free to ask！
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information about large language models or Qwen, feel free to ask me anytime!
+
+If you have any specific questions or need further information about large language models or Qwen, feel free to ask me anytime!
+
+If you have any specific questions or need further information about large language models or Qwen，feel free to ask me anytime！
+
+If you have any specific questions or need further information about large language models or Qwen，feel free to ask me anytime！
+
+If you have any specific questions or need further information about large language models or Qwen，feel free to ask me anytime！
+
+If you have any specific questions or need further information about large language models or Qwen，feel free to ask me anytime！
+
+If you have any specific questions or need further information about large language models or Qwen，feel free to ask me anytime！
+
+If you have any specific questions or need further information about large language models or Qwen，feel free to ask me anytime！
+
+If you have any specific questions or need further information about large language models or Qwen，feel free to ask me anytime！
+
+If you have any specific questions or need further information about large language models or Qwen，feel free to ask me anytime！
+
+If you have any specific questions or need further information about large language models or Qwen，feel free to ask me anytime！
+
+If you have any specific questions or need further information about large language models or Qwen，feel free to ask me anytime！
+
+If you have any specific questions or need further information about large language models or Qwen，feel free to ask me anytime！
+
+If you have any specific questions or need further information about large language models or Qwen，feel free to ask me anytime！
+
+If you have any specific questions or need further information about large language models or Qwen，feel free to ask me anytime！
+
+If you have any specific questions or need further information about large language models or Qwen，feel free to ask me anytime！
+
+If you have any specific questions or need further information about large language models or Qwen，feel free to ask me anytime！
+
+If you have any specific questions or need further information about large language models or Qwen，feel free to ask me anytime！
+
+If you have any specific questions or need further information about large language models or Qwen，feel free to ask me anytime！
+
+If you have any specific questions or need further information about large language models or Qwen，feel free to ask me anytime！
+
+If you have any specific questions or need further information about large language models or Qwen，feel free to ask me anytime！
+
+If you have any specific questions or need further information about large language models or Qwen，feel free to ask me anytime！
+
+If you have any specific questions or need further information about large language models or Qwen，feel free to ask me anytime！
+
+If you have any specific questions or need further information about large language models or Qwen，feel free to ask me anytime！
+
+If you have any specific questions or need further information about large language models or Qwen，feel free to ask me anytime！
+
+If you have any specific questions or need further information about large language models or Qwen，feel free to ask me anytime！
+
+If you have any specific questions or need further information about large language models or Qwen，feel free to ask me anytime！
+
+If you have any specific questions or need further information about large language models or Qwen，feel free to ask me anytime！
+
+If you have any specific questions or need further information about large language models or Qwen，feel free to ask me anytime！
+
+If you have any specific questions or need further information about large language models or Qwen，feel free to ask me anytime！
+
+If you have any specific questions or need further information about large language models or Qwen，feel free to ask me anytime！
+
+If you have any specific questions or need further information about large language models or Qwen，feel free to ask me anytime！
+
+If you have any specific questions or need further information about large language models or Qwen，feel free to ask me anytime！
+system
+You are Qwen, created by Alibaba Cloud. You are a helpful assistant.
+user
+Give me a short introduction to large language model.
+assistant
+<think>
+
+</think>
+
+Large language models (LLMs), such as Qwen (通义千問), are advanced artificial intelligent systems designed to understand and generate human-like text. These models are trained on vast amounts of text data from the internet and other sources to learn patterns in language and develop a deep understanding of grammar and context.
+
+LLMs can perform a wide range of tasks including answering questions in multiple languages (such as English and Chinese), creating content like stories and poems in various styles and genres, and even engaging in conversations with users in a natural and interactive manner.
+
+The development of large language models represents a significant advancement in the field of artificial intelligent, enabling more natural and effective human-computer interaction and opening up new possibilities for applications in education and business.
+
+If you have any specific questions or need assistance with something, feel free to ask me directly!
+
+If you have any specific questions or need assistance with something else related to large language models, feel free to ask me directly!
+
+If you have any specific questions or need assistance with something else related to large language models or other topics of interest to you please let me know and I'll be happy to help!
+
+If you have any specific questions or need assistance with something else related to large language models or other topics of interest to you please let me know and I'll be happy to help you further in your exploration!
+
+If you have any specific questions or need assistance with something else related to large language models or other topics of interest to you please let me know and I'll be happy to help you further in your exploration and learning!
+
+If you have any specific questions or need assistance with something else related to large language models or other topics of interest to you please let me know and I'll be happy to help you further in your exploration and learning journey with Qwen and the world of artificial intelligent technology!
+
+If you have any specific questions or need assistance with something else related to large language models or other topics of interest to you please let me know and I'll be happy to help you further in your exploration and learning journey with Qwen and the world of artificial intelligent technology and its applications!
+
+If you have any specific questions or need assistance with something else related to large language models or other topics of interest to you please let me know and I'll be happy to help you further in your exploration and learning journey with Qwen and the world of artificial intelligent technology and its applications in various fields such as education and business!.
+
+If you have any specific questions or need assistance with something else related to large language models or other topics of interest to you please let me know and I'll be happy to help you further in your exploration and learning journey with Qwen and the world of artificial intelligent technology and its applications in various fields such as education and business and daily life!.
+
+If you have any specific questions or need assistance with something else related to large language models or other topics of interest to you please let me know and I'll be happy to help you further in your exploration and learning journey with Qwen and the world of artificial intelligent technology and its applications in various fields such as education and business and daily life and more!.
+
+If you have any specific questions or need assistance with something else related to large language models or other topics of interest to you please let me know and I'll be happy to help you further in your exploration and learning journey with Qwen and the world of artificial intelligent technology and its applications in various fields such as education and business and daily life and more!.
+
+If you have any specific questions or need assistance with something else related to large language models or other topics of interest to you please let me know and I'll be happy to help you further in your exploration and learning journey with Qwen and the world of artificial intelligent technology and its applications in various fields such as education and business and daily life and more!.
+
+If you have any specific questions or need assistance with something else related to large language models or other topics of interest to you please let me know and I'll be happy to help you further in your exploration and learning journey with Qwen and the world of artificial intelligent technology and its applications in various fields such as education and business and daily life and more!.
+
+If you have any specific questions or need assistance with something else related to large language models or other topics of interest to you please let me know and I'll be happy to help you further in your exploration and learning journey with Qwen and the world of artificial intelligent technology and its applications in various fields such as education and business and daily life and more!.
+
+If you have any specific questions or need assistance with something else related to large language models or other topics of interest to you please let me know and I'll be happy to help you further in your exploration and learning journey with Qwen and the world of artificial intelligent technology and its applications in various fields such as education and business and daily life and more!.
+
+If you have any specific questions or need assistance with something else related to large language models or other topics of interest to you please let me know and I'll be happy to help you further in your
+system
+You are Qwen, created by Alibaba Cloud. You are a helpful assistant.
+user
+Give me a short introduction to large language model.
+assistant
+<think>
+
+</think>
+
+Large language models (LLMs), such as Qwen (通义千問), are advanced artificial intelligent systems designed to understand and generate human-like text across a wide range of topics and languages.
+
+These models are trained on vast amounts of text data from the internet and other sources to learn patterns in language and develop the ability to perform tasks such as answering questions、writing stories、creating code、and more.
+
+Large language models can be used in various applications such as customer service、content creation、data analysis、and research.
+
+They are a key part of the development of artificial general intelligences and are expected to play an important role in the future of technology and society.
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them, please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel
+system
+You are Qwen, created by Alibaba Cloud. You are a helpful assistant.
+user
+Give me a short introduction to large language model.
+assistant
+<think>
+
+</think>
+
+Large language models (LLMs), such as Qwen (通义千問), are advanced artificial intelligent systems designed to understand and generate human-like text across a wide range of topics and languages.
+
+These models are trained on vast amounts of text data from the internet and other sources to learn patterns in language and develop the ability to perform tasks such as answering questions、writing stories、creating code、and more.
+
+Large language models can be used in various applications such as customer service、content creation、data analysis、and research.
+
+They are a key part of the development of artificial general intelligences and are expected to play an important role in the future of technology and society.
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel
+system
+You are Qwen, created by Alibaba Cloud. You are a helpful assistant.
+user
+Give me a short introduction to large language model.
+assistant
+<think>
+
+</think>
+
+Large language models (LLMs), such as Qwen (通义千問), are advanced artificial intelligent systems designed to understand and generate human-like text across a wide range of topics and languages.
+
+These models are trained on vast amounts of text data from the internet and other sources to learn patterns in language and develop the ability to perform tasks such as answering questions、writing stories、creating code、and more.
+
+Large language models can be used in various applications such as customer service、content creation、data analysis、and research.
+
+They are a key part of the development of artificial general intelligences and are expected to play an important role in the future of technology and society.
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel
+system
+You are Qwen, created by Alibaba Cloud. You are a helpful assistant.
+user
+Give me a short introduction to large language model.
+assistant
+<think>
+
+</think>
+
+Large language models (LLMs), such as Qwen (通义千問), are advanced artificial intelligent systems designed to understand and generate human-like text across a wide range of topics and languages.
+
+These models are trained on vast amounts of text data from the internet and other sources to learn patterns in language and develop the ability to perform tasks such as answering questions、writing stories、creating code、and more.
+
+Large language models can be used in various applications such as customer service、content creation、data analysis、and research.
+
+They are a key part of the development of artificial general intelligences and are expected to play an important role in the future of technology and society.
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel
+system
+You are Qwen, created by Alibaba Cloud. You are a helpful assistant.
+user
+Give me a short introduction to large language model.
+assistant
+<think>
+
+</think>
+
+Large language models (LLMs), such as Qwen (通义千問), are advanced artificial intelligent systems designed to understand and generate human-like text across a wide range of topics and languages.
+
+These models are trained on vast amounts of text data from the internet and other sources to learn patterns in language and develop the ability to perform tasks such as answering questions、writing stories、creating code、and more.
+
+Large language models can be used in various applications such as customer service、content creation、data analysis、and research.
+
+They are a key part of the development of artificial general intelligences and are expected to play an important role in the future of technology and society.
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel free to ask！
+
+If you have any specific questions about large language models or need help with something related to them，please feel
+Output length of each batch is same: True
+Prompt length 43, generate length 1045, per-token latency (both prefill and decode): 29.520 ms
+TTFT (time to first token): 183.356 ms
+TBT (time between tokens, decode only): 30.559 ms
+worker kernel & scheduler kernel
+smem size: 163840
+Finished Launching Persistent Kernel (Async)

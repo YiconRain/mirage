@@ -1,0 +1,163 @@
+===== TGX  qwen3-8b  bs=1  =====
+/usr/local/lib/python3.12/dist-packages/torch/library.py:357: UserWarning: Warning only once for all operators,  other operators may also be overridden.
+  Overriding a previously registered kernel for the same operator and the same dispatch key
+  operator: flash_attn::_flash_attn_backward(Tensor dout, Tensor q, Tensor k, Tensor v, Tensor out, Tensor softmax_lse, Tensor(a6!)? dq, Tensor(a7!)? dk, Tensor(a8!)? dv, float dropout_p, float softmax_scale, bool causal, SymInt window_size_left, SymInt window_size_right, float softcap, Tensor? alibi_slopes, bool deterministic, Tensor? rng_state=None) -> Tensor
+    registered at /usr/local/lib/python3.12/dist-packages/torch/_library/custom_ops.py:926
+  dispatch key: ADInplaceOrView
+  previous kernel: no debug info
+       new kernel: registered at /usr/local/lib/python3.12/dist-packages/torch/_library/custom_ops.py:926 (Triggered internally at /opt/pytorch/pytorch/aten/src/ATen/core/dispatch/OperatorEntry.cpp:208.)
+  self.m.impl(
+Input arguments: Namespace(use_mirage=True, max_num_batched_tokens=8, max_num_batched_requests=1, page_size=4096, max_num_pages=16, output_dir=None, trace_name='', profiling=False, spec_decode=None, ngram_size=3, max_seq_length=1088, spec_length=3, model_path=None, model='Qwen/Qwen3-8B', use_cutlass_kernel=True, ignore_eos=True, max_new_tokens=None, temperature=0.0, top_p=1.0, do_sample=False, save_tokens=None, prompt='Give me a short introduction to large language model.', split_kv_cache=False, lm_head_grid='default')
+world_size(1) rank(0)
+Loading checkpoint shards:   0%|          | 0/5 [00:00<?, ?it/s]Loading checkpoint shards:  20%|██        | 1/5 [00:00<00:02,  1.51it/s]Loading checkpoint shards:  40%|████      | 2/5 [00:01<00:01,  1.51it/s]Loading checkpoint shards:  60%|██████    | 3/5 [00:01<00:01,  1.51it/s]Loading checkpoint shards:  80%|████████  | 4/5 [00:02<00:00,  1.67it/s]Loading checkpoint shards: 100%|██████████| 5/5 [00:02<00:00,  2.20it/s]Loading checkpoint shards: 100%|██████████| 5/5 [00:02<00:00,  1.86it/s]
+/root/mirage/python/mirage/../../include/mirage/persistent_kernel/persistent_kernel.cuh(692): warning #177-D: variable "_trace_t" was declared but never referenced
+        bool _trace_t =
+             ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+/root/mirage/python/mirage/../../include/mirage/persistent_kernel/persistent_kernel.cuh(527): warning #20054-D: dynamic initialization is not supported for a function-scope static __shared__ variable within a __device__/__global__ function
+    __attribute__((shared)) TaskDesc task_descs[TASK_DESCS_BUFFER_LENGTH];
+                                     ^
+
+/root/mirage/python/mirage/../../include/mirage/persistent_kernel/tasks/ampere/multitoken_paged_attention_32_64.cuh(219): warning #177-D: variable "s_m_buffer" was declared but never referenced
+    float *s_m_buffer = reinterpret_cast<float *>(smem + S_M_BUFFER_OFFSET);
+           ^
+          detected during instantiation of "void kernel::multitoken_paged_attention_task_impl<T,NUM_QO_HEADS,NUM_KV_HEADS,KV_CACHE_STRIDE,QKV_STRIDE,O_STRIDE,HEAD_DIM,MAX_SEQ_LEN,PAGE_SIZE,MAX_TOKENS>(const void *, void *, void *, void *, const int *, const int *, const int *, const int *, int16_t, __nv_bool, __nv_bool, const void *, const void *, const void *, const void *, float, float) [with T=bfloat16, NUM_QO_HEADS=4, NUM_KV_HEADS=1, KV_CACHE_STRIDE=1024, QKV_STRIDE=6144, O_STRIDE=4096, HEAD_DIM=128, MAX_SEQ_LEN=1088, PAGE_SIZE=4096, MAX_TOKENS=8]" at line 1212 of /tmp/tmp7qx0wicq/test.cu
+
+/root/mirage/python/mirage/../../include/mirage/persistent_kernel/tasks/ampere/multitoken_paged_attention_32_64.cuh(220): warning #177-D: variable "s_d_buffer" was declared but never referenced
+    float *s_d_buffer = reinterpret_cast<float *>(smem + S_D_BUFFER_OFFSET);
+           ^
+          detected during instantiation of "void kernel::multitoken_paged_attention_task_impl<T,NUM_QO_HEADS,NUM_KV_HEADS,KV_CACHE_STRIDE,QKV_STRIDE,O_STRIDE,HEAD_DIM,MAX_SEQ_LEN,PAGE_SIZE,MAX_TOKENS>(const void *, void *, void *, void *, const int *, const int *, const int *, const int *, int16_t, __nv_bool, __nv_bool, const void *, const void *, const void *, const void *, float, float) [with T=bfloat16, NUM_QO_HEADS=4, NUM_KV_HEADS=1, KV_CACHE_STRIDE=1024, QKV_STRIDE=6144, O_STRIDE=4096, HEAD_DIM=128, MAX_SEQ_LEN=1088, PAGE_SIZE=4096, MAX_TOKENS=8]" at line 1212 of /tmp/tmp7qx0wicq/test.cu
+
+/root/mirage/python/mirage/../../include/mirage/persistent_kernel/tasks/ampere/multitoken_paged_attention_32_64.cuh(221): warning #177-D: variable "s_o_buffer" was declared but never referenced
+    float *s_o_buffer = reinterpret_cast<float *>(smem + S_O_BUFFER_OFFSET);
+           ^
+          detected during instantiation of "void kernel::multitoken_paged_attention_task_impl<T,NUM_QO_HEADS,NUM_KV_HEADS,KV_CACHE_STRIDE,QKV_STRIDE,O_STRIDE,HEAD_DIM,MAX_SEQ_LEN,PAGE_SIZE,MAX_TOKENS>(const void *, void *, void *, void *, const int *, const int *, const int *, const int *, int16_t, __nv_bool, __nv_bool, const void *, const void *, const void *, const void *, float, float) [with T=bfloat16, NUM_QO_HEADS=4, NUM_KV_HEADS=1, KV_CACHE_STRIDE=1024, QKV_STRIDE=6144, O_STRIDE=4096, HEAD_DIM=128, MAX_SEQ_LEN=1088, PAGE_SIZE=4096, MAX_TOKENS=8]" at line 1212 of /tmp/tmp7qx0wicq/test.cu
+
+[MPK INIT] Total tasks: 14316, Total events: 2334
+sm_cnt:  108
+Compiling megakernel using the following command line:
+['/usr/local/cuda/bin/nvcc', '/tmp/tmp7qx0wicq/test.cu', '-O3', '-lineinfo', '-I/usr/include/python3.12', '-I/root/mirage/python/mirage/../../include', '-I/root/mirage/python/mirage/../../include/mirage/persistent_kernel', '-I/root/mirage/python/mirage/../../deps/cutlass/include', '-I/root/mirage/python/mirage/../../deps/cutlass/tools/util/include', '-I/root/mirage/python/mirage/../../deps/json/include', '-DMAX_WORKER_PER_SCHEDULER=3', '-DMIRAGE_USE_CUTLASS_KERNEL=1', '-arch=native', '-shared', '-std=c++20', '-rdc=false', '-use_fast_math', '-lcuda', '-lcudart', '-lstdc++fs', '-Xcompiler=-fPIC', '--expt-relaxed-constexpr', '-o', '/tmp/tmp7qx0wicq/test.cpython-312-x86_64-linux-gnu.so', '-DMPK_TARGET_CC=80', '-DMIRAGE_BACKEND_USE_CUDA', '-DMODE_OFFLINE', '-DMPK_MAX_NUM_BATCHED_REQUESTS=1', '-DMPK_MAX_NUM_BATCHED_TOKENS=8', '-DMPK_MAX_NUM_PAGES=16', '-DMPK_PAGE_SIZE=4096', '-DMPK_MAX_SEQ_LENGTH=1088']
+Finished megakernel compilation...
+tokens.shape =  torch.Size([1, 1088])
+system
+You are Qwen, created by Alibaba Cloud. You are a helpful assistant.
+user
+Give me a short introduction to large language model.
+assistant
+<think>
+
+</think>
+
+Large language models (LLMs) are a type of artificial intelligent system that can understand, generate, and respond to human language. These models are trained on vast amounts of text data, allowing them to perform a wide range of tasks, such as answering questions, writing stories, coding, and translating languages. LLMs are capable of generating coherent and contextually relevant responses, making them valuable tools in various applications, including customer service, content creation, and research. Their ability to process and generate natural language has revolutionized the field of artificial Intelligence, enabling more interactive and intelligent systems.
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need further information, feel free to ask!
+
+If you have any specific questions or need
+Prompt length 43, generate length 1045, per-token latency (both prefill and decode): 11.525 ms
+TTFT (time to first token): 71.582 ms
+TBT (time between tokens, decode only): 11.930 ms
+worker kernel & scheduler kernel
+smem size: 163840
+Finished Launching Persistent Kernel (Async)
